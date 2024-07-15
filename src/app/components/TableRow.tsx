@@ -58,7 +58,7 @@ export default async function TableRow(props: { game: any }) {
   });
 
   return (
-    <tr className="border-b border-gray-400">
+    <tr className="border-b border-gray-400" key={game.objectid}>
       <td className="py-2">
         <Link href={`https://boardgamegeek.com${href}`} target="_blank">
           {primaryname.name}

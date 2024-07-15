@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import TableRow from "./components/TableRow";
+import Link from "next/link";
 
 export default async function Home() {
   const games = await axios({
@@ -74,8 +75,19 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col justify-between p-24">
-      <div>
-        Total Games Listed: <strong>{games.length}</strong>
+      <div className="flex justify-between mb-8">
+        <div>
+          Total Games Listed: <strong>{games.length}</strong>
+        </div>
+        <div>
+          <Link className="px-4 py-2" href="/api/itemscraper">
+            Download Games
+          </Link>
+          |
+          <Link className="px-4 py-2" href="/api/parentscraper">
+            Download Parents
+          </Link>
+        </div>
       </div>
       <table>
         <thead>
