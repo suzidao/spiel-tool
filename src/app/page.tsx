@@ -69,9 +69,13 @@ export default async function Home() {
         }
       `,
     },
-  }).then((result) => {
-    return result.data.data.entries;
-  });
+  })
+    .then((result) => {
+      return result.data.data.entries;
+    })
+    .catch((error) => {
+      return error;
+    });
 
   return (
     <main className="flex min-h-screen flex-col justify-between p-24">
@@ -105,11 +109,13 @@ export default async function Home() {
             <th>Complexity</th>
           </tr>
         </thead>
-        <tbody>
-          {games.map((game: any, idx: number) => {
-            return <TableRow key={idx} game={game} />;
-          })}
-        </tbody>
+        {games.length > 0 && (
+          <tbody>
+            {games.map((game: any, idx: number) => {
+              return <TableRow key={idx} game={game} />;
+            })}
+          </tbody>
+        )}
       </table>
     </main>
   );

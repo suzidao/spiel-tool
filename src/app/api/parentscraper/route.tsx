@@ -1,6 +1,6 @@
 /** @format */
 
-const PARENTPAGECOUNT = 3;
+const PARENTPAGECOUNT = 4;
 
 export async function GET() {
   const previewItems: Entry[] = [];
@@ -11,7 +11,9 @@ export async function GET() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-store",
         },
+        cache: "no-store",
       }
     );
     const batchItems = await response.json();
@@ -26,6 +28,7 @@ export async function GET() {
 
   headers.append("Content-Disposition", 'attachment; filename="spiel-preview-parents.json"');
   headers.append("Content-Type", "application/json");
+  headers.append("Cache-Control", "no-store");
 
   return new Response(blob, {
     headers,

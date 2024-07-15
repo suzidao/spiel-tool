@@ -27,7 +27,7 @@
         "./src/*"
       ]
     },
-    "moduleResolution": "node"
+    "moduleResolution": "node",
   },
   "include": [
     "src",

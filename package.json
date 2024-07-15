@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev && nodemon --watch src/graphql --exec ts-node src/graphql/index.tsx",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start && node graphql/index.tsx",
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-table": "^8.19.3",
     "axios": "^1.7.2",
     "express": "^4.19.2",
     "graphql": "^16.9.0",
