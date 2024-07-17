@@ -82,10 +82,13 @@ export default async function Home() {
     });
 
   const editedGames = games.map((game: Entry) => {
+    // retrieve location from publisher meta
     pubMeta.map((meta) => {
       if (game.publishers[0].item.objectid === meta.objectid)
         game.location = meta.location === null || meta.location === "" ? "–" : meta.location;
     });
+
+    // consolidate & format release dates and release overrides
     const releasedate = game.version.item.releasedate;
     const overridedate = game.version.item.overridedate;
 
@@ -105,6 +108,7 @@ export default async function Home() {
       }
     };
     game.version.item.releasedate = formattedReleaseDate();
+
     return game;
   });
 
