@@ -14,7 +14,14 @@ const location = (args: { id: string }): PublisherMeta | undefined => {
 };
 
 const entries = (): Entry[] => {
-  return games;
+  const editedLocations = games.map((game) => {
+    const newLocation = pubMeta.map((meta) => {
+      return meta.objectid === game.publishers[0].item.objectid ? meta.location : game.location;
+    })[0];
+    game.location = newLocation;
+    return game;
+  });
+  return editedLocations;
 };
 const entry = (args: { id: string }): Entry | undefined => {
   return games.find((game) => game.itemid === args.id);

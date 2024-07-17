@@ -3,9 +3,11 @@
 import axios from "axios";
 import TableRow from "./components/TableRow";
 import Link from "next/link";
+import pubMeta from "../data/spiel-preview-parents.json";
+import DataTable from "./components/DataTable";
 
 export default async function Home() {
-  const games = await axios({
+  const games: Entry[] = await axios({
     url: "http://localhost:4000/graphql",
     method: "POST",
     data: {
@@ -45,6 +47,7 @@ export default async function Home() {
                 minage
                 links {
                   boardgamedesigner {
+                    objectid
                     name
                     canonical_link
                   }
@@ -54,6 +57,7 @@ export default async function Home() {
                   }
                 }
                 primaryname {
+                  nameid
                   name
                 }
                 dynamicinfo {
@@ -77,6 +81,33 @@ export default async function Home() {
       return error;
     });
 
+  const editedGames = games.map((game: Entry) => {
+    pubMeta.map((meta) => {
+      if (game.publishers[0].item.objectid === meta.objectid)
+        game.location = meta.location === null || meta.location === "" ? "–" : meta.location;
+    });
+    const releasedate = game.version.item.releasedate;
+    const overridedate = game.version.item.overridedate;
+
+    const formattedReleaseDate = () => {
+      if (overridedate) {
+        return overridedate;
+      } else if (releasedate) {
+        if (releasedate === "0000-00-00") {
+          return "–";
+        } else if (releasedate.endsWith("-00-00")) {
+          return releasedate.split("-")[0];
+        } else if (releasedate.endsWith("-00")) {
+          return releasedate.split("-")[1] + "-" + releasedate.split("-")[0];
+        } else {
+          return releasedate.split("-")[1] + "-" + releasedate.split("-")[2] + "-" + releasedate.split("-")[0];
+        }
+      }
+    };
+    game.version.item.releasedate = formattedReleaseDate();
+    return game;
+  });
+
   return (
     <main className="flex min-h-screen flex-col justify-between p-24">
       <div className="flex justify-between mb-8">
@@ -93,14 +124,15 @@ export default async function Home() {
           </Link>
         </div>
       </div>
-      <table>
+      <DataTable games={editedGames} />
+      {/* <table>
         <thead>
           <tr>
             <th className="text-left">Game Title</th>
             <th className="text-left">Publisher</th>
             <th className="text-left">Designer(s)</th>
             <th className="text-left">Location</th>
-            {/* <th className="min-w-12">👍</th> */}
+            {/* <th className="min-w-12">👍</th> }
             <th className="text-left">Release Date</th>
             <th>Min. Players</th>
             <th>Max. Players</th>
@@ -116,7 +148,7 @@ export default async function Home() {
             })}
           </tbody>
         )}
-      </table>
+      </table> */}
     </main>
   );
 }

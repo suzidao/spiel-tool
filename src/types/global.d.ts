@@ -7,10 +7,11 @@ export declare global {
     geekitem: GeekItem;
     msrp: number;
     showprice: number;
-    location: string;
+    location: string | null;
     pretty_availability_status: string;
     reactions: Reactions;
     version: Version;
+    publishers: Publisher[];
   };
 
   type Reactions = {
@@ -26,7 +27,7 @@ export declare global {
   };
 
   type VersionItem = {
-    releasedate: string;
+    releasedate: string | undefined;
     overridedate: string;
   };
 
@@ -40,14 +41,14 @@ export declare global {
     maxplaytime: string;
     minage: string;
     links: Links;
-    primaryname: string;
+    primaryname: Name;
     dynamicinfo: Info;
   };
 
   type Links = {
     boardgamedesigner: Designer[];
-    boardgamepublisher: Publisher[];
     reimplements: BaseGame[];
+    boardgamefamily: GameFamily[];
   };
 
   type Designer = {
@@ -57,15 +58,29 @@ export declare global {
   };
 
   type Publisher = {
-    objectid: string;
-    name: string;
-    canonical_link: string;
+    item: {
+      objectid: string;
+      href: string;
+      primaryname: {
+        name: string;
+      };
+    };
   };
 
   type BaseGame = {
     objectid: string;
     name: string;
     canonical_link: string;
+  };
+
+  type GameFamily = {
+    objectid: string;
+    name: string;
+  };
+
+  type Name = {
+    name: string;
+    nameid: string;
   };
 
   type Info = {
@@ -82,6 +97,6 @@ export declare global {
 
   type PublisherMeta = {
     objectid: string;
-    location: string;
+    location: string | null;
   };
 }

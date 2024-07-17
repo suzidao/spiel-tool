@@ -74,6 +74,7 @@ const schema = buildSchema(`
 
   type Name {
     name: String
+    nameid: String
   }
 
   type Info {
