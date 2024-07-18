@@ -113,7 +113,7 @@ export default async function Home() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col justify-between p-24">
+    <main className="flex min-h-screen flex-col p-24">
       <div className="flex justify-between mb-8">
         <div>
           Total Games Listed: <strong>{games.length}</strong>

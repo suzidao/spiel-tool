@@ -3,25 +3,31 @@
 "use client";
 
 import {
+  Column,
+  ColumnDef,
+  ColumnFiltersState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
+  Row,
   RowData,
-  SortingFn,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
     classes?: string;
+    filterVariant?: "text" | "range" | "number";
   }
 }
 
 export default function DataTable(props: { games: Entry[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const data = props.games;
 
   const columnHelper = createColumnHelper<Entry>();
@@ -53,34 +59,42 @@ export default function DataTable(props: { games: Entry[] }) {
       header: () => <span>Publisher</span>,
       sortingFn: "text",
     }),
-    columnHelper.accessor<(row: Entry) => string, string>(
-      (row) =>
-        row.geekitem.item.links.boardgamedesigner.length > 0 ? row.geekitem.item.links.boardgamedesigner[0].name : "",
-      {
-        id: "Designers",
-        cell: ({ cell, row }) => {
-          const designers = row.original.geekitem.item.links.boardgamedesigner;
-          if (designers.length > 0) {
-            return designers.map((designer, idx) => {
-              const isLast = designers.length - 1 === idx;
-              const designerLink = (
-                <Fragment key={designer.objectid}>
-                  <Link href={designer.canonical_link} target="_blank">
-                    {designer.name}
-                  </Link>
-                  {!isLast && ", "}
-                </Fragment>
-              );
-              return designerLink;
-            });
-          } else {
-            return "–";
-          }
-        },
-        header: () => <span>Designers</span>,
-        sortingFn: "text",
-      }
-    ),
+    columnHelper.accessor("geekitem.item.links.boardgamedesigner", {
+      id: "Designers",
+      cell: (info) => {
+        const designers = info.getValue();
+        if (designers.length > 0) {
+          return designers.map((designer, idx) => {
+            const isLast = designers.length - 1 === idx;
+            const designerLink = (
+              <Fragment key={designer.objectid}>
+                <Link href={designer.canonical_link} target="_blank">
+                  {designer.name}
+                </Link>
+                {!isLast && ", "}
+              </Fragment>
+            );
+            return designerLink;
+          });
+        } else {
+          return "–";
+        }
+      },
+      header: () => <span>Designers</span>,
+      enableSorting: false,
+      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
+        const designers = row.original.geekitem.item.links.boardgamedesigner;
+        return designers
+          .map((designer: Designer) => {
+            return designer.name
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .toLowerCase()
+              .includes(filterValue);
+          })
+          .includes(true);
+      },
+    }),
     columnHelper.accessor("location", {
       id: "Location",
       cell: (info) => info.getValue(),
@@ -97,6 +111,7 @@ export default function DataTable(props: { games: Entry[] }) {
       meta: {
         classes: "text-center min-w-12",
       },
+      enableColumnFilter: false,
     }),
     columnHelper.accessor("version.item.releasedate", {
       id: "ReleaseDate",
@@ -105,6 +120,7 @@ export default function DataTable(props: { games: Entry[] }) {
       meta: {
         classes: "whitespace-nowrap",
       },
+      enableColumnFilter: false,
     }),
 
     columnHelper.accessor("geekitem.item.minplayers", {
@@ -117,6 +133,7 @@ export default function DataTable(props: { games: Entry[] }) {
       sortDescFirst: true,
       meta: {
         classes: "text-center",
+        filterVariant: "number",
       },
     }),
     columnHelper.accessor("geekitem.item.maxplayers", {
@@ -127,8 +144,10 @@ export default function DataTable(props: { games: Entry[] }) {
       },
       header: () => <span>Max Players</span>,
       sortDescFirst: true,
+      filterFn: "equalsString",
       meta: {
         classes: "text-center",
+        filterVariant: "number",
       },
     }),
     columnHelper.accessor("geekitem.item.minplaytime", {
@@ -139,8 +158,10 @@ export default function DataTable(props: { games: Entry[] }) {
       },
       header: () => <span>Min Playtime</span>,
       sortDescFirst: true,
+      filterFn: "equalsString",
       meta: {
         classes: "text-center",
+        filterVariant: "number",
       },
     }),
     columnHelper.accessor("geekitem.item.maxplaytime", {
@@ -151,8 +172,10 @@ export default function DataTable(props: { games: Entry[] }) {
       },
       header: () => <span>Max Playtime</span>,
       sortDescFirst: true,
+      filterFn: "equalsString",
       meta: {
         classes: "text-center",
+        filterVariant: "number",
       },
     }),
     columnHelper.accessor<(row: Entry) => string, string>((row) => row.geekitem.item.dynamicinfo.item.stats.avgweight, {
@@ -164,8 +187,10 @@ export default function DataTable(props: { games: Entry[] }) {
       header: () => <span>Complexity</span>,
       sortingFn: "basic",
       sortDescFirst: true,
+      filterFn: "inNumberRange",
       meta: {
         classes: "text-center",
+        filterVariant: "range",
       },
     }),
   ];
@@ -173,66 +198,156 @@ export default function DataTable(props: { games: Entry[] }) {
   const table = useReactTable({
     data,
     columns,
+    filterFns: {},
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(), //client side filtering
     getSortedRowModel: getSortedRowModel(), //client-side sorting
     onSortingChange: setSorting,
-    state: { sorting },
+    state: { columnFilters, sorting },
     enableSortingRemoval: false,
   });
 
   return (
-    <table>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id}>
-                {header.isPlaceholder ? null : (
-                  <div
-                    className={
-                      "text-left " +
-                      (header.column.getCanSort() ? "cursor-pointer select-none " : "") +
-                      header.column.columnDef.meta?.classes
-                    }
-                    onClick={header.column.getToggleSortingHandler()}
-                    title={
-                      header.column.getCanSort()
-                        ? header.column.getNextSortingOrder() === "asc"
-                          ? "Sort ascending"
-                          : header.column.getNextSortingOrder() === "desc"
-                          ? "Sort descending"
-                          : "Clear sort"
-                        : undefined
-                    }
+    <>
+      <div>
+        Total Games: {table.getFilteredRowModel().rows.length} | {table.getCoreRowModel().rows.length}
+      </div>
+      <table>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>
+                  {header.isPlaceholder ? null : (
+                    <>
+                      <div
+                        className={
+                          "text-left " +
+                          (header.column.getCanSort() ? "cursor-pointer select-none " : "") +
+                          header.column.columnDef.meta?.classes
+                        }
+                        onClick={header.column.getToggleSortingHandler()}
+                        title={
+                          header.column.getCanSort()
+                            ? header.column.getNextSortingOrder() === "asc"
+                              ? "Sort ascending"
+                              : header.column.getNextSortingOrder() === "desc"
+                              ? "Sort descending"
+                              : "Clear sort"
+                            : undefined
+                        }
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                      {header.column.getCanFilter() ? (
+                        <div className={"text=left " + header.column.columnDef.meta?.classes}>
+                          <Filter column={header.column} />
+                        </div>
+                      ) : null}
+                    </>
+                  )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => {
+                return (
+                  <td
+                    key={cell.id}
+                    className={"border-b border-gray-400 leading-5 px-1 py-2 " + cell.column.columnDef.meta?.classes}
                   >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {{
-                      asc: " 🔼",
-                      desc: " 🔽",
-                    }[header.column.getIsSorted() as string] ?? null}
-                  </div>
-                )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => {
-              return (
-                <td
-                  key={cell.id}
-                  className={"border-b border-gray-400 leading-5 px-1 py-2 " + cell.column.columnDef.meta?.classes}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
+}
+
+function Filter({ column }: { column: Column<any, unknown> }) {
+  const columnFilterValue = column.getFilterValue();
+  const { filterVariant } = column.columnDef.meta ?? {};
+
+  return filterVariant === "range" ? (
+    <div>
+      <div className="flex space-x-2">
+        {/* See faceted column filters example for min max values functionality */}
+        <DebouncedInput
+          type="number"
+          value={(columnFilterValue as [number, number])?.[0] ?? ""}
+          onChange={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
+          min={1}
+          max={5}
+          placeholder={`Min`}
+          className="border p-1 w-12"
+        />
+        <DebouncedInput
+          type="number"
+          value={(columnFilterValue as [number, number])?.[1] ?? ""}
+          onChange={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
+          min={1}
+          max={5}
+          placeholder={`Max`}
+          className="border p-1 w-12"
+        />
+      </div>
+      <div className="h-1" />
+    </div>
+  ) : filterVariant === "number" ? (
+    <DebouncedInput
+      type="number"
+      value={(columnFilterValue ?? "") as number}
+      onChange={(value) => column.setFilterValue(value)}
+      placeholder="#"
+      className="border p-1 w-12"
+    />
+  ) : (
+    <DebouncedInput
+      className="border p-1 w-full"
+      onChange={(value) => column.setFilterValue(value)}
+      placeholder={`Filter`}
+      type="text"
+      value={(columnFilterValue ?? "") as string}
+    />
+  );
+}
+
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 500,
+  ...props
+}: {
+  value: string | number;
+  onChange: (value: string | number) => void;
+  debounce?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
+  const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value);
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [value, debounce, onChange]);
+
+  return <input {...props} value={value} onChange={(e) => setValue(e.target.value)} />;
 }
