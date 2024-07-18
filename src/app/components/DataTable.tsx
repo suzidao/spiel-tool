@@ -20,6 +20,7 @@ import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
+    headerClasses?: string;
     classes?: string;
     filterVariant?: "text" | "range" | "number";
   }
@@ -109,6 +110,7 @@ export default function DataTable(props: { games: Entry[] }) {
       },
       header: () => <span>👍</span>,
       meta: {
+        headerClasses: "text-center",
         classes: "text-center min-w-12",
       },
       enableColumnFilter: false,
@@ -118,65 +120,87 @@ export default function DataTable(props: { games: Entry[] }) {
       cell: (info) => info.getValue(),
       header: () => <span>Release Date</span>,
       meta: {
+        headerClasses: "text-center",
         classes: "whitespace-nowrap",
       },
       enableColumnFilter: false,
     }),
-
-    columnHelper.accessor("geekitem.item.minplayers", {
-      id: "MinPlayers",
-      cell: (info) => {
-        const minplayers = Number(info.getValue());
-        return minplayers > 0 ? minplayers : "–";
-      },
-      header: () => <span>Min Players</span>,
-      sortDescFirst: true,
+    columnHelper.group({
+      id: "PlayerCount",
+      header: () => <span>Player Count</span>,
       meta: {
-        classes: "text-center",
-        filterVariant: "number",
+        headerClasses: "text-center",
       },
+      columns: [
+        columnHelper.accessor("geekitem.item.minplayers", {
+          id: "MinPlayers",
+          cell: (info) => {
+            const minplayers = Number(info.getValue());
+            return minplayers > 0 ? minplayers : "–";
+          },
+          header: () => <span>Min</span>,
+          sortDescFirst: true,
+          meta: {
+            headerClasses: "text-center font-normal uppercase text-xs",
+            classes: "text-center",
+            filterVariant: "number",
+          },
+        }),
+        columnHelper.accessor("geekitem.item.maxplayers", {
+          id: "MaxPlayers",
+          cell: (info) => {
+            const maxplayers = Number(info.getValue());
+            return maxplayers > 0 ? maxplayers : "–";
+          },
+          header: () => <span>Max</span>,
+          sortDescFirst: true,
+          filterFn: "equalsString",
+          meta: {
+            headerClasses: "text-center font-normal uppercase text-xs",
+            classes: "text-center",
+            filterVariant: "number",
+          },
+        }),
+      ],
     }),
-    columnHelper.accessor("geekitem.item.maxplayers", {
-      id: "MaxPlayers",
-      cell: (info) => {
-        const maxplayers = Number(info.getValue());
-        return maxplayers > 0 ? maxplayers : "–";
-      },
-      header: () => <span>Max Players</span>,
-      sortDescFirst: true,
-      filterFn: "equalsString",
+    columnHelper.group({
+      id: "PlayTime",
+      header: () => <span>Play Time</span>,
       meta: {
-        classes: "text-center",
-        filterVariant: "number",
+        headerClasses: "text-center",
       },
-    }),
-    columnHelper.accessor("geekitem.item.minplaytime", {
-      id: "MinPlaytime",
-      cell: (info) => {
-        const minplaytime = Number(info.getValue());
-        return minplaytime > 0 ? minplaytime : "–";
-      },
-      header: () => <span>Min Playtime</span>,
-      sortDescFirst: true,
-      filterFn: "equalsString",
-      meta: {
-        classes: "text-center",
-        filterVariant: "number",
-      },
-    }),
-    columnHelper.accessor("geekitem.item.maxplaytime", {
-      id: "MaxPlaytime",
-      cell: (info) => {
-        const maxplaytime = Number(info.getValue());
-        return maxplaytime > 0 ? maxplaytime : "–";
-      },
-      header: () => <span>Max Playtime</span>,
-      sortDescFirst: true,
-      filterFn: "equalsString",
-      meta: {
-        classes: "text-center",
-        filterVariant: "number",
-      },
+      columns: [
+        columnHelper.accessor("geekitem.item.minplaytime", {
+          id: "MinPlaytime",
+          cell: (info) => {
+            const minplaytime = Number(info.getValue());
+            return minplaytime > 0 ? minplaytime : "–";
+          },
+          header: () => <span>Min</span>,
+          sortDescFirst: true,
+          filterFn: "equalsString",
+          meta: {
+            headerClasses: "text-center font-normal uppercase text-xs",
+            classes: "text-center",
+            filterVariant: "number",
+          },
+        }),
+        columnHelper.accessor("geekitem.item.maxplaytime", {
+          id: "MaxPlaytime",
+          cell: (info) => {
+            const maxplaytime = Number(info.getValue());
+            return maxplaytime > 0 ? maxplaytime : "–";
+          },
+          header: () => <span>Max</span>,
+          sortDescFirst: true,
+          filterFn: "equalsString",
+          meta: {
+            headerClasses: "text-center font-normal uppercase text-xs",
+            classes: "text-center",
+            filterVariant: "number",
+          },
+        }),
+      ],
     }),
     columnHelper.accessor<(row: Entry) => string, string>((row) => row.geekitem.item.dynamicinfo.item.stats.avgweight, {
       id: "Complexity",
@@ -189,6 +213,7 @@ export default function DataTable(props: { games: Entry[] }) {
       sortDescFirst: true,
       filterFn: "inNumberRange",
       meta: {
+        headerClasses: "text-center",
         classes: "text-center",
         filterVariant: "range",
       },
@@ -211,21 +236,22 @@ export default function DataTable(props: { games: Entry[] }) {
   return (
     <>
       <div>
-        Total Games: {table.getFilteredRowModel().rows.length} | {table.getCoreRowModel().rows.length}
+        Total Games: <strong>{table.getFilteredRowModel().rows.length}</strong> |{" "}
+        <strong>{table.getCoreRowModel().rows.length}</strong>
       </div>
       <table>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th key={header.id} colSpan={header.colSpan} className="p-1">
                   {header.isPlaceholder ? null : (
                     <>
                       <div
                         className={
                           "text-left " +
                           (header.column.getCanSort() ? "cursor-pointer select-none " : "") +
-                          header.column.columnDef.meta?.classes
+                          header.column.columnDef.meta?.headerClasses
                         }
                         onClick={header.column.getToggleSortingHandler()}
                         title={
