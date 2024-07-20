@@ -40,6 +40,7 @@ export default async function Home() {
                 href
                 subtypes
                 yearpublished
+                releasestatus
                 minplayers
                 maxplayers
                 minplaytime

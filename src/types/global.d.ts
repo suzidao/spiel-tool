@@ -35,6 +35,7 @@ export declare global {
     href: string;
     subtypes: string[];
     yearpublished: string;
+    releasestatus: string | null;
     minplayers: string;
     maxplayers: string;
     minplaytime: string;

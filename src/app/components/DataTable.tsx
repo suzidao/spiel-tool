@@ -2,9 +2,10 @@
 
 "use client";
 
+import BGGKeys from "../../data/bgg-keys.json";
+
 import {
   Column,
-  ColumnDef,
   ColumnFiltersState,
   createColumnHelper,
   flexRender,
@@ -15,20 +16,26 @@ import {
   RowData,
   SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
+    columnName?: string;
     headerClasses?: string;
     classes?: string;
-    filterVariant?: "text" | "range" | "number";
+    filterVariant?: "text" | "range" | "number" | "min" | "exclusions";
+    filterMax?: number;
+    externalFilter?: boolean;
   }
 }
 
 export default function DataTable(props: { games: Entry[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ YearPublished: false, SubTypes: false });
+
   const data = props.games;
 
   const columnHelper = createColumnHelper<Entry>();
@@ -36,7 +43,7 @@ export default function DataTable(props: { games: Entry[] }) {
   const columns = [
     columnHelper.accessor("geekitem.item.primaryname.name", {
       id: "GameTitle",
-      cell: ({ cell, row }) => {
+      cell: ({ row }) => {
         const game = row.original.geekitem.item;
         return (
           <Link key={game.primaryname.nameid} href={`https://boardgamegeek.com${game.href}`} target="_blank">
@@ -46,10 +53,11 @@ export default function DataTable(props: { games: Entry[] }) {
       },
       header: () => <span>Game Title</span>,
       sortingFn: "text",
+      enableHiding: false,
     }),
     columnHelper.accessor<(row: Entry) => string, string>((row) => row.publishers[0].item.primaryname.name, {
       id: "Publisher",
-      cell: ({ cell, row }) => {
+      cell: ({ row }) => {
         const publisher = row.original.publishers[0];
         return (
           <Link key={publisher.item.objectid} href={`https://boardgamegeek.com${publisher.item.href}`} target="_blank">
@@ -59,6 +67,7 @@ export default function DataTable(props: { games: Entry[] }) {
       },
       header: () => <span>Publisher</span>,
       sortingFn: "text",
+      enableHiding: false,
     }),
     columnHelper.accessor("geekitem.item.links.boardgamedesigner", {
       id: "Designers",
@@ -81,7 +90,7 @@ export default function DataTable(props: { games: Entry[] }) {
           return "–";
         }
       },
-      header: () => <span>Designers</span>,
+      header: () => <span>Designer(s)</span>,
       enableSorting: false,
       filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
         const designers = row.original.geekitem.item.links.boardgamedesigner;
@@ -95,12 +104,18 @@ export default function DataTable(props: { games: Entry[] }) {
           })
           .includes(true);
       },
+      meta: {
+        columnName: "Designer(s)",
+      },
     }),
     columnHelper.accessor("location", {
       id: "Location",
       cell: (info) => info.getValue(),
       header: () => <span>Location</span>,
       sortingFn: "text",
+      meta: {
+        columnName: "Location",
+      },
     }),
     columnHelper.accessor("reactions.thumbs", {
       id: "Thumbs",
@@ -109,26 +124,30 @@ export default function DataTable(props: { games: Entry[] }) {
         return thumbs > 0 ? thumbs : "–";
       },
       header: () => <span>👍</span>,
+      enableColumnFilter: false,
       meta: {
+        columnName: "👍",
         headerClasses: "text-center",
         classes: "text-center min-w-12",
       },
-      enableColumnFilter: false,
     }),
     columnHelper.accessor("version.item.releasedate", {
       id: "ReleaseDate",
       cell: (info) => info.getValue(),
       header: () => <span>Release Date</span>,
+      enableColumnFilter: false,
       meta: {
+        columnName: "Release Date",
         headerClasses: "text-center",
         classes: "whitespace-nowrap",
       },
-      enableColumnFilter: false,
     }),
     columnHelper.group({
       id: "PlayerCount",
       header: () => <span>Player Count</span>,
+      enableHiding: true,
       meta: {
+        columnName: "Player Count",
         headerClasses: "text-center",
       },
       columns: [
@@ -141,6 +160,7 @@ export default function DataTable(props: { games: Entry[] }) {
           header: () => <span>Min</span>,
           sortDescFirst: true,
           meta: {
+            columnName: "Min. Players",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
             filterVariant: "number",
@@ -156,6 +176,7 @@ export default function DataTable(props: { games: Entry[] }) {
           sortDescFirst: true,
           filterFn: "equalsString",
           meta: {
+            columnName: "Max. Players",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
             filterVariant: "number",
@@ -164,9 +185,10 @@ export default function DataTable(props: { games: Entry[] }) {
       ],
     }),
     columnHelper.group({
-      id: "PlayTime",
-      header: () => <span>Play Time</span>,
+      id: "Playtime",
+      header: () => <span>Playtime</span>,
       meta: {
+        columnName: "Playtime",
         headerClasses: "text-center",
       },
       columns: [
@@ -180,6 +202,7 @@ export default function DataTable(props: { games: Entry[] }) {
           sortDescFirst: true,
           filterFn: "equalsString",
           meta: {
+            columnName: "Min. Playtime",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
             filterVariant: "number",
@@ -195,6 +218,7 @@ export default function DataTable(props: { games: Entry[] }) {
           sortDescFirst: true,
           filterFn: "equalsString",
           meta: {
+            columnName: "Max. Playtime",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
             filterVariant: "number",
@@ -213,9 +237,67 @@ export default function DataTable(props: { games: Entry[] }) {
       sortDescFirst: true,
       filterFn: "inNumberRange",
       meta: {
+        columnName: "Complexity",
         headerClasses: "text-center",
         classes: "text-center",
-        filterVariant: "range",
+        filterVariant: "min",
+        filterMax: 5,
+      },
+    }),
+    columnHelper.accessor("geekitem.item.yearpublished", {
+      id: "YearPublished",
+      cell: (info) => Number(info.getValue()),
+      header: () => <span>Year</span>,
+      sortDescFirst: true,
+      filterFn: "inNumberRange",
+      meta: {
+        columnName: "Earliest Publication Year",
+        headerClasses: "text-center",
+        classes: "text-center",
+        filterVariant: "min",
+        filterMax: 3000,
+        externalFilter: true,
+      },
+    }),
+    columnHelper.accessor("geekitem.item.subtypes", {
+      id: "SubTypes",
+      cell: (info) => {
+        const subtypes = info.getValue();
+        if (subtypes.length > 0) {
+          return subtypes.map((subtype, idx) => {
+            const isLast = subtypes.length - 1 === idx;
+            const subtypeList = (
+              <Fragment key={subtype + idx}>
+                {subtype}
+                {!isLast && ", "}
+              </Fragment>
+            );
+            return subtypeList;
+          });
+        } else {
+          return "–";
+        }
+      },
+      header: () => <span>SubTypes</span>,
+      enableSorting: false,
+      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string[]) => {
+        const subtypes = row.original.geekitem.item.subtypes;
+
+        return !subtypes
+          .map((subtype) => {
+            const filteredTypes = filterValue.map((filter) => {
+              return filter === subtype;
+            });
+            return filteredTypes.includes(true);
+          })
+          .includes(true);
+      },
+      meta: {
+        columnName: "Exclude Subtypes",
+        headerClasses: "text-center",
+        classes: "text-center",
+        filterVariant: "exclusions",
+        externalFilter: true,
       },
     }),
   ];
@@ -229,15 +311,48 @@ export default function DataTable(props: { games: Entry[] }) {
     getFilteredRowModel: getFilteredRowModel(), //client side filtering
     getSortedRowModel: getSortedRowModel(), //client-side sorting
     onSortingChange: setSorting,
-    state: { columnFilters, sorting },
+    onColumnVisibilityChange: setColumnVisibility,
     enableSortingRemoval: false,
+    state: { columnFilters, sorting, columnVisibility },
   });
 
   return (
     <>
-      <div>
+      <div className="py-2">
         Total Games: <strong>{table.getFilteredRowModel().rows.length}</strong> |{" "}
         <strong>{table.getCoreRowModel().rows.length}</strong>
+      </div>
+      <div className="flex flex-wrap justify-between py-2 mb-2 border-b border-black">
+        <div className="font-semibold mb-2 w-full">Hide/Show Columns</div>
+        {table.getAllLeafColumns().map((column) => {
+          return (
+            column.columnDef.enableHiding !== false &&
+            column.columnDef.meta?.externalFilter !== true && (
+              <div key={column.id} className="px-1">
+                <label className="flex align-middle gap-2">
+                  <input
+                    {...{
+                      type: "checkbox",
+                      checked: column.getIsVisible(),
+                      onChange: column.getToggleVisibilityHandler(),
+                    }}
+                  />{" "}
+                  {column.columnDef.meta?.columnName}
+                </label>
+              </div>
+            )
+          );
+        })}
+      </div>
+      <div>
+        {table.getAllColumns().map((column) => {
+          return column.columnDef.meta?.externalFilter ? (
+            <div key={column.id + "-filter"}>
+              <span>{column.columnDef.meta.columnName}: </span>
+              <Filter column={column} />
+            </div>
+          ) : null;
+        })}
       </div>
       <table>
         <thead>
@@ -266,8 +381,8 @@ export default function DataTable(props: { games: Entry[] }) {
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: " 🔼",
-                          desc: " 🔽",
+                          asc: " ↑",
+                          desc: " ↓",
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                       {header.column.getCanFilter() ? (
@@ -308,30 +423,34 @@ function Filter({ column }: { column: Column<any, unknown> }) {
   const { filterVariant } = column.columnDef.meta ?? {};
 
   return filterVariant === "range" ? (
-    <div>
-      <div className="flex space-x-2">
-        {/* See faceted column filters example for min max values functionality */}
-        <DebouncedInput
-          type="number"
-          value={(columnFilterValue as [number, number])?.[0] ?? ""}
-          onChange={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
-          min={1}
-          max={5}
-          placeholder={`Min`}
-          className="border p-1 w-12"
-        />
-        <DebouncedInput
-          type="number"
-          value={(columnFilterValue as [number, number])?.[1] ?? ""}
-          onChange={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
-          min={1}
-          max={5}
-          placeholder={`Max`}
-          className="border p-1 w-12"
-        />
-      </div>
-      <div className="h-1" />
+    <div className="flex space-x-2">
+      {/* See faceted column filters example for min max values functionality */}
+      <DebouncedInput
+        type="number"
+        value={(columnFilterValue as [number, number])?.[0] ?? ""}
+        onChange={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
+        min={1}
+        placeholder={`Min`}
+        className="border p-1 w-12"
+      />
+      <DebouncedInput
+        type="number"
+        value={(columnFilterValue as [number, number])?.[1] ?? ""}
+        onChange={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
+        min={1}
+        placeholder={`Max`}
+        className="border p-1 w-12"
+      />
     </div>
+  ) : filterVariant === "min" ? (
+    <DebouncedInput
+      type="number"
+      value={(columnFilterValue as [number, number])?.[0] ?? ""}
+      onChange={(value) => column.setFilterValue([value, column.columnDef.meta?.filterMax ?? 9999])}
+      max={column.columnDef.meta?.filterMax}
+      placeholder={`Min`}
+      className="border p-1 w-16"
+    />
   ) : filterVariant === "number" ? (
     <DebouncedInput
       type="number"
@@ -340,6 +459,26 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       placeholder="#"
       className="border p-1 w-12"
     />
+  ) : filterVariant === "exclusions" ? (
+    <div key={column.id} className="px-1">
+      {BGGKeys.excluded_subtypes.map((subtype) => (
+        <label key={subtype.id} className="flex align-middle gap-2">
+          <input
+            type="checkbox"
+            value={subtype.id}
+            onChange={(e: any) => {
+              const target: string = e.target.value;
+              const oldValue = (columnFilterValue ?? []) as string[];
+              const newValue = oldValue.includes(target)
+                ? oldValue.filter((type) => type !== target)
+                : [target, ...oldValue];
+              column.setFilterValue(newValue);
+            }}
+          />
+          {subtype.name}
+        </label>
+      ))}
+    </div>
   ) : (
     <DebouncedInput
       className="border p-1 w-full"
@@ -354,7 +493,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
 function DebouncedInput({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 1000,
   ...props
 }: {
   value: string | number;

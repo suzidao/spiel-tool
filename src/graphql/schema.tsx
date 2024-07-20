@@ -28,6 +28,7 @@ const schema = buildSchema(`
     href: String
     subtypes: [String]
     yearpublished: String
+    releasestatus: String
     minplayers: String
     maxplayers: String
     minplaytime: String
