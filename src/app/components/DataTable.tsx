@@ -25,18 +25,23 @@ declare module "@tanstack/react-table" {
     columnName?: string;
     headerClasses?: string;
     classes?: string;
-    filterVariant?: "text" | "range" | "number" | "min" | "exclusions";
+    filterVariant?: "text" | "range" | "number" | "min" | "checklist";
     filterMax?: number;
     externalFilter?: boolean;
+    filterList?: { objectid: string; name: string }[];
   }
 }
 
-export default function DataTable(props: { games: Entry[] }) {
+export default function DataTable(props: { data: Entry[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ YearPublished: false, SubTypes: false });
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    YearPublished: false,
+    SubTypes: false,
+    BoardGameFamily: false,
+  });
 
-  const data = props.games;
+  const data = props.data;
 
   const columnHelper = createColumnHelper<Entry>();
 
@@ -296,8 +301,54 @@ export default function DataTable(props: { games: Entry[] }) {
         columnName: "Exclude Subtypes",
         headerClasses: "text-center",
         classes: "text-center",
-        filterVariant: "exclusions",
+        filterVariant: "checklist",
         externalFilter: true,
+        filterList: BGGKeys.excluded_subtypes,
+      },
+    }),
+    columnHelper.accessor("geekitem.item.links.boardgamefamily", {
+      id: "BoardGameFamily",
+      cell: (info) => {
+        const families = info.getValue();
+        if (families.length > 0) {
+          return families.map((family, idx) => {
+            const isLast = families.length - 1 === idx;
+            const familyList = (
+              <Fragment key={family.objectid}>
+                {family.objectid}
+                {!isLast && ", "}
+              </Fragment>
+            );
+            return familyList;
+          });
+        } else {
+          return "–";
+        }
+      },
+      header: () => <span>Digital Implementation(s)</span>,
+      enableSorting: false,
+      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string[]) => {
+        const families = row.original.geekitem.item.links.boardgamefamily;
+        const matches = families.map((family) => {
+          const filteredTypes = filterValue.map((filter) => {
+            const matchFound = filter === family.objectid;
+            return matchFound;
+          });
+          return filteredTypes.includes(true);
+        });
+        if (filterValue.length === 0) {
+          return true;
+        } else {
+          return matches.includes(true);
+        }
+      },
+      meta: {
+        columnName: "Digital Implementation(s)",
+        headerClasses: "text-center",
+        classes: "text-center",
+        filterVariant: "checklist",
+        externalFilter: true,
+        filterList: BGGKeys.digital_implementations,
       },
     }),
   ];
@@ -459,25 +510,26 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       placeholder="#"
       className="border p-1 w-12"
     />
-  ) : filterVariant === "exclusions" ? (
+  ) : filterVariant === "checklist" ? (
     <div key={column.id} className="px-1">
-      {BGGKeys.excluded_subtypes.map((subtype) => (
-        <label key={subtype.id} className="flex align-middle gap-2">
-          <input
-            type="checkbox"
-            value={subtype.id}
-            onChange={(e: any) => {
-              const target: string = e.target.value;
-              const oldValue = (columnFilterValue ?? []) as string[];
-              const newValue = oldValue.includes(target)
-                ? oldValue.filter((type) => type !== target)
-                : [target, ...oldValue];
-              column.setFilterValue(newValue);
-            }}
-          />
-          {subtype.name}
-        </label>
-      ))}
+      {column.columnDef.meta?.filterList &&
+        column.columnDef.meta?.filterList.map((filterItem) => (
+          <label key={filterItem.objectid} className="flex align-middle gap-2">
+            <input
+              type="checkbox"
+              value={filterItem.objectid}
+              onChange={(e: any) => {
+                const target: string = e.target.value;
+                const oldValue = (columnFilterValue ?? []) as string[];
+                const newValue = oldValue.includes(target)
+                  ? oldValue.filter((type) => type !== target)
+                  : [target, ...oldValue];
+                column.setFilterValue(newValue);
+              }}
+            />
+            {filterItem.name}
+          </label>
+        ))}
     </div>
   ) : (
     <DebouncedInput

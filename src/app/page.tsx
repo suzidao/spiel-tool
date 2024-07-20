@@ -52,6 +52,10 @@ export default async function Home() {
                     name
                     canonical_link
                   }
+                  boardgamefamily {
+                    objectid
+                    name
+                  }
                   reimplements {
                     name
                     canonical_link
@@ -129,7 +133,7 @@ export default async function Home() {
           </Link>
         </div>
       </div>
-      <DataTable games={editedGames} />
+      <DataTable data={editedGames} />
       {/* <table>
         <thead>
           <tr>

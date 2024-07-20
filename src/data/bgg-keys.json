@@ -1,61 +1,61 @@
 {
   "digital_implementations": [
     {
-      "id": "70360",
+      "objectid": "70360",
       "name": "Board Game Arena"
     },
     {
-      "id": "70948",
+      "objectid": "70948",
       "name": "Tabletopia"
     },
     {
-      "id": "73596",
-      "name": "Tabletop Simulator Mod"
+      "objectid": "73596",
+      "name": "Tabletop Simulator Mod (TTS)"
     },
     {
-      "id": "78432",
+      "objectid": "78432",
       "name": "Google Play"
     },
     {
-      "id": "77349",
+      "objectid": "77349",
       "name": "Steam"
     },
     {
-      "id": "77905",
+      "objectid": "77905",
       "name": "Sovranti"
     },
     {
-      "id": "80918",
+      "objectid": "80918",
       "name": "Game Park"
     },
     {
-      "id": "70354",
+      "objectid": "70354",
       "name": "Yucata"
     },
     {
-      "id": "104952",
+      "objectid": "104952",
       "name": "Apple App Store"
     },
     {
-      "id": "76458",
+      "objectid": "76458",
       "name": "BrettspielWelt"
     }
   ],
   "excluded_subtypes": [
     {
-      "id": "boardgameexpansion",
+      "objectid": "boardgameexpansion",
       "name": "Expansions"
     },
     {
-      "id": "boardgameintegration",
+      "objectid": "boardgameintegration",
       "name": "Integrations"
     },
     {
-      "id": "boardgamecompilation",
+      "objectid": "boardgamecompilation",
       "name": "Compilations"
     },
     {
-      "id": "boardgameimplementation",
+      "objectid": "boardgameimplementation",
       "name": "(Re)Implementations"
     }
   ]
