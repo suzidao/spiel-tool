@@ -132,7 +132,7 @@ export default function DataTable(props: { data: Entry[] }) {
       enableColumnFilter: false,
       meta: {
         columnName: "👍",
-        headerClasses: "text-center",
+        headerClasses: "align-bottom pb-4 text-center",
         classes: "text-center min-w-12",
       },
     }),
@@ -143,7 +143,7 @@ export default function DataTable(props: { data: Entry[] }) {
       enableColumnFilter: false,
       meta: {
         columnName: "Release Date",
-        headerClasses: "text-center",
+        headerClasses: "align-bottom pb-4",
         classes: "whitespace-nowrap",
       },
     }),
@@ -373,8 +373,8 @@ export default function DataTable(props: { data: Entry[] }) {
         Total Games: <strong>{table.getFilteredRowModel().rows.length}</strong> |{" "}
         <strong>{table.getCoreRowModel().rows.length}</strong>
       </div>
-      <div className="flex flex-wrap justify-between py-2 mb-2 border-b border-black">
-        <div className="font-semibold mb-2 w-full">Hide/Show Columns</div>
+      <div className="flex flex-wrap gap-2 py-2 mb-2 border-b border-black">
+        <div className="font-semibold">Hide/Show Columns:</div>
         {table.getAllLeafColumns().map((column) => {
           return (
             column.columnDef.enableHiding !== false &&
@@ -395,30 +395,33 @@ export default function DataTable(props: { data: Entry[] }) {
           );
         })}
       </div>
-      <div>
+      <div className="flex flex-wrap gap-2">
         {table.getAllColumns().map((column) => {
           return column.columnDef.meta?.externalFilter ? (
-            <div key={column.id + "-filter"}>
-              <span>{column.columnDef.meta.columnName}: </span>
+            <div
+              key={column.id + "-filter"}
+              className="flex flex-col flex-wrap items-start lg:items-center gap-2 mr-4 lg:flex-nowrap lg:flex-row"
+            >
+              <span className="font-semibold whitespace-nowrap">{column.columnDef.meta.columnName}: </span>
               <Filter column={column} />
             </div>
           ) : null;
         })}
       </div>
       <table>
-        <thead>
+        <thead className="bg-slate-200 sticky top-0">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan} className="p-1">
+                <th
+                  key={header.id}
+                  colSpan={header.colSpan}
+                  className={"text-left px-1 pt-2 " + header.column.columnDef.meta?.headerClasses}
+                >
                   {header.isPlaceholder ? null : (
                     <>
                       <div
-                        className={
-                          "text-left " +
-                          (header.column.getCanSort() ? "cursor-pointer select-none " : "") +
-                          header.column.columnDef.meta?.headerClasses
-                        }
+                        className={header.column.getCanSort() ? "cursor-pointer select-none " : ""}
                         onClick={header.column.getToggleSortingHandler()}
                         title={
                           header.column.getCanSort()
@@ -437,7 +440,7 @@ export default function DataTable(props: { data: Entry[] }) {
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                       {header.column.getCanFilter() ? (
-                        <div className={"text=left " + header.column.columnDef.meta?.classes}>
+                        <div className={"pt-1 pb-2 text-left " + header.column.columnDef.meta?.classes}>
                           <Filter column={header.column} />
                         </div>
                       ) : null}
@@ -472,6 +475,12 @@ export default function DataTable(props: { data: Entry[] }) {
 function Filter({ column }: { column: Column<any, unknown> }) {
   const columnFilterValue = column.getFilterValue();
   const { filterVariant } = column.columnDef.meta ?? {};
+  const checkChecklist = (columnFilterValue: string[], filterName?: string) => {
+    const checklist = column.columnDef.meta?.filterList?.map((filterItem) => {
+      return filterItem.objectid;
+    });
+    return filterName ? columnFilterValue.includes(filterName) : columnFilterValue.length === checklist!.length;
+  };
 
   return filterVariant === "range" ? (
     <div className="flex space-x-2">
@@ -511,25 +520,45 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       className="border p-1 w-12"
     />
   ) : filterVariant === "checklist" ? (
-    <div key={column.id} className="px-1">
-      {column.columnDef.meta?.filterList &&
-        column.columnDef.meta?.filterList.map((filterItem) => (
-          <label key={filterItem.objectid} className="flex align-middle gap-2">
-            <input
-              type="checkbox"
-              value={filterItem.objectid}
-              onChange={(e: any) => {
-                const target: string = e.target.value;
-                const oldValue = (columnFilterValue ?? []) as string[];
-                const newValue = oldValue.includes(target)
-                  ? oldValue.filter((type) => type !== target)
-                  : [target, ...oldValue];
-                column.setFilterValue(newValue);
-              }}
-            />
-            {filterItem.name}
-          </label>
-        ))}
+    <div key={column.id} className="px-1 flex flex-row gap-2">
+      <label className="border-r border-gray-500 flex font-semibold items-center gap-2 py-1 pr-4">
+        <input
+          {...{
+            type: "checkbox",
+            checked: checkChecklist((columnFilterValue ?? []) as string[]),
+            onChange: () => {
+              const filterValue = (columnFilterValue ?? []) as string[];
+              const checklist = column.columnDef.meta?.filterList?.map((filterItem) => {
+                return filterItem.objectid;
+              });
+              filterValue.length === checklist!.length ? column.setFilterValue("") : column.setFilterValue(checklist);
+            },
+          }}
+        />
+        All
+      </label>
+      <div className="flex flex-wrap">
+        {column.columnDef.meta?.filterList &&
+          column.columnDef.meta?.filterList.map((filterItem) => (
+            <label key={filterItem.objectid} className="flex items-center gap-2 py-1 px-2 whitespace-nowrap">
+              <input
+                type="checkbox"
+                name={column.columnDef.id}
+                value={filterItem.objectid}
+                checked={checkChecklist((columnFilterValue ?? []) as string[], filterItem.objectid)}
+                onChange={(e: any) => {
+                  const target: string = e.target.value;
+                  const oldValue = (columnFilterValue ?? []) as string[];
+                  const newValue = oldValue.includes(target)
+                    ? oldValue.filter((type) => type !== target)
+                    : [target, ...oldValue];
+                  column.setFilterValue(newValue);
+                }}
+              />
+              {filterItem.name}
+            </label>
+          ))}
+      </div>
     </div>
   ) : (
     <DebouncedInput
