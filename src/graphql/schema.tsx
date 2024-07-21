@@ -10,7 +10,10 @@ const schema = buildSchema(`
     version: Version
     msrp: Float
     showprice: Float
+    msrp_currency: String
+    showprice_currency: String
     location: String
+    availability_status: String
     pretty_availability_status: String
     reactions: Reactions
     publishers: [Publisher]

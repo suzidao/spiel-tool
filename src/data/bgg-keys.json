@@ -58,5 +58,19 @@
       "objectid": "boardgameimplementation",
       "name": "(Re)Implementations"
     }
+  ],
+  "availability_statuses": [
+    {
+      "objectid": "all",
+      "name": "All"
+    },
+    {
+      "objectid": "demo",
+      "name": "Demo"
+    },
+    {
+      "objectid": "forsale",
+      "name": "For Sale"
+    }
   ]
 }

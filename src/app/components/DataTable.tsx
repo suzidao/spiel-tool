@@ -25,7 +25,9 @@ declare module "@tanstack/react-table" {
     columnName?: string;
     headerClasses?: string;
     classes?: string;
-    filterVariant?: "text" | "range" | "number" | "min" | "checklist";
+    filterClasses?: string;
+    filterVariant?: "text" | "range" | "number" | "min" | "max" | "checklist" | "radio";
+    filterMin?: number;
     filterMax?: number;
     externalFilter?: boolean;
     filterList?: { objectid: string; name: string }[];
@@ -34,11 +36,12 @@ declare module "@tanstack/react-table" {
 
 export default function DataTable(props: { data: Entry[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: "AvailabilityStatus", value: "all" }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     YearPublished: false,
     SubTypes: false,
     BoardGameFamily: false,
+    AvailabilityStatus: false,
   });
 
   const data = props.data;
@@ -169,11 +172,13 @@ export default function DataTable(props: { data: Entry[] }) {
           },
           header: () => <span>Min</span>,
           sortDescFirst: true,
+          filterFn: "inNumberRange",
           meta: {
             columnName: "Min. Players",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
-            filterVariant: "number",
+            filterClasses: "w-12",
+            filterVariant: "min",
           },
         }),
         columnHelper.accessor("geekitem.item.maxplayers", {
@@ -184,12 +189,12 @@ export default function DataTable(props: { data: Entry[] }) {
           },
           header: () => <span>Max</span>,
           sortDescFirst: true,
-          filterFn: "equalsString",
+          filterFn: "inNumberRange",
           meta: {
             columnName: "Max. Players",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
-            filterVariant: "number",
+            filterVariant: "max",
           },
         }),
       ],
@@ -210,12 +215,13 @@ export default function DataTable(props: { data: Entry[] }) {
           },
           header: () => <span>Min</span>,
           sortDescFirst: true,
-          filterFn: "equalsString",
+          filterFn: "inNumberRange",
           meta: {
             columnName: "Min. Playtime",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
-            filterVariant: "number",
+            filterVariant: "min",
+            filterClasses: "w-12",
           },
         }),
         columnHelper.accessor("geekitem.item.maxplaytime", {
@@ -226,12 +232,12 @@ export default function DataTable(props: { data: Entry[] }) {
           },
           header: () => <span>Max</span>,
           sortDescFirst: true,
-          filterFn: "equalsString",
+          filterFn: "inNumberRange",
           meta: {
             columnName: "Max. Playtime",
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
-            filterVariant: "number",
+            filterVariant: "max",
           },
         }),
       ],
@@ -251,7 +257,27 @@ export default function DataTable(props: { data: Entry[] }) {
         headerClasses: "text-center",
         classes: "text-center",
         filterVariant: "min",
+        filterClasses: "w-16",
         filterMax: 5,
+      },
+    }),
+    columnHelper.accessor("availability_status", {
+      id: "AvailabilityStatus",
+      cell: (info) => info.getValue(),
+      header: () => <span>Availability</span>,
+      enableSorting: false,
+      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
+        if (filterValue === "all") {
+          return true;
+        } else {
+          return row.original.availability_status === filterValue;
+        }
+      },
+      meta: {
+        columnName: "Availability",
+        filterVariant: "radio",
+        externalFilter: true,
+        filterList: BGGKeys.availability_statuses,
       },
     }),
     columnHelper.accessor("geekitem.item.yearpublished", {
@@ -262,10 +288,9 @@ export default function DataTable(props: { data: Entry[] }) {
       filterFn: "inNumberRange",
       meta: {
         columnName: "Earliest Publication Year",
-        headerClasses: "text-center",
-        classes: "text-center",
         filterVariant: "min",
         filterMax: 3000,
+        filterClasses: "w-16",
         externalFilter: true,
       },
     }),
@@ -304,8 +329,6 @@ export default function DataTable(props: { data: Entry[] }) {
       },
       meta: {
         columnName: "Exclude Subtypes",
-        headerClasses: "text-center",
-        classes: "text-center",
         filterVariant: "checklist",
         externalFilter: true,
         filterList: BGGKeys.excluded_subtypes,
@@ -349,8 +372,6 @@ export default function DataTable(props: { data: Entry[] }) {
       },
       meta: {
         columnName: "Digital Implementation(s)",
-        headerClasses: "text-center",
-        classes: "text-center",
         filterVariant: "checklist",
         externalFilter: true,
         filterList: BGGKeys.digital_implementations,
@@ -369,7 +390,11 @@ export default function DataTable(props: { data: Entry[] }) {
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     enableSortingRemoval: false,
-    state: { columnFilters, sorting, columnVisibility },
+    state: {
+      columnFilters,
+      sorting,
+      columnVisibility,
+    },
   });
 
   return (
@@ -400,12 +425,12 @@ export default function DataTable(props: { data: Entry[] }) {
           );
         })}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mb-4">
         {table.getAllColumns().map((column) => {
           return column.columnDef.meta?.externalFilter ? (
             <div
               key={column.id + "-filter"}
-              className="flex flex-col flex-wrap items-start lg:items-center gap-2 mr-4 lg:flex-nowrap lg:flex-row"
+              className="flex flex-col flex-wrap items-start lg:items-center gap-2 mr-2 lg:flex-nowrap lg:flex-row"
             >
               <span className="font-semibold whitespace-nowrap">{column.columnDef.meta.columnName}: </span>
               <Filter column={column} />
@@ -421,7 +446,10 @@ export default function DataTable(props: { data: Entry[] }) {
                 <th
                   key={header.id}
                   colSpan={header.colSpan}
-                  className={"text-left px-1 pt-2 " + header.column.columnDef.meta?.headerClasses}
+                  className={
+                    "text-left px-1 pt-2 " +
+                    (header.column.columnDef.meta?.headerClasses && header.column.columnDef.meta?.headerClasses)
+                  }
                 >
                   {header.isPlaceholder ? null : (
                     <>
@@ -445,7 +473,12 @@ export default function DataTable(props: { data: Entry[] }) {
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                       {header.column.getCanFilter() ? (
-                        <div className={"pt-1 pb-2 text-left " + header.column.columnDef.meta?.classes}>
+                        <div
+                          className={
+                            "pt-1 pb-2 text-left text-sm font-normal " +
+                            (header.column.columnDef.meta?.classes && header.column.columnDef.meta?.classes)
+                          }
+                        >
                           <Filter column={header.column} />
                         </div>
                       ) : null}
@@ -458,12 +491,15 @@ export default function DataTable(props: { data: Entry[] }) {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr key={row.id} className="even:bg-gray-200">
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td
                     key={cell.id}
-                    className={"border-b border-gray-400 leading-5 px-1 py-2 " + cell.column.columnDef.meta?.classes}
+                    className={
+                      "border-b border-gray-400 leading-5 px-1 py-2 " +
+                      (cell.column.columnDef.meta?.classes && cell.column.columnDef.meta?.classes)
+                    }
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
@@ -514,7 +550,16 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       onChange={(value) => column.setFilterValue([value, column.columnDef.meta?.filterMax ?? 9999])}
       max={column.columnDef.meta?.filterMax}
       placeholder={`Min`}
-      className="border p-1 w-16"
+      className={"border p-1 " + (column.columnDef.meta?.filterClasses && column.columnDef.meta?.filterClasses)}
+    />
+  ) : filterVariant === "max" ? (
+    <DebouncedInput
+      type="number"
+      value={(columnFilterValue as [number, number])?.[1] ?? ""}
+      onChange={(value) => column.setFilterValue([column.columnDef.meta?.filterMin ?? 1, value])}
+      min={1}
+      placeholder={`Max`}
+      className="border p-1 w-12"
     />
   ) : filterVariant === "number" ? (
     <DebouncedInput
@@ -525,8 +570,8 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       className="border p-1 w-12"
     />
   ) : filterVariant === "checklist" ? (
-    <div key={column.id} className="px-1 flex flex-row gap-2">
-      <label className="border-r border-gray-500 flex font-semibold items-center gap-2 py-1 pr-4">
+    <div key={column.id} className="px-1 flex flex-wrap gap-1">
+      <label className="flex font-semibold items-center gap-1 py-1 mr-4">
         <input
           {...{
             type: "checkbox",
@@ -542,28 +587,50 @@ function Filter({ column }: { column: Column<any, unknown> }) {
         />
         All
       </label>
-      <div className="flex flex-wrap">
+      {column.columnDef.meta?.filterList &&
+        column.columnDef.meta?.filterList.map((filterItem) => (
+          <label key={filterItem.objectid} className="flex items-center gap-2 py-1 mr-4 whitespace-nowrap">
+            <input
+              type="checkbox"
+              name={column.columnDef.id}
+              value={filterItem.objectid}
+              checked={checkChecklist((columnFilterValue ?? []) as string[], filterItem.objectid)}
+              onChange={(e: any) => {
+                const target: string = e.target.value;
+                const oldValue = (columnFilterValue ?? []) as string[];
+                const newValue = oldValue.includes(target)
+                  ? oldValue.filter((type) => type !== target)
+                  : [target, ...oldValue];
+                column.setFilterValue(newValue);
+              }}
+            />
+            {filterItem.name}
+          </label>
+        ))}
+    </div>
+  ) : filterVariant === "radio" ? (
+    <div key={column.id} className="px-1 flex flex-row gap-2">
+      <fieldset className="flex row-wrap gap-2">
         {column.columnDef.meta?.filterList &&
-          column.columnDef.meta?.filterList.map((filterItem) => (
-            <label key={filterItem.objectid} className="flex items-center gap-2 py-1 px-2 whitespace-nowrap">
+          column.columnDef.meta?.filterList.map((filterItem, idx) => (
+            <label
+              key={filterItem.objectid}
+              className="flex items-center gap-2 py-1 pr-2 whitespace-nowrap first-of-type:font-semibold"
+            >
               <input
-                type="checkbox"
+                type="radio"
+                defaultChecked={idx === 0}
                 name={column.columnDef.id}
                 value={filterItem.objectid}
-                checked={checkChecklist((columnFilterValue ?? []) as string[], filterItem.objectid)}
                 onChange={(e: any) => {
                   const target: string = e.target.value;
-                  const oldValue = (columnFilterValue ?? []) as string[];
-                  const newValue = oldValue.includes(target)
-                    ? oldValue.filter((type) => type !== target)
-                    : [target, ...oldValue];
-                  column.setFilterValue(newValue);
+                  column.setFilterValue(target);
                 }}
               />
               {filterItem.name}
             </label>
           ))}
-      </div>
+      </fieldset>
     </div>
   ) : (
     <DebouncedInput

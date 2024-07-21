@@ -16,6 +16,8 @@ export default async function GamesPage() {
             objectid
             msrp
             showprice
+            location
+            availability_status
             pretty_availability_status
             publishers {
               item {
@@ -88,37 +90,6 @@ export default async function GamesPage() {
       return error;
     });
 
-  const editedGames = games.map((game: Entry) => {
-    // retrieve location from publisher meta
-    pubMeta.map((meta) => {
-      if (game.publishers[0].item.objectid === meta.objectid)
-        game.location = meta.location === null || meta.location === "" ? "–" : meta.location;
-    });
-
-    // consolidate & format release dates and release overrides
-    const releasedate = game.version.item.releasedate;
-    const overridedate = game.version.item.overridedate;
-
-    const formattedReleaseDate = () => {
-      if (overridedate) {
-        return overridedate;
-      } else if (releasedate) {
-        if (releasedate === "0000-00-00") {
-          return "–";
-        } else if (releasedate.endsWith("-00-00")) {
-          return releasedate.split("-")[0];
-        } else if (releasedate.endsWith("-00")) {
-          return releasedate.split("-")[1] + "-" + releasedate.split("-")[0];
-        } else {
-          return releasedate.split("-")[1] + "-" + releasedate.split("-")[2] + "-" + releasedate.split("-")[0];
-        }
-      }
-    };
-    game.version.item.releasedate = formattedReleaseDate();
-
-    return game;
-  });
-
   return (
     <div className="flex min-h-screen flex-col p-6 lg:p-24">
       <div className="flex justify-between mb-8">
@@ -126,16 +97,16 @@ export default async function GamesPage() {
           Total Games Listed: <strong>{games.length}</strong>
         </div>
         <div>
-          <Link className="px-4 py-2" href="/api/itemscraper">
+          <Link className="px-4 py-2" href="/api/scrapers/items">
             Download Games
           </Link>
           |
-          <Link className="px-4 py-2" href="/api/parentscraper">
+          <Link className="px-4 py-2" href="/api/scrapers/parents">
             Download Parents
           </Link>
         </div>
       </div>
-      <DataTable data={editedGames} />
+      <DataTable data={games} />
     </div>
   );
 }

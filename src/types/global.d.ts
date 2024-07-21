@@ -7,7 +7,10 @@ export declare global {
     geekitem: GeekItem;
     msrp: number;
     showprice: number;
+    msrp_currency: string;
+    showprice_currency: string;
     location: string | null;
+    availability_status: string;
     pretty_availability_status: string;
     reactions: Reactions;
     version: Version;
