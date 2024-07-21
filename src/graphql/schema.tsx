@@ -116,9 +116,10 @@ const schema = buildSchema(`
   type Version {
     item: VersionItem
   }
-
+    
   type VersionItem {
     objectid: String
+    name: String
     releasedate: String
     overridedate: String
     orderurl: String

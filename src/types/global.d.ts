@@ -27,6 +27,8 @@ export declare global {
   };
 
   type VersionItem = {
+    objectid: string;
+    name: string;
     releasedate: string | undefined;
     overridedate: string;
   };

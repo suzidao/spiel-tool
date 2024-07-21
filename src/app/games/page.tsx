@@ -32,6 +32,7 @@ export default async function GamesPage() {
             version {
               item {
                 objectid
+                name
                 releasedate
                 overridedate
               }

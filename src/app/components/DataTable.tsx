@@ -56,7 +56,7 @@ export default function DataTable(props: { data: Entry[] }) {
               ℹ️
             </Link>
             <Link href={`https://boardgamegeek.com${game.href}`} target="_blank">
-              {game.primaryname.name}
+              {row.original.version.item.name}
             </Link>
           </Fragment>
         );
