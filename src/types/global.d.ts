@@ -50,6 +50,9 @@ export declare global {
     boardgamedesigner: Designer[];
     reimplements: BaseGame[];
     boardgamefamily: GameFamily[];
+    boardgamemechanic: GameMechanic[];
+    boardgamecategory: GameCategory[];
+    boardgameversion: GameVersion[];
   };
 
   type Designer = {
@@ -75,6 +78,21 @@ export declare global {
   };
 
   type GameFamily = {
+    objectid: string;
+    name: string;
+  };
+
+  type GameMechanic = {
+    objectid: string;
+    name: string;
+  };
+
+  type GameCategory = {
+    objectid: string;
+    name: string;
+  };
+
+  type GameVersion = {
     objectid: string;
     name: string;
   };

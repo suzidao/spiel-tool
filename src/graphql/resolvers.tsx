@@ -9,9 +9,9 @@ import type PublisherMeta from "../types/global.d.ts";
 const games = gamesData as unknown as Entry[];
 const pubMeta = pubMetaData as unknown as PublisherMeta[];
 
-const location = (args: { id: string }): PublisherMeta | undefined => {
-  return pubMeta.find((meta: PublisherMeta) => (meta.objectid === args.id ? meta : ""));
-};
+// const location = (args: { id: string }): PublisherMeta | undefined => {
+//   return pubMeta.find((meta: PublisherMeta) => (meta.objectid === args.id ? meta : ""));
+// };
 
 const entries = (): Entry[] => {
   const editedLocations = games.map((game) => {
@@ -24,11 +24,10 @@ const entries = (): Entry[] => {
   return editedLocations;
 };
 const entry = (args: { id: string }): Entry | undefined => {
-  return games.find((game) => game.itemid === args.id);
+  return games.find((game) => game.objectid === args.id);
 };
 
 export const root = {
-  location,
   entries,
   entry,
 };

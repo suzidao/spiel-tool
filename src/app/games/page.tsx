@@ -13,6 +13,7 @@ export default async function GamesPage() {
       query: `
         query {
           entries {
+            objectid
             msrp
             showprice
             pretty_availability_status
@@ -30,6 +31,7 @@ export default async function GamesPage() {
             }
             version {
               item {
+                objectid
                 releasedate
                 overridedate
               }
@@ -55,9 +57,9 @@ export default async function GamesPage() {
                     objectid
                     name
                   }
-                  reimplements {
+                  boardgameversion {
+                    objectid
                     name
-                    canonical_link
                   }
                 }
                 primaryname {

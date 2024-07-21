@@ -51,9 +51,14 @@ export default function DataTable(props: { data: Entry[] }) {
       cell: ({ row }) => {
         const game = row.original.geekitem.item;
         return (
-          <Link key={game.primaryname.nameid} href={`https://boardgamegeek.com${game.href}`} target="_blank">
-            {game.primaryname.name}
-          </Link>
+          <Fragment key={game.primaryname.nameid}>
+            <Link href={`/games/${row.original.objectid}`} className="mr-2" scroll={false}>
+              ℹ️
+            </Link>
+            <Link href={`https://boardgamegeek.com${game.href}`} target="_blank">
+              {game.primaryname.name}
+            </Link>
+          </Fragment>
         );
       },
       header: () => <span>Game Title</span>,

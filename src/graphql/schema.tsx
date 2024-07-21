@@ -4,8 +4,8 @@ import { buildSchema } from "graphql";
 
 const schema = buildSchema(`
   type Entry {
-    itemid: ID!
-    objectid: String
+    objectid: String!
+    itemid: String
     geekitem: GeekItem!
     version: Version
     msrp: Float
@@ -44,10 +44,13 @@ const schema = buildSchema(`
     boardgamepublisher: [Publisher]
     reimplements: [BaseGame]
     boardgamefamily: [GameFamily]
+    boardgamecategory: [GameCategory]
+    boardgameversion: [GameVersion]
+    boardgamemechanic: [GameMechanic]
   }
 
   type Designer {
-    objectid: ID!
+    objectid: String
     name: String
     canonical_link: String
   }
@@ -57,13 +60,13 @@ const schema = buildSchema(`
   }
 
   type PublisherItem {
-    objectid: ID!
+    objectid: String
     href: String
     primaryname: Name
   }
 
   type BaseGame {
-    objectid: ID!
+    objectid: String
     name: String
     canonical_link: String
   }
@@ -71,6 +74,21 @@ const schema = buildSchema(`
   type GameFamily {
     name: String
     objectid: String
+  }
+
+  type GameCategory {
+    objectid: String
+    name: String
+  }
+
+  type GameMechanic {
+    objectid: String
+    name: String
+  }
+
+  type GameVersion {
+    objectid: String
+    name: String
   }
 
   type Name {
@@ -91,7 +109,7 @@ const schema = buildSchema(`
   }
 
   type PublisherMeta {
-    objectid: ID!
+    objectid: String
     location: String
   }
 
@@ -100,6 +118,7 @@ const schema = buildSchema(`
   }
 
   type VersionItem {
+    objectid: String
     releasedate: String
     overridedate: String
     orderurl: String
@@ -107,8 +126,7 @@ const schema = buildSchema(`
 
   type Query {
     entries: [Entry]
-    entry(id: ID!): Entry
-    location(id: ID!): PublisherMeta
+    entry(id: String): Entry
   }
 `);
 
