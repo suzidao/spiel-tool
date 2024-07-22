@@ -32,7 +32,6 @@ const schema = buildSchema(`
     href: String
     subtypes: [String]
     yearpublished: String
-    releasestatus: String
     minplayers: String
     maxplayers: String
     minplaytime: String
@@ -44,19 +43,14 @@ const schema = buildSchema(`
   }
 
   type Links {
-    boardgamedesigner: [Designer]
+    boardgamedesigner: [GameLink]
     boardgamepublisher: [Publisher]
-    reimplements: [BaseGame]
-    boardgamefamily: [GameFamily]
-    boardgamecategory: [GameCategory]
-    boardgameversion: [GameVersion]
-    boardgamemechanic: [GameMechanic]
-  }
-
-  type Designer {
-    objectid: String
-    name: String
-    canonical_link: String
+    reimplements: [GameLink]
+    boardgamefamily: [GameMeta]
+    boardgamecategory: [GameMeta]
+    boardgameversion: [GameMeta]
+    boardgamemechanic: [GameMeta]
+    expandsboardgame: [GameLink]
   }
 
   type Publisher {
@@ -69,30 +63,15 @@ const schema = buildSchema(`
     primaryname: Name
   }
 
-  type BaseGame {
+  type GameLink {
     objectid: String
     name: String
     canonical_link: String
   }
 
-  type GameFamily {
+  type GameMeta {
     name: String
     objectid: String
-  }
-
-  type GameCategory {
-    objectid: String
-    name: String
-  }
-
-  type GameMechanic {
-    objectid: String
-    name: String
-  }
-
-  type GameVersion {
-    objectid: String
-    name: String
   }
 
   type Name {
@@ -126,6 +105,7 @@ const schema = buildSchema(`
     name: String
     releasedate: String
     overridedate: String
+    releasestatus: String
     orderurl: String
   }
 

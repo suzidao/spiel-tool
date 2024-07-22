@@ -38,6 +38,7 @@ export default async function GamesPage() {
                 name
                 releasedate
                 overridedate
+                releasestatus
               }
             }
             geekitem {
@@ -45,7 +46,6 @@ export default async function GamesPage() {
                 href
                 subtypes
                 yearpublished
-                releasestatus
                 minplayers
                 maxplayers
                 minplaytime

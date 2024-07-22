@@ -23,6 +23,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
               msrp_currency
               showprice_currency
               location
+              availability_status
               pretty_availability_status
               publishers {
                 item {
@@ -42,6 +43,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
                   objectid
                   releasedate
                   overridedate
+                  releasestatus
                 }
               }
               geekitem {
@@ -49,7 +51,6 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
                   href
                   subtypes
                   yearpublished
-                  releasestatus
                   minplayers
                   maxplayers
                   minplaytime
@@ -66,6 +67,11 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
                       name
                     }
                     reimplements {
+                      objectid
+                      name
+                      canonical_link
+                    }
+                    expandsboardgame {
                       objectid
                       name
                       canonical_link

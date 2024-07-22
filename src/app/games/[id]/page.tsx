@@ -3,7 +3,7 @@
 import GameInfo from "@/app/components/GameInfo";
 
 export default async function GamePage({ params: { id } }: { params: { id: string } }) {
-  const rawdata = await fetch(`http://localhost:3000/api/games/${id}`, { cache: "no-store" });
+  const rawdata = await fetch(`../../api/games/${id}`);
   const data = await rawdata.json();
 
   const game = data.data.entry;

@@ -35,13 +35,13 @@ export declare global {
     name: string;
     releasedate: string | undefined;
     overridedate: string;
+    releasestatus: string | null;
   };
 
   type Game = {
     href: string;
     subtypes: string[];
     yearpublished: string;
-    releasestatus: string | null;
     minplayers: string;
     maxplayers: string;
     minplaytime: string;
@@ -53,18 +53,13 @@ export declare global {
   };
 
   type Links = {
-    boardgamedesigner: Designer[];
-    reimplements: BaseGame[];
-    boardgamefamily: GameFamily[];
-    boardgamemechanic: GameMechanic[];
-    boardgamecategory: GameCategory[];
-    boardgameversion: GameVersion[];
-  };
-
-  type Designer = {
-    objectid: string;
-    name: string;
-    canonical_link: string;
+    boardgamedesigner: GameLink[];
+    reimplements: GameLink[];
+    boardgamefamily: GameMeta[];
+    boardgamemechanic: GameMeta[];
+    boardgamecategory: GameMeta[];
+    boardgameversion: GameMeta[];
+    expandsboardgame: GameLink[];
   };
 
   type Publisher = {
@@ -77,28 +72,13 @@ export declare global {
     };
   };
 
-  type BaseGame = {
+  type GameLink = {
     objectid: string;
     name: string;
     canonical_link: string;
   };
 
-  type GameFamily = {
-    objectid: string;
-    name: string;
-  };
-
-  type GameMechanic = {
-    objectid: string;
-    name: string;
-  };
-
-  type GameCategory = {
-    objectid: string;
-    name: string;
-  };
-
-  type GameVersion = {
+  type GameMeta = {
     objectid: string;
     name: string;
   };
