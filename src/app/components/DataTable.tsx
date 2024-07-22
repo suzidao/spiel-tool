@@ -32,6 +32,8 @@ declare module "@tanstack/react-table" {
     filterMax?: number;
     externalFilter?: boolean;
     filterList?: { objectid: string; name: string }[];
+    pairedColumn?: string;
+    hasPair?: boolean;
   }
 }
 
@@ -173,7 +175,6 @@ export default function DataTable(props: { data: Entry[] }) {
     columnHelper.group({
       id: "PlayerCount",
       header: () => <span>Player Count</span>,
-      enableHiding: true,
       meta: {
         columnName: "Player Count",
         headerClasses: "text-center",
@@ -194,6 +195,7 @@ export default function DataTable(props: { data: Entry[] }) {
             classes: "text-center",
             filterClasses: "w-12",
             filterVariant: "min",
+            pairedColumn: "MaxPlayers",
           },
         }),
         columnHelper.accessor("geekitem.item.maxplayers", {
@@ -210,15 +212,16 @@ export default function DataTable(props: { data: Entry[] }) {
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
             filterVariant: "max",
+            hasPair: true,
           },
         }),
       ],
     }),
     columnHelper.group({
       id: "Playtime",
-      header: () => <span>Playtime</span>,
+      header: () => <span>Play Time</span>,
       meta: {
-        columnName: "Playtime",
+        columnName: "Play Time",
         headerClasses: "text-center",
       },
       columns: [
@@ -237,6 +240,7 @@ export default function DataTable(props: { data: Entry[] }) {
             classes: "text-center",
             filterVariant: "min",
             filterClasses: "w-12",
+            pairedColumn: "MaxPlaytime",
           },
         }),
         columnHelper.accessor("geekitem.item.maxplaytime", {
@@ -253,6 +257,7 @@ export default function DataTable(props: { data: Entry[] }) {
             headerClasses: "text-center font-normal uppercase text-xs",
             classes: "text-center",
             filterVariant: "max",
+            hasPair: true,
           },
         }),
       ],
@@ -421,22 +426,28 @@ export default function DataTable(props: { data: Entry[] }) {
       <div className="flex flex-wrap gap-2 py-2 mb-2 border-b border-black">
         <div className="font-semibold">Hide/Show Columns:</div>
         {table.getAllLeafColumns().map((column) => {
+          const pairedColumn = column.columnDef.meta?.pairedColumn;
+          const hasPair = column.columnDef.meta?.hasPair;
+
           return (
-            column.columnDef.enableHiding !== false &&
-            column.columnDef.meta?.externalFilter !== true && (
+            hasPair ??
+            (column.columnDef.enableHiding !== false && column.columnDef.meta?.externalFilter !== true && (
               <div key={column.id} className="px-1">
                 <label className="flex align-middle gap-2">
                   <input
                     {...{
                       type: "checkbox",
                       checked: column.getIsVisible(),
-                      onChange: column.getToggleVisibilityHandler(),
+                      onChange: () => {
+                        if (pairedColumn) table.getColumn(pairedColumn!)?.toggleVisibility();
+                        column.toggleVisibility();
+                      },
                     }}
                   />{" "}
-                  {column.columnDef.meta?.columnName}
+                  {pairedColumn ? column.parent?.columnDef.meta?.columnName : column.columnDef.meta?.columnName}
                 </label>
               </div>
-            )
+            ))
           );
         })}
       </div>
