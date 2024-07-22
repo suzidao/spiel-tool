@@ -54,9 +54,7 @@ const entries = (): Entry[] => {
 
 const entry = (args: { id: string }): Entry | undefined => {
   const game = games.find((game) => game.objectid === args.id);
-
   editGame(game!);
-
   return game;
 };
 

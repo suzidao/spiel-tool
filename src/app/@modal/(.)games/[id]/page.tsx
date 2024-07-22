@@ -12,7 +12,7 @@ export default async function GameModal({ params: { id } }: { params: { id: stri
 
   return (
     <Modal title={game.version.item.name}>
-      <div className="z-10 w-full justify-between font-mono text-sm lg:flex lg:gap-8">
+      <div className="z-10 w-full justify-between text-sm lg:flex lg:gap-8">
         <div className="">
           <GameInfo game={game} />
         </div>

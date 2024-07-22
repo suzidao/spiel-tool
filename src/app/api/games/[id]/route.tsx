@@ -70,19 +70,13 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
                       canonical_link
                     }
                     boardgamecategory {
-                      name
-                    }
-                    boardgamemechanic {
-                      name
-                    }
-                    boardgameversion {
                       objectid
                       name
                     }
-                  }
-                  primaryname {
-                    nameid
-                    name
+                    boardgamemechanic {
+                      objectid
+                      name
+                    }
                   }
                   dynamicinfo {
                     item {

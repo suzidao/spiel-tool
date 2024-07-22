@@ -284,7 +284,7 @@ export default function DataTable(props: { data: Entry[] }) {
       id: "YearPublished",
       cell: (info) => Number(info.getValue()),
       header: () => <span>Year</span>,
-      sortDescFirst: true,
+      enableSorting: false,
       filterFn: "inNumberRange",
       meta: {
         columnName: "Earliest Publication Year",
@@ -549,6 +549,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       value={(columnFilterValue as [number, number])?.[0] ?? ""}
       onChange={(value) => column.setFilterValue([value, column.columnDef.meta?.filterMax ?? 9999])}
       max={column.columnDef.meta?.filterMax}
+      min={1}
       placeholder={`Min`}
       className={"border p-1 " + (column.columnDef.meta?.filterClasses && column.columnDef.meta?.filterClasses)}
     />
@@ -556,7 +557,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
     <DebouncedInput
       type="number"
       value={(columnFilterValue as [number, number])?.[1] ?? ""}
-      onChange={(value) => column.setFilterValue([column.columnDef.meta?.filterMin ?? 1, value])}
+      onChange={(value) => column.setFilterValue([column.columnDef.meta?.filterMin ?? "", value])}
       min={1}
       placeholder={`Max`}
       className="border p-1 w-12"

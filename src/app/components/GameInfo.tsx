@@ -6,7 +6,9 @@ import BGGKeys from "../../data/bgg-keys.json";
 
 export default function GameInfo(props: { game: Entry }) {
   const { game } = props;
-  const { href, links, minplayers, maxplayers, minplaytime, maxplaytime, dynamicinfo } = game.geekitem.item;
+  const { name, releasedate } = game.version.item;
+  const { href, minplayers, maxplayers, minplaytime, maxplaytime, dynamicinfo, yearpublished } = game.geekitem.item;
+  const { boardgamedesigner, boardgamefamily, reimplements, boardgamemechanic } = game.geekitem.item.links;
   const publisher = game.publishers[0].item;
 
   const players = () => {
@@ -34,7 +36,7 @@ export default function GameInfo(props: { game: Entry }) {
       <div className="my-4">
         <span className="pr-2 font-medium">Game Title:</span>
         <Link href={`https://boardgamegeek.com${href}`} target="_blank">
-          {game.version.item.name}
+          {name} ({yearpublished})
         </Link>
       </div>
       <div className="my-4">
@@ -45,8 +47,8 @@ export default function GameInfo(props: { game: Entry }) {
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium">Designer(s):</span>
-        {links.boardgamedesigner.map((designer: Designer, idx: number) => {
-          const isLast = links.boardgamedesigner.length - 1 === idx;
+        {boardgamedesigner.map((designer: Designer, idx: number) => {
+          const isLast = boardgamedesigner.length - 1 === idx;
           return (
             <Fragment key={designer.objectid}>
               <Link href={designer.canonical_link} target="_blank">
@@ -67,7 +69,7 @@ export default function GameInfo(props: { game: Entry }) {
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium">Release Date:</span>
-        {game.version.item.releasedate}
+        {releasedate}
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium">Player Count:</span>
@@ -84,7 +86,7 @@ export default function GameInfo(props: { game: Entry }) {
       <div className="my-4">
         <span className="pr-2 font-medium">Mechanics:</span>
         <ul className="ml-4 my-2">
-          {links.boardgamemechanic.map((mechanic) => {
+          {boardgamemechanic.map((mechanic) => {
             return (
               <li key={mechanic.objectid} className="my-1">
                 {mechanic.name}
@@ -96,7 +98,7 @@ export default function GameInfo(props: { game: Entry }) {
       <div className="my-4">
         <span className="pr-2 font-medium">Digital Implementations:</span>
         <ul className="ml-4 my-2">
-          {links.boardgamefamily.map((family) => {
+          {boardgamefamily.map((family) => {
             const keys = BGGKeys.digital_implementations.map((key) => key.objectid);
 
             if (keys.includes(family.objectid)) {
