@@ -49,7 +49,7 @@ export default function DataTable(props: { data: Entry[] }) {
   const columnHelper = createColumnHelper<Entry>();
 
   const columns = [
-    columnHelper.accessor("geekitem.item.primaryname.name", {
+    columnHelper.accessor("version.item.name", {
       id: "GameTitle",
       cell: ({ row }) => {
         const game = row.original.geekitem.item;
@@ -67,6 +67,13 @@ export default function DataTable(props: { data: Entry[] }) {
       header: () => <span>Game Title</span>,
       sortingFn: "text",
       enableHiding: false,
+      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
+        return row.original.version.item.name
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .includes(filterValue);
+      },
     }),
     columnHelper.accessor<(row: Entry) => string, string>((row) => row.publishers[0].item.primaryname.name, {
       id: "Publisher",
@@ -81,6 +88,13 @@ export default function DataTable(props: { data: Entry[] }) {
       header: () => <span>Publisher</span>,
       sortingFn: "text",
       enableHiding: false,
+      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
+        return row.original.publishers[0].item.primaryname.name
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .includes(filterValue);
+      },
     }),
     columnHelper.accessor("geekitem.item.links.boardgamedesigner", {
       id: "Designers",

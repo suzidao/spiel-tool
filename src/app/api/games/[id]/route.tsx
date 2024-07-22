@@ -17,6 +17,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
           query ($id: String) {
             entry (id: $id) {
               objectid
+              versionid
               msrp
               showprice
               msrp_currency

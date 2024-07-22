@@ -4,6 +4,7 @@ export declare global {
   type Entry = {
     itemid: string;
     objectid: string;
+    versionid: string;
     geekitem: GeekItem;
     msrp: number;
     showprice: number;

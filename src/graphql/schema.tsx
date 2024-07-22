@@ -6,6 +6,7 @@ const schema = buildSchema(`
   type Entry {
     objectid: String!
     itemid: String
+    versionid: String
     geekitem: GeekItem!
     version: Version
     msrp: Float

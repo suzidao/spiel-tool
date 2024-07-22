@@ -14,6 +14,7 @@ export default async function GamesPage() {
         query {
           entries {
             objectid
+            versionid
             msrp
             showprice
             location
