@@ -9,8 +9,10 @@ export default async function GamePage({ params: { id } }: { params: { id: strin
   const game = data.data.entry;
 
   return (
-    <div className="p-4 lg:p-24 mx-auto">
-      <GameInfo game={game} />
+    <div className="p-4 lg:p-24 flex justify-center">
+      <div className="bg-white p-16 lg:min-w-[960px]">
+        <GameInfo game={game} />
+      </div>
     </div>
   );
 }

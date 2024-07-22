@@ -31,7 +31,7 @@ export default function GameInfo(props: { game: Entry }) {
   };
 
   return (
-    <div className="min-w-[420px]">
+    <div className="min-w-[420px] max-w-[960px] mx-auto bg-white">
       {reimplements.length > 0 && (
         <div className="mb-4 text-xs uppercase">
           <span className="pr-1 font-semibold">Reimplements:</span>
