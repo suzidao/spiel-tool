@@ -576,7 +576,7 @@
         }
       }
     },
-    "previewitemids": ["17066", "17067", "17068", "17069", "17070", "17071"],
+    "previewitemids": ["17066", "17067", "17068", "17069", "17070", "17071", "17485"],
     "rendered_body": ""
   },
   {
@@ -683,8 +683,8 @@
     "previewid": "68",
     "objecttype": "company",
     "objectid": "40025",
-    "body": null,
-    "location": null,
+    "body": "",
+    "location": "3-G611",
     "geekitem": {
       "item": {
         "href": "/boardgamepublisher/40025/spielefaible",
@@ -708,7 +708,7 @@
         }
       }
     },
-    "previewitemids": ["16515"],
+    "previewitemids": ["16515", "17472"],
     "rendered_body": ""
   },
   {
@@ -3209,7 +3209,7 @@
         }
       }
     },
-    "previewitemids": ["17058", "17059", "17060"],
+    "previewitemids": ["17058", "17059", "17060", "17476", "17477", "17478"],
     "rendered_body": ""
   },
   {
@@ -4982,7 +4982,7 @@
         }
       }
     },
-    "previewitemids": ["17319", "17320"],
+    "previewitemids": ["17319", "17320", "17484"],
     "rendered_body": ""
   },
   {
@@ -5886,7 +5886,283 @@
         }
       }
     },
-    "previewitemids": ["17455"],
+    "previewitemids": ["17455", "17498", "17499"],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10468",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "23",
+    "body": "",
+    "location": "3-U113",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/23/chaosium",
+        "primaryname": {
+          "nameid": "59926",
+          "name": "Chaosium",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "Chaosium"
+        },
+        "imageid": "2541194",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__thumb/img/JwSZdJAVGRrDcLTlXaZQPe8seus=/fit-in/200x150/filters:strip_icc()/pic2541194.png",
+          "micro": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__micro/img/ktZj0vptc9Hh2876RljaN_I8Adc=/fit-in/64x64/filters:strip_icc()/pic2541194.png",
+          "square": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__square/img/uLhHOWlthB5II-QwrmXThLobdSY=/75x75/filters:strip_icc()/pic2541194.png",
+          "squarefit": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__squarefit/img/t2QEapoPjIPidueQxr2jxIZZQGg=/fit-in/75x75/filters:strip_icc()/pic2541194.png",
+          "tallthumb": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__tallthumb/img/pgYbEmwk-kMHALcL2qkhrKrRAa4=/fit-in/75x125/filters:strip_icc()/pic2541194.png",
+          "previewthumb": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__previewthumb/img/fUOPnhr3lzKxRLrU6jb0dzNzgVM=/fit-in/300x320/filters:strip_icc()/pic2541194.png",
+          "square200": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__square200/img/3tc3rjCWV6LqaivoVxvUttFt-6I=/200x200/filters:strip_icc()/pic2541194.png",
+          "original": "https://cf.geekdo-images.com/Oa9jjhYjIT2xOSjNAGJ_UQ__original/img/kSuaIgjCIFK6iYT25ZppukNP_CQ=/0x0/filters:format(png)/pic2541194.png"
+        }
+      }
+    },
+    "previewitemids": ["17466"],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10469",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "28114",
+    "body": "",
+    "location": "5-H121",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/28114/capital-gains-studio",
+        "primaryname": {
+          "nameid": "943227",
+          "name": "Capital Gains Studio",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "Capital Gains Studio"
+        },
+        "imageid": "3569871",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__thumb/img/D3lB38k_lco6mR9AXWPoDhpr2UI=/fit-in/200x150/filters:strip_icc()/pic3569871.png",
+          "micro": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__micro/img/JExixKgo7-ezKHp9koXZWE6d89w=/fit-in/64x64/filters:strip_icc()/pic3569871.png",
+          "square": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__square/img/VKlicKlYNpX8bMrJ0mmjLM1D73w=/75x75/filters:strip_icc()/pic3569871.png",
+          "squarefit": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__squarefit/img/IsrKlfyi6DmVGK7lkI5r98ffVqw=/fit-in/75x75/filters:strip_icc()/pic3569871.png",
+          "tallthumb": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__tallthumb/img/G1CDzrBBmGrrSuoS8uxTyjtoOj4=/fit-in/75x125/filters:strip_icc()/pic3569871.png",
+          "previewthumb": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__previewthumb/img/0tw17zfJ9FyistS-8b9B2Gkc0AA=/fit-in/300x320/filters:strip_icc()/pic3569871.png",
+          "square200": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__square200/img/SJCY2pndqDHidLv3RQWiw8Pmkd0=/200x200/filters:strip_icc()/pic3569871.png",
+          "original": "https://cf.geekdo-images.com/vgFiJiIh6FQzu_5FdQLiWg__original/img/umIImwugOIQuSHXZ4mbj3VEg9ko=/0x0/filters:format(png)/pic3569871.png"
+        }
+      }
+    },
+    "previewitemids": ["17469", "17470", "17471"],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10470",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "46382",
+    "body": "",
+    "location": "3-C310",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/46382/red-mojo",
+        "primaryname": {
+          "nameid": "1845110",
+          "name": "Red Mojo",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "Red Mojo"
+        },
+        "imageid": "5680224",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__thumb/img/OHCjrRIx2TcKyYvl6xRK_Cq75-M=/fit-in/200x150/filters:strip_icc()/pic5680224.jpg",
+          "micro": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__micro/img/GPVmq2oNCGKH5pOK20ZQQ6CwzCo=/fit-in/64x64/filters:strip_icc()/pic5680224.jpg",
+          "square": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__square/img/BOcr0nYKfjOLo4gUT23E480gvkg=/75x75/filters:strip_icc()/pic5680224.jpg",
+          "squarefit": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__squarefit/img/h6xR5vBwQFfktYT0ZubPCNv1n6E=/fit-in/75x75/filters:strip_icc()/pic5680224.jpg",
+          "tallthumb": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__tallthumb/img/mAXHC08EdGCDEwKhmsb7MgrrE18=/fit-in/75x125/filters:strip_icc()/pic5680224.jpg",
+          "previewthumb": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__previewthumb/img/00bBOAivv9RbpuFUttgW0z60wSQ=/fit-in/300x320/filters:strip_icc()/pic5680224.jpg",
+          "square200": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__square200/img/H5nVJVGBKRA7tRaL6Owr_VK4kzU=/200x200/filters:strip_icc()/pic5680224.jpg",
+          "original": "https://cf.geekdo-images.com/J8legNxXwfpHfXFyUkX7aw__original/img/0vh3vVoo1YshNaSwgNV8L8PQ8hg=/0x0/filters:format(jpeg)/pic5680224.jpg"
+        }
+      }
+    },
+    "previewitemids": ["17473"],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10471",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "52040",
+    "body": "",
+    "location": "3-U112",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/52040/pif-games",
+        "primaryname": {
+          "nameid": "2176477",
+          "name": "PIF GAMES",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "PIF GAMES"
+        },
+        "imageid": "6961704",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__thumb/img/0yDf-bG9mJzTfGWUSt3uZEK2oQs=/fit-in/200x150/filters:strip_icc()/pic6961704.png",
+          "micro": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__micro/img/0gA-vCkCH4LfoOs8DhqgGB-jp_4=/fit-in/64x64/filters:strip_icc()/pic6961704.png",
+          "square": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__square/img/3WspoSmWHRw0F4g9kJyHAS2x2AI=/75x75/filters:strip_icc()/pic6961704.png",
+          "squarefit": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__squarefit/img/YqTKDI0XQIA0KfeXWTiYfFFgYKs=/fit-in/75x75/filters:strip_icc()/pic6961704.png",
+          "tallthumb": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__tallthumb/img/FBkQH5fy1xI0lGWmYLf8TeaLeiw=/fit-in/75x125/filters:strip_icc()/pic6961704.png",
+          "previewthumb": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__previewthumb/img/ToGpvj6oo1SZoRhEtbYWvK875Q4=/fit-in/300x320/filters:strip_icc()/pic6961704.png",
+          "square200": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__square200/img/v6q3u371LJV9PnxpNPYy7LYTBNE=/200x200/filters:strip_icc()/pic6961704.png",
+          "original": "https://cf.geekdo-images.com/S2Tr-PWuMvcNCT1S8U4Qkw__original/img/lsmht_7H1omiFhwascO9FQQP_sk=/0x0/filters:format(png)/pic6961704.png"
+        }
+      }
+    },
+    "previewitemids": ["17474", "17475"],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10472",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "29636",
+    "body": "",
+    "location": "2-D411",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/29636/emperors4",
+        "primaryname": {
+          "nameid": "988857",
+          "name": "EmperorS4",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "EmperorS4"
+        },
+        "imageid": "5231408",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__thumb/img/dBb-PPxwf47k9s3Zi4gjXDeXmO8=/fit-in/200x150/filters:strip_icc()/pic5231408.jpg",
+          "micro": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__micro/img/R9r218UdxWxS4cOPgYvvyk6V02I=/fit-in/64x64/filters:strip_icc()/pic5231408.jpg",
+          "square": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__square/img/UAVhh2thIMAw5WpPUkbL4Fe7r2s=/75x75/filters:strip_icc()/pic5231408.jpg",
+          "squarefit": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__squarefit/img/6jod28TRcyps2LdXItNpLnnKK48=/fit-in/75x75/filters:strip_icc()/pic5231408.jpg",
+          "tallthumb": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__tallthumb/img/lPu7uR-Kuk8vgsO_OxZXeuUKUuM=/fit-in/75x125/filters:strip_icc()/pic5231408.jpg",
+          "previewthumb": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__previewthumb/img/eGhF9Oj2NuMnndKMKbTVx55_fr0=/fit-in/300x320/filters:strip_icc()/pic5231408.jpg",
+          "square200": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__square200/img/ighF-vJ5KjIyS5DlLlUM4MZwkRg=/200x200/filters:strip_icc()/pic5231408.jpg",
+          "original": "https://cf.geekdo-images.com/wgH6K-I9EE-_ve4xUftvew__original/img/746old7oQC0o1LKkppjRNOuBQk0=/0x0/filters:format(jpeg)/pic5231408.jpg"
+        }
+      }
+    },
+    "previewitemids": ["17479", "17480", "17482", "17483"],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10473",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "18852",
+    "body": "",
+    "location": "4-D211",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/18852/hobby-world",
+        "primaryname": {
+          "nameid": "529992",
+          "name": "Hobby World",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "Hobby World"
+        },
+        "imageid": "6791190",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__thumb/img/z5Z92Er-eb2q_yF4viSWoxai_jg=/fit-in/200x150/filters:strip_icc()/pic6791190.jpg",
+          "micro": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__micro/img/Umjm0q3J6gKJZOJkLPEi0PmOphc=/fit-in/64x64/filters:strip_icc()/pic6791190.jpg",
+          "square": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__square/img/QMSKJAQTTMzsBFyfBU0An9tpO6A=/75x75/filters:strip_icc()/pic6791190.jpg",
+          "squarefit": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__squarefit/img/aE6v9gBd15idn1O6OBMEx43PRyk=/fit-in/75x75/filters:strip_icc()/pic6791190.jpg",
+          "tallthumb": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__tallthumb/img/7BUXwr67ss6k5YF_itu-sr_UOBI=/fit-in/75x125/filters:strip_icc()/pic6791190.jpg",
+          "previewthumb": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__previewthumb/img/pJ26FyRB7s-XismCUs2R5vBbCXs=/fit-in/300x320/filters:strip_icc()/pic6791190.jpg",
+          "square200": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__square200/img/zojh78R39woQ3Xn_GJ9eMyvQkVE=/200x200/filters:strip_icc()/pic6791190.jpg",
+          "original": "https://cf.geekdo-images.com/C4qov9JAcl4T0pv9jM5F-Q__original/img/SA6TbK2gkADlXJS54GaO8fWJ560=/0x0/filters:format(jpeg)/pic6791190.jpg"
+        }
+      }
+    },
+    "previewitemids": [
+      "17486",
+      "17487",
+      "17488",
+      "17489",
+      "17490",
+      "17491",
+      "17492",
+      "17493",
+      "17494",
+      "17495",
+      "17496"
+    ],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10474",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "23031",
+    "body": "",
+    "location": "4-D211 (Hobby World)",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/23031/magellan",
+        "primaryname": {
+          "nameid": "659198",
+          "name": "Magellan",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "Magellan"
+        },
+        "imageid": "7287961",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__thumb/img/kMLXGwLTpnMetyoCt8yWjVyfAZc=/fit-in/200x150/filters:strip_icc()/pic7287961.png",
+          "micro": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__micro/img/kwxK9PORZuJc3utuwmnxHIvrQHI=/fit-in/64x64/filters:strip_icc()/pic7287961.png",
+          "square": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__square/img/B1_xb3uwLvCpChkQCr0r3TeXLIU=/75x75/filters:strip_icc()/pic7287961.png",
+          "squarefit": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__squarefit/img/XcFc_sj0fmWYWDumbFyF-Oaeh64=/fit-in/75x75/filters:strip_icc()/pic7287961.png",
+          "tallthumb": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__tallthumb/img/X3U2E6Pd3Iq2F4bnWUfXcbnmC-c=/fit-in/75x125/filters:strip_icc()/pic7287961.png",
+          "previewthumb": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__previewthumb/img/rfx9CyN3ClirS7itQiv3kuXMXkk=/fit-in/300x320/filters:strip_icc()/pic7287961.png",
+          "square200": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__square200/img/HJ9aytswGAsqhA5jOyLf0wxmJWc=/200x200/filters:strip_icc()/pic7287961.png",
+          "original": "https://cf.geekdo-images.com/7C3g4Ude-EgeL_ld31pw9A__original/img/gqQGkpWb-zddzFjuDax8ur-DcsA=/0x0/filters:format(png)/pic7287961.png"
+        }
+      }
+    },
+    "previewitemids": ["17497"],
+    "rendered_body": ""
+  },
+  {
+    "parentitemid": "10475",
+    "previewid": "68",
+    "objecttype": "company",
+    "objectid": "27470",
+    "body": "",
+    "location": "3-H512",
+    "geekitem": {
+      "item": {
+        "href": "/boardgamepublisher/27470/lucrum-games",
+        "primaryname": {
+          "nameid": "887382",
+          "name": "Lucrum Games",
+          "sortindex": "1",
+          "primaryname": "1",
+          "translit": "Lucrum Games"
+        },
+        "imageid": "2859999",
+        "images": {
+          "thumb": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__thumb/img/MjNRx1ExJkYFGsZxm0uPy-gzoEk=/fit-in/200x150/filters:strip_icc()/pic2859999.jpg",
+          "micro": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__micro/img/2iWUlk-n11yEquKPErrzEYVAvjc=/fit-in/64x64/filters:strip_icc()/pic2859999.jpg",
+          "square": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__square/img/mJ8CTSihqm08rYfp3pyZgqeVMso=/75x75/filters:strip_icc()/pic2859999.jpg",
+          "squarefit": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__squarefit/img/1Epthi_mGU4rVMWbZZZbay-tX-g=/fit-in/75x75/filters:strip_icc()/pic2859999.jpg",
+          "tallthumb": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__tallthumb/img/jC-YsUKhXhR9lTE6bmukyxv1hsE=/fit-in/75x125/filters:strip_icc()/pic2859999.jpg",
+          "previewthumb": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__previewthumb/img/W18rZ6xZ5b1IHtOn1prY4dYG_Jg=/fit-in/300x320/filters:strip_icc()/pic2859999.jpg",
+          "square200": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__square200/img/EYqnAUnZEtp0w0ztnC9BrbKRfZc=/200x200/filters:strip_icc()/pic2859999.jpg",
+          "original": "https://cf.geekdo-images.com/N3RftBjh_kUdk9YYe5KNRw__original/img/pKiculfEGh9i83aZGX0S5WdmqSg=/0x0/filters:format(jpeg)/pic2859999.jpg"
+        }
+      }
+    },
+    "previewitemids": ["17500", "17501"],
     "rendered_body": ""
   }
 ]

@@ -1,6 +1,6 @@
 /** @format */
 
-const ITEMPAGECOUNT = 55;
+const ITEMPAGECOUNT = 58;
 
 export async function GET() {
   const previewItems: Entry[] = [];

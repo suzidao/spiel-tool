@@ -3,6 +3,74 @@
 import { buildSchema } from "graphql";
 
 const schema = buildSchema(`
+  type User {
+    userid: Int
+    username: String
+    password: String
+    email: String
+    comments: [Comment]
+    rankings: [Ranking]
+    interest: [Game]
+  }
+
+  type Comment {
+    commentid: Int
+    userid: Int
+    gameid: Int
+    comment: String
+  }
+
+  type Ranking {
+    rankingid: Int
+    userid: Int
+    gameid: Int
+    ranking: Int
+  }
+
+  type Game {
+    gameid: Int
+    title: String
+    publisher: String
+    designers: [String]
+    minplayers: Int
+    maxplayers: Int
+    minplaytime: Int
+    maxplaytime: Int
+    complexity: Float
+    contact: String
+    decision: Decision
+    negotiation: Negotiation
+    acquisition: Acquisition
+    comments: [Comment]
+    rankings: [Ranking]
+  }
+
+  enum Decision {
+    none
+    rejected
+    evaluate
+    alternate
+    selected
+    soft_locked
+    placed
+  }
+
+  enum Negotiation {
+    none
+    emailed
+    promised
+    deal
+    rejected
+  }
+
+  enum Acquisition {
+    none
+    acquired
+    shipping
+    pickup
+    dropoff
+  }
+
   type Entry {
     objectid: String!
     itemid: String
@@ -25,10 +93,10 @@ const schema = buildSchema(`
   }
 
   type GeekItem {
-    item: Game
+    item: EntryGame
   }
 
-  type Game {
+  type EntryGame {
     href: String
     subtypes: [String]
     yearpublished: String
@@ -109,10 +177,23 @@ const schema = buildSchema(`
     orderurl: String
   }
 
+  input UserInput {
+    username: String
+    password: String
+    email: String
+  }
+
   type Query {
+    users: [User]
+    user(id: Int): User
     entries: [Entry]
     entry(id: String): Entry
   }
+
+  type Mutation {
+    addUser(input: UserInput): User!
+  }
+
 `);
 
 export default schema;

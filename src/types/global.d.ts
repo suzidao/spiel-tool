@@ -1,6 +1,84 @@
 /** @format */
 
 export declare global {
+  type User = {
+    userid: number;
+    username: string;
+    password: string;
+    email?: string;
+    comments?: UserComment[];
+    rankings?: UserRanking[];
+    interest?: Game[];
+  };
+
+  type UserComment = {
+    commentid: number;
+    userid: number;
+    gameid: number;
+    comment?: string;
+  };
+
+  type UserRanking = {
+    rankingid: number;
+    userid: number;
+    gameid: number;
+    ranking: number;
+  };
+
+  type Game = {
+    gameid: number;
+    title: string;
+    publisher?: string;
+    designers?: string[];
+    minplayers?: number;
+    maxplayers?: number;
+    minplaytime?: number;
+    maxplaytime?: number;
+    complexity?: number;
+    contact?: string;
+    decision?: Decision;
+    negotiation?: Negotiation;
+    acquisition?: Acquisition;
+    comments?: UserComment[];
+    rankings?: UserRanking[];
+    interest?: User[];
+  };
+
+  enum Decision {
+    none = "None",
+    rejected = "Rejected",
+    evaluate = "Evaluate",
+    alternate = "Alternate",
+    selected = "Selected",
+    soft_locked = "Soft-Locked",
+    placed = "Placed",
+  }
+
+  enum Negotiation {
+    none = "None",
+    emailed = "Emailed",
+    promised = "Promised",
+    deal = "Deal @ SPIEL",
+    rejected = "Rejected",
+  }
+
+  enum Acquisition {
+    none = "None",
+    acquired = "Acquired",
+    shipping = "Shipping",
+    pickup = "SPIEL Pickup",
+    dropoff = "PAX Dropoff",
+  }
+
+  type UserInput = {
+    username: string;
+    password: string;
+    email: string;
+    created_at: string;
+    updated_at: string;
+  };
+
+  // BGG Data Fields
   type Entry = {
     itemid: string;
     objectid: string;
@@ -23,7 +101,7 @@ export declare global {
   };
 
   type GeekItem = {
-    item: Game;
+    item: EntryGame;
   };
 
   type Version = {
@@ -38,7 +116,7 @@ export declare global {
     releasestatus: string | null;
   };
 
-  type Game = {
+  type EntryGame = {
     href: string;
     subtypes: string[];
     yearpublished: string;

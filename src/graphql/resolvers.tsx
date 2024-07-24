@@ -1,15 +1,53 @@
 /** @format */
 
+import { pool } from "../data/db";
 import gamesData from "../data/spiel-preview-games.json";
 import pubMetaData from "../data/spiel-preview-parents.json";
 
 import type Entry from "../types/global.d.ts";
-import type PublisherMeta from "../types/global.d.ts";
 
 const games = gamesData as unknown as Entry[];
 const pubMeta = pubMetaData as unknown as PublisherMeta[];
 
-const editGame = (game: Entry) => {
+// Queries
+
+const users = async (): Promise<User[]> => {
+  try {
+    const result = await pool.query(`SELECT * FROM users`);
+    return result.rows;
+  } catch (error: any) {
+    return error.message;
+  }
+};
+
+const user = async (args: { id: number }): Promise<User> => {
+  try {
+    const result = await pool.query(`SELECT * FROM users WHERE userid=${args.id}`);
+    return result.rows[0];
+  } catch (error: any) {
+    return error.message;
+  }
+};
+
+// Mutations
+
+const addUser = async (args: { input: UserInput }): Promise<User> => {
+  const allUsers = await users().then((users) => users);
+  const userid = allUsers.length + 1;
+
+  const { username, password, email } = args.input;
+  const user = { userid, ...args.input };
+
+  await pool.query(
+    `INSERT INTO users (userid, username, password, email) VALUES (${userid}, '${username}', '${password}', '${email}')`
+  );
+
+  return user;
+};
+
+// BGG data Query resolvers
+
+const editGameData = (game: Entry) => {
   // retrieve and replace location from publisher meta
   const matchingMeta = pubMeta.find((meta) => meta.objectid === game.publishers[0].item.objectid.toString());
 
@@ -46,19 +84,24 @@ const editGame = (game: Entry) => {
   return game;
 };
 
+// Queries
+
 const entries = (): Entry[] => {
   return games.map((game) => {
-    return editGame(game);
+    return editGameData(game);
   });
 };
 
 const entry = (args: { id: string }): Entry | undefined => {
   const game = games.find((game) => game.objectid === args.id);
-  editGame(game!);
+  editGameData(game!);
   return game;
 };
 
 export const root = {
+  addUser,
+  users,
+  user,
   entries,
   entry,
 };

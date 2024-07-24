@@ -1,7 +1,10 @@
 /** @format */
 
-import Link from "next/link";
+export default async function HomePage() {
+  // const rawdata = await fetch("http://localhost:3000/api/users");
+  // const { data } = await rawdata.json();
 
-export default async function Home() {
+  // const users = data.users;
+
   return <main className="flex min-h-screen flex-col p-6 lg:p-24"></main>;
 }

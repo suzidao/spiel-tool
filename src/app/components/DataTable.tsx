@@ -6,7 +6,6 @@ import BGGKeys from "../../data/bgg-keys.json";
 import Filters from "./Filters";
 
 import {
-  Column,
   ColumnFiltersState,
   createColumnHelper,
   flexRender,
@@ -419,37 +418,39 @@ export default function DataTable(props: { data: Entry[] }) {
 
   return (
     <>
-      <div className="py-2">
-        Total Games: <strong>{table.getFilteredRowModel().rows.length}</strong> |{" "}
-        <strong>{table.getCoreRowModel().rows.length}</strong>
-      </div>
-      <div className="flex flex-wrap gap-2 py-2 mb-2 border-b border-black">
-        <div className="font-semibold">Hide/Show Columns:</div>
-        {table.getAllLeafColumns().map((column) => {
-          const pairedColumn = column.columnDef.meta?.pairedColumn;
-          const hasPair = column.columnDef.meta?.hasPair;
+      <div className="flex justify-between items-center mb-2 border-b border-black pb-3">
+        <div>
+          Total Games: <strong>{table.getFilteredRowModel().rows.length}</strong> |{" "}
+          <strong>{table.getCoreRowModel().rows.length}</strong>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <div className="font-semibold">Hide/Show Columns:</div>
+          {table.getAllLeafColumns().map((column) => {
+            const pairedColumn = column.columnDef.meta?.pairedColumn;
+            const hasPair = column.columnDef.meta?.hasPair;
 
-          return (
-            hasPair ??
-            (column.columnDef.enableHiding !== false && column.columnDef.meta?.externalFilter !== true && (
-              <div key={column.id} className="px-1">
-                <label className="flex align-middle gap-2">
-                  <input
-                    {...{
-                      type: "checkbox",
-                      checked: column.getIsVisible(),
-                      onChange: () => {
-                        if (pairedColumn) table.getColumn(pairedColumn!)?.toggleVisibility();
-                        column.toggleVisibility();
-                      },
-                    }}
-                  />{" "}
-                  {pairedColumn ? column.parent?.columnDef.meta?.columnName : column.columnDef.meta?.columnName}
-                </label>
-              </div>
-            ))
-          );
-        })}
+            return (
+              hasPair ??
+              (column.columnDef.enableHiding !== false && column.columnDef.meta?.externalFilter !== true && (
+                <div key={column.id} className="px-1">
+                  <label className="flex align-middle gap-2">
+                    <input
+                      {...{
+                        type: "checkbox",
+                        checked: column.getIsVisible(),
+                        onChange: () => {
+                          if (pairedColumn) table.getColumn(pairedColumn!)?.toggleVisibility();
+                          column.toggleVisibility();
+                        },
+                      }}
+                    />{" "}
+                    {pairedColumn ? column.parent?.columnDef.meta?.columnName : column.columnDef.meta?.columnName}
+                  </label>
+                </div>
+              ))
+            );
+          })}
+        </div>
       </div>
       <div className="flex flex-wrap gap-2 mb-4">
         {table.getAllColumns().map((column) => {
