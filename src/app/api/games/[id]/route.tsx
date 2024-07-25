@@ -76,10 +76,6 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
                       name
                       canonical_link
                     }
-                    boardgamecategory {
-                      objectid
-                      name
-                    }
                     boardgamemechanic {
                       objectid
                       name

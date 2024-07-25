@@ -107,7 +107,7 @@ export default function DataTable(props: { data: Entry[] }) {
             const isLast = designers.length - 1 === idx;
             const designerLink = (
               <Fragment key={designer.objectid}>
-                <Link href={designer.canonical_link} target="_blank">
+                <Link href={designer.canonical_link!} target="_blank">
                   {designer.name}
                 </Link>
                 {!isLast && ", "}

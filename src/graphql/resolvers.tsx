@@ -6,7 +6,7 @@ import pubMetaData from "../data/spiel-preview-parents.json";
 
 import type Entry from "../types/global.d.ts";
 
-const games = gamesData as unknown as Entry[];
+const bgg_games = gamesData as unknown as Entry[];
 const pubMeta = pubMetaData as unknown as PublisherMeta[];
 
 // Queries
@@ -24,6 +24,15 @@ const user = async (args: { id: number }): Promise<User> => {
   try {
     const result = await pool.query(`SELECT * FROM users WHERE userid=${args.id}`);
     return result.rows[0];
+  } catch (error: any) {
+    return error.message;
+  }
+};
+
+const games = async (): Promise<Game[]> => {
+  try {
+    const result = await pool.query(`SELECT * FROM games`);
+    return result.rows;
   } catch (error: any) {
     return error.message;
   }
@@ -87,13 +96,13 @@ const editGameData = (game: Entry) => {
 // Queries
 
 const entries = (): Entry[] => {
-  return games.map((game) => {
+  return bgg_games.map((game) => {
     return editGameData(game);
   });
 };
 
 const entry = (args: { id: string }): Entry | undefined => {
-  const game = games.find((game) => game.objectid === args.id);
+  const game = bgg_games.find((game) => game.objectid === args.id);
   editGameData(game!);
   return game;
 };
@@ -102,6 +111,7 @@ export const root = {
   addUser,
   users,
   user,
+  games,
   entries,
   entry,
 };

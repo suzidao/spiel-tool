@@ -31,11 +31,11 @@ const schema = buildSchema(`
     gameid: Int
     title: String
     publisher: String
-    designers: [String]
-    minplayers: Int
-    maxplayers: Int
-    minplaytime: Int
-    maxplaytime: Int
+    designers: [GameLink]
+    minplayers: String
+    maxplayers: String
+    minplaytime: String
+    maxplaytime: String
     complexity: Float
     contact: String
     decision: Decision
@@ -43,6 +43,9 @@ const schema = buildSchema(`
     acquisition: Acquisition
     comments: [Comment]
     rankings: [Ranking]
+    numhave: Int
+    numneed: Int
+    itemid: Int
   }
 
   enum Decision {
@@ -184,6 +187,7 @@ const schema = buildSchema(`
   }
 
   type Query {
+    games: [Game]
     users: [User]
     user(id: Int): User
     entries: [Entry]

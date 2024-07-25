@@ -25,9 +25,45 @@ export declare global {
     ranking: number;
   };
 
+  type CombinedGame = {
+    gameid: number;
+    title?: string;
+    publisher?: string;
+    designers?: GameLink[];
+    minplayers?: string;
+    maxplayers?: string;
+    minplaytime?: string;
+    maxplaytime?: string;
+    complexity?: string;
+    contact?: string;
+    decision?: Decision;
+    negotiation?: Negotiation;
+    acquisition?: Acquisition;
+    comments?: UserComment[];
+    rankings?: UserRanking[];
+    interest?: User[];
+    // fields from BGG Data
+    game_link?: string;
+    publisher_link?: string;
+    location?: string;
+    msrp?: number;
+    showprice?: number;
+    msrp_currency?: string;
+    showprice_currency?: string;
+    availability_status?: string;
+    thumbs?: number;
+    subtypes?: string[];
+    yearpublished?: string;
+    minage?: string;
+    mechanics?: GameLink[];
+    expands?: GameLink[];
+    reimplements?: GameLink[];
+    digitized?: GameLink[];
+  };
+
   type Game = {
     gameid: number;
-    title: string;
+    title?: string;
     publisher?: string;
     designers?: string[];
     minplayers?: number;
@@ -42,6 +78,7 @@ export declare global {
     comments?: UserComment[];
     rankings?: UserRanking[];
     interest?: User[];
+    itemid?: number;
   };
 
   enum Decision {
@@ -151,13 +188,13 @@ export declare global {
   };
 
   type GameLink = {
-    objectid: string;
+    objectid?: string;
     name: string;
-    canonical_link: string;
+    canonical_link?: string;
   };
 
   type GameMeta = {
-    objectid: string;
+    objectid?: string;
     name: string;
   };
 
