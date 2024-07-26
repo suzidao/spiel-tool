@@ -36,7 +36,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export default function DataTable(props: { data: Entry[] }) {
+export default function DataTable(props: { data: CombinedGame[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: "AvailabilityStatus", value: "all" }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -48,20 +48,20 @@ export default function DataTable(props: { data: Entry[] }) {
 
   const data = props.data;
 
-  const columnHelper = createColumnHelper<Entry>();
+  const columnHelper = createColumnHelper<CombinedGame>();
 
   const columns = [
-    columnHelper.accessor("version.item.name", {
+    columnHelper.accessor("title", {
       id: "GameTitle",
       cell: ({ row }) => {
-        const game = row.original.geekitem.item;
+        const game = row.original;
         return (
-          <Fragment key={game.primaryname.nameid}>
-            <Link href={`/games/${row.original.objectid}`} className="mr-2" scroll={false}>
+          <Fragment key={game.gameid}>
+            <Link href={`/games/${row.original.gameid}`} className="mr-2" scroll={false}>
               ℹ️
             </Link>
-            <Link href={`https://boardgamegeek.com${game.href}`} target="_blank">
-              {row.original.version.item.name}
+            <Link href={`https://boardgamegeek.com${game.game_link}`} target="_blank">
+              {row.original.title}
             </Link>
           </Fragment>
         );
@@ -69,40 +69,40 @@ export default function DataTable(props: { data: Entry[] }) {
       header: () => <span>Game Title</span>,
       sortingFn: "text",
       enableHiding: false,
-      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
-        return row.original.version.item.name
-          .normalize("NFD")
+      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
+        return row.original
+          .title!.normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
           .includes(filterValue);
       },
     }),
-    columnHelper.accessor<(row: Entry) => string, string>((row) => row.publishers[0].item.primaryname.name, {
+    columnHelper.accessor("publisher", {
       id: "Publisher",
       cell: ({ row }) => {
-        const publisher = row.original.publishers[0];
+        const game = row.original;
         return (
-          <Link key={publisher.item.objectid} href={`https://boardgamegeek.com${publisher.item.href}`} target="_blank">
-            {publisher.item.primaryname.name}
+          <Link key={game.publisher} href={`https://boardgamegeek.com${game.publisher_link}`} target="_blank">
+            {game.publisher}
           </Link>
         );
       },
       header: () => <span>Publisher</span>,
       sortingFn: "text",
       enableHiding: false,
-      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
-        return row.original.publishers[0].item.primaryname.name
+      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
+        return row.original.publisher
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
           .includes(filterValue);
       },
     }),
-    columnHelper.accessor("geekitem.item.links.boardgamedesigner", {
+    columnHelper.accessor("designers", {
       id: "Designers",
       cell: (info) => {
         const designers = info.getValue();
-        if (designers.length > 0) {
+        if (!!designers && designers.length > 0) {
           return designers.map((designer, idx) => {
             const isLast = designers.length - 1 === idx;
             const designerLink = (
@@ -121,8 +121,8 @@ export default function DataTable(props: { data: Entry[] }) {
       },
       header: () => <span>Designer(s)</span>,
       enableSorting: false,
-      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
-        const designers = row.original.geekitem.item.links.boardgamedesigner;
+      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
+        const designers = row.original.designers;
         return designers
           .map((designer) => {
             return designer.name
@@ -146,7 +146,7 @@ export default function DataTable(props: { data: Entry[] }) {
         columnName: "Location",
       },
     }),
-    columnHelper.accessor("reactions.thumbs", {
+    columnHelper.accessor("thumbs", {
       id: "Thumbs",
       cell: (info) => {
         const thumbs = Number(info.getValue());
@@ -160,7 +160,7 @@ export default function DataTable(props: { data: Entry[] }) {
         classes: "text-center min-w-12",
       },
     }),
-    columnHelper.accessor("version.item.releasedate", {
+    columnHelper.accessor("releasedate", {
       id: "ReleaseDate",
       cell: (info) => info.getValue(),
       header: () => <span>Release Date</span>,
@@ -179,7 +179,7 @@ export default function DataTable(props: { data: Entry[] }) {
         headerClasses: "text-center",
       },
       columns: [
-        columnHelper.accessor("geekitem.item.minplayers", {
+        columnHelper.accessor("minplayers", {
           id: "MinPlayers",
           cell: (info) => {
             const minplayers = Number(info.getValue());
@@ -197,7 +197,7 @@ export default function DataTable(props: { data: Entry[] }) {
             pairedColumn: "MaxPlayers",
           },
         }),
-        columnHelper.accessor("geekitem.item.maxplayers", {
+        columnHelper.accessor("maxplayers", {
           id: "MaxPlayers",
           cell: (info) => {
             const maxplayers = Number(info.getValue());
@@ -224,7 +224,7 @@ export default function DataTable(props: { data: Entry[] }) {
         headerClasses: "text-center",
       },
       columns: [
-        columnHelper.accessor("geekitem.item.minplaytime", {
+        columnHelper.accessor("minplaytime", {
           id: "MinPlaytime",
           cell: (info) => {
             const minplaytime = Number(info.getValue());
@@ -242,7 +242,7 @@ export default function DataTable(props: { data: Entry[] }) {
             pairedColumn: "MaxPlaytime",
           },
         }),
-        columnHelper.accessor("geekitem.item.maxplaytime", {
+        columnHelper.accessor("maxplaytime", {
           id: "MaxPlaytime",
           cell: (info) => {
             const maxplaytime = Number(info.getValue());
@@ -261,11 +261,11 @@ export default function DataTable(props: { data: Entry[] }) {
         }),
       ],
     }),
-    columnHelper.accessor<(row: Entry) => string, string>((row) => row.geekitem.item.dynamicinfo.item.stats.avgweight, {
+    columnHelper.accessor("complexity", {
       id: "Complexity",
       cell: (info) => {
-        const avgweight = Number(info.getValue());
-        return avgweight > 0 ? avgweight.toFixed(2) : "–";
+        const complexity = Number(info.getValue());
+        return complexity > 0 ? complexity.toFixed(2) : "–";
       },
       header: () => <span>Complexity</span>,
       sortingFn: "basic",
@@ -285,7 +285,7 @@ export default function DataTable(props: { data: Entry[] }) {
       cell: (info) => info.getValue(),
       header: () => <span>Availability</span>,
       enableSorting: false,
-      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string) => {
+      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
         if (filterValue === "all") {
           return true;
         } else {
@@ -299,7 +299,7 @@ export default function DataTable(props: { data: Entry[] }) {
         filterList: BGGKeys.availability_statuses,
       },
     }),
-    columnHelper.accessor("geekitem.item.yearpublished", {
+    columnHelper.accessor("yearpublished", {
       id: "YearPublished",
       cell: (info) => Number(info.getValue()),
       header: () => <span>Year</span>,
@@ -313,7 +313,7 @@ export default function DataTable(props: { data: Entry[] }) {
         externalFilter: true,
       },
     }),
-    columnHelper.accessor("geekitem.item.subtypes", {
+    columnHelper.accessor("subtypes", {
       id: "SubTypes",
       cell: (info) => {
         const subtypes = info.getValue();
@@ -334,8 +334,8 @@ export default function DataTable(props: { data: Entry[] }) {
       },
       header: () => <span>SubTypes</span>,
       enableSorting: false,
-      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string[]) => {
-        const subtypes = row.original.geekitem.item.subtypes;
+      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string[]) => {
+        const subtypes = row.original.subtypes;
 
         return !subtypes
           .map((subtype) => {
@@ -353,13 +353,13 @@ export default function DataTable(props: { data: Entry[] }) {
         filterList: BGGKeys.excluded_subtypes,
       },
     }),
-    columnHelper.accessor("geekitem.item.links.boardgamefamily", {
+    columnHelper.accessor("digitized", {
       id: "BoardGameFamily",
       cell: (info) => {
-        const families = info.getValue();
-        if (families.length > 0) {
-          return families.map((family, idx) => {
-            const isLast = families.length - 1 === idx;
+        const digitized = info.getValue();
+        if (digitized.length > 0) {
+          return digitized.map((family, idx) => {
+            const isLast = digitized.length - 1 === idx;
             const familyList = (
               <Fragment key={family.objectid}>
                 {family.objectid}
@@ -374,11 +374,11 @@ export default function DataTable(props: { data: Entry[] }) {
       },
       header: () => <span>Digital Implementation(s)</span>,
       enableSorting: false,
-      filterFn: (row: Row<Entry>, _columnId: string, filterValue: string[]) => {
-        const families = row.original.geekitem.item.links.boardgamefamily;
-        const matches = families.map((family) => {
+      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string[]) => {
+        const digitizations = row.original.digitized;
+        const matches = digitizations.map((digitization) => {
           const filteredTypes = filterValue.map((filter) => {
-            const matchFound = filter === family.objectid;
+            const matchFound = filter === digitization.objectid;
             return matchFound;
           });
           return filteredTypes.includes(true);

@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@tanstack/react-table": "^8.19.3",
-    "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "graphql": "^16.9.0",

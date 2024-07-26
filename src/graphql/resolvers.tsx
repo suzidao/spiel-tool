@@ -38,6 +38,14 @@ const games = async (): Promise<Game[]> => {
   }
 };
 
+const game = async (args: { id: number }): Promise<Game> => {
+  try {
+    const result = await pool.query(`SELECT * FROM games WHERE gameid=${args.id}`);
+    return result.rows[0];
+  } catch (error: any) {
+    return error.message;
+  }
+};
 // Mutations
 
 const addUser = async (args: { input: UserInput }): Promise<User> => {
@@ -112,6 +120,7 @@ export const root = {
   users,
   user,
   games,
+  game,
   entries,
   entry,
 };

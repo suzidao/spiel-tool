@@ -188,6 +188,7 @@ const schema = buildSchema(`
 
   type Query {
     games: [Game]
+    game(id: Int): Game
     users: [User]
     user(id: Int): User
     entries: [Entry]

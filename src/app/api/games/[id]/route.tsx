@@ -1,10 +1,11 @@
 /** @format */
 
+import { editGame } from "@/utils/editData";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
-  let gameId = req.url?.split("/").pop();
+  let gameId = Number(req.url?.split("/").pop());
 
   const rawdata = await fetch("http://localhost:4000/graphql", {
     method: "POST",
@@ -14,89 +15,50 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
     cache: "no-store",
     body: JSON.stringify({
       query: `
-          query ($id: String) {
-            entry (id: $id) {
-              objectid
-              versionid
-              msrp
-              showprice
-              msrp_currency
-              showprice_currency
-              location
-              availability_status
-              pretty_availability_status
-              publishers {
-                item {
-                  objectid
-                  href
-                  primaryname {
-                    name
-                  }
-                }
-              }
-              reactions {
-                thumbs
-              }
-              version {
-                item {
-                  name
-                  objectid
-                  releasedate
-                  overridedate
-                  releasestatus
-                }
-              }
-              geekitem {
-                item {
-                  href
-                  subtypes
-                  yearpublished
-                  minplayers
-                  maxplayers
-                  minplaytime
-                  maxplaytime
-                  minage
-                  links {
-                    boardgamedesigner {
-                      objectid
-                      name
-                      canonical_link
-                    }
-                    boardgamefamily {
-                      objectid
-                      name
-                    }
-                    reimplements {
-                      objectid
-                      name
-                      canonical_link
-                    }
-                    expandsboardgame {
-                      objectid
-                      name
-                      canonical_link
-                    }
-                    boardgamemechanic {
-                      objectid
-                      name
-                    }
-                  }
-                  dynamicinfo {
-                    item {
-                      stats {
-                        avgweight
-                      }
-                    }
-                  }
-                }
-              }
+        query ($id: Int) {
+          game (id: $id) {
+            gameid
+            itemid
+            title
+            publisher
+            designers {
+              name
+              canonical_link
             }
+            minplayers
+            maxplayers
+            minplaytime
+            maxplaytime
+            complexity
+            contact
+            decision
+            negotiation
+            acquisition
+            comments {
+              commentid
+              userid
+              gameid
+              comment
+            }
+            rankings {
+              rankingid
+              userid
+              gameid
+              ranking
+            }
+            numhave
+            numneed
           }
-        `,
+        }
+      `,
       variables: { id: gameId },
     }),
   });
-  const data = await rawdata.json();
+  const { data } = await rawdata.json();
 
-  return NextResponse.json(data);
+  const game = data.game;
+
+  const editedGame = game.itemid === null ? (game as CombinedGame) : (editGame(game) as CombinedGame);
+
+  return NextResponse.json(editedGame);
 }

@@ -1,95 +1,11 @@
 /** @format */
 
-import axios from "axios";
 import Link from "next/link";
-import pubMeta from "../../data/spiel-preview-parents.json";
 import DataTable from "../components/DataTable";
 
 export default async function GamesPage() {
-  const games: Entry[] = await axios({
-    url: "http://localhost:4000/graphql",
-    method: "POST",
-    data: {
-      query: `
-        query {
-          entries {
-            objectid
-            versionid
-            msrp
-            showprice
-            location
-            availability_status
-            pretty_availability_status
-            publishers {
-              item {
-                objectid
-                href
-                primaryname {
-                  name
-                }
-              }
-            }
-            reactions {
-              thumbs
-            }
-            version {
-              item {
-                objectid
-                name
-                releasedate
-                overridedate
-                releasestatus
-              }
-            }
-            geekitem {
-              item {
-                href
-                subtypes
-                yearpublished
-                minplayers
-                maxplayers
-                minplaytime
-                maxplaytime
-                minage
-                links {
-                  boardgamedesigner {
-                    objectid
-                    name
-                    canonical_link
-                  }
-                  boardgamefamily {
-                    objectid
-                    name
-                  }
-                  boardgameversion {
-                    objectid
-                    name
-                  }
-                }
-                primaryname {
-                  nameid
-                  name
-                }
-                dynamicinfo {
-                  item {
-                    stats {
-                      avgweight
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    },
-  })
-    .then((result) => {
-      return result.data.data.entries;
-    })
-    .catch((error) => {
-      return error;
-    });
+  const rawdata = await fetch("http://localhost:3000/api/games", { cache: "no-store" });
+  const games = await rawdata.json();
 
   return (
     <div className="flex min-h-screen flex-col p-6 lg:p-24">

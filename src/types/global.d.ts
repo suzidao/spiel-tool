@@ -27,38 +27,40 @@ export declare global {
 
   type CombinedGame = {
     gameid: number;
-    title?: string;
-    publisher?: string;
-    designers?: GameLink[];
-    minplayers?: string;
-    maxplayers?: string;
-    minplaytime?: string;
-    maxplaytime?: string;
-    complexity?: string;
+    title: string;
+    publisher: string;
+    designers: GameLink[] | [];
+    minplayers: string;
+    maxplayers: string;
+    minplaytime: string;
+    maxplaytime: string;
+    complexity: string;
     contact?: string;
     decision?: Decision;
     negotiation?: Negotiation;
     acquisition?: Acquisition;
-    comments?: UserComment[];
-    rankings?: UserRanking[];
-    interest?: User[];
+    comments?: UserComment[] | [];
+    rankings?: UserRanking[] | [];
+    interest?: User[] | [];
     // fields from BGG Data
-    game_link?: string;
-    publisher_link?: string;
-    location?: string;
+    game_link: string;
+    publisher_link: string;
+    location: string;
     msrp?: number;
     showprice?: number;
     msrp_currency?: string;
     showprice_currency?: string;
     availability_status?: string;
     thumbs?: number;
-    subtypes?: string[];
+    subtypes: string[] | [];
     yearpublished?: string;
+    releasedate: string | undefined;
+    releasestatus: string | null;
     minage?: string;
-    mechanics?: GameLink[];
-    expands?: GameLink[];
-    reimplements?: GameLink[];
-    digitized?: GameLink[];
+    mechanics: GameMeta[] | [];
+    expands: GameLink[] | [];
+    reimplements: GameLink[] | [];
+    digitized: GameMeta[] | [];
   };
 
   type Game = {
@@ -188,13 +190,13 @@ export declare global {
   };
 
   type GameLink = {
-    objectid?: string;
+    objectid: string;
     name: string;
-    canonical_link?: string;
+    canonical_link: string;
   };
 
   type GameMeta = {
-    objectid?: string;
+    objectid: string;
     name: string;
   };
 
