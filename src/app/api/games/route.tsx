@@ -1,9 +1,9 @@
 /** @format */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { editGame } from "../../../utils/editData";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const rawDB = await fetch("http://localhost:4000/graphql", {
     method: "POST",
     headers: {

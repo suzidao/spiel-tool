@@ -1,9 +1,9 @@
 /** @format */
 
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextApiRequest) {
   let userId = req.url?.split("/").pop();
 
   const rawdata = await fetch("http://localhost:4000/graphql", {
