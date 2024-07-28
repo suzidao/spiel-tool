@@ -196,6 +196,7 @@ const schema = buildSchema(`
   }
 
   type Mutation {
+    addBGGGames: [Game]
     addUser(input: UserInput): User!
   }
 

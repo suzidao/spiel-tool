@@ -74,3 +74,22 @@ export async function getItemIds() {
 
   return newGames.map((game) => game.itemid);
 }
+
+export async function addBGGGames() {
+  const rawdata = await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+        mutation {
+          addBGGGames { gameid }
+        }
+      `,
+    }),
+  });
+  const data = await rawdata.json();
+
+  return data;
+}

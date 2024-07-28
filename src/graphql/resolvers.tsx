@@ -62,6 +62,21 @@ const addUser = async (args: { input: UserInput }): Promise<User> => {
   return user;
 };
 
+const addBGGGames = async (): Promise<Game[]> => {
+  const allGames = await games().then((games) => games);
+  const lastGameId = allGames[allGames.length - 1].gameid;
+  const allItemIds = allGames.map((game: Game) => game.itemid);
+  const lastItemId = allItemIds[allItemIds.length - 1];
+
+  const newGames = bgg_games.filter((game: Entry) => Number(game.itemid) > lastItemId!);
+
+  for (let i = 0; i < newGames.length; i++) {
+    await pool.query(`INSERT INTO games (gameid, itemid) VALUES (${lastGameId + 1 + i}, ${newGames[i].itemid})`);
+  }
+
+  return allGames;
+};
+
 // BGG data Query resolvers
 
 const editGameData = (game: Entry) => {
@@ -119,6 +134,7 @@ export const root = {
   addUser,
   users,
   user,
+  addBGGGames,
   games,
   game,
   entries,
