@@ -60,9 +60,13 @@ export default function DataTable(props: { data: CombinedGame[] }) {
             <Link href={`/games/${row.original.gameid}`} className="mr-2" scroll={false}>
               ℹ️
             </Link>
-            <Link href={`https://boardgamegeek.com${game.game_link}`} target="_blank">
-              {row.original.title}
-            </Link>
+            {game.game_link ? (
+              <Link href={game.game_link} target="_blank">
+                {row.original.title}
+              </Link>
+            ) : (
+              <>{row.original.title}</>
+            )}
           </Fragment>
         );
       },
@@ -81,10 +85,12 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       id: "Publisher",
       cell: ({ row }) => {
         const game = row.original;
-        return (
-          <Link key={game.publisher} href={`https://boardgamegeek.com${game.publisher_link}`} target="_blank">
+        return game.publisher_link ? (
+          <Link key={game.publisher} href={game.publisher_link} target="_blank">
             {game.publisher}
           </Link>
+        ) : (
+          <Fragment key={game.publisher}>{game.publisher}</Fragment>
         );
       },
       header: () => <span>Publisher</span>,
@@ -100,8 +106,9 @@ export default function DataTable(props: { data: CombinedGame[] }) {
     }),
     columnHelper.accessor("designers", {
       id: "Designers",
-      cell: (info) => {
-        const designers = info.getValue();
+      cell: ({ row }) => {
+        const game = row.original;
+        const designers = game.designers;
         if (!!designers && designers.length > 0) {
           return designers.map((designer, idx) => {
             const isLast = designers.length - 1 === idx;
@@ -113,7 +120,14 @@ export default function DataTable(props: { data: CombinedGame[] }) {
                 {!isLast && ", "}
               </Fragment>
             );
-            return designerLink;
+            return designer.canonical_link ? (
+              designerLink
+            ) : (
+              <Fragment key={designer && idx}>
+                {designer.name}
+                {!isLast && ", "}
+              </Fragment>
+            );
           });
         } else {
           return "–";
@@ -317,7 +331,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       id: "SubTypes",
       cell: (info) => {
         const subtypes = info.getValue();
-        if (subtypes.length > 0) {
+        if (subtypes && subtypes.length > 0) {
           return subtypes.map((subtype, idx) => {
             const isLast = subtypes.length - 1 === idx;
             const subtypeList = (
@@ -337,14 +351,16 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string[]) => {
         const subtypes = row.original.subtypes;
 
-        return !subtypes
-          .map((subtype) => {
-            const filteredTypes = filterValue.map((filter) => {
-              return filter === subtype;
-            });
-            return filteredTypes.includes(true);
-          })
-          .includes(true);
+        return subtypes
+          ? !subtypes
+              .map((subtype) => {
+                const filteredTypes = filterValue.map((filter) => {
+                  return filter === subtype;
+                });
+                return filteredTypes.includes(true);
+              })
+              .includes(true)
+          : true;
       },
       meta: {
         columnName: "Exclude Subtypes",
@@ -357,7 +373,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       id: "BoardGameFamily",
       cell: (info) => {
         const digitized = info.getValue();
-        if (digitized.length > 0) {
+        if (digitized && digitized.length > 0) {
           return digitized.map((family, idx) => {
             const isLast = digitized.length - 1 === idx;
             const familyList = (
@@ -376,13 +392,15 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       enableSorting: false,
       filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string[]) => {
         const digitizations = row.original.digitized;
-        const matches = digitizations.map((digitization) => {
-          const filteredTypes = filterValue.map((filter) => {
-            const matchFound = filter === digitization.objectid;
-            return matchFound;
-          });
-          return filteredTypes.includes(true);
-        });
+        const matches = digitizations
+          ? digitizations.map((digitization) => {
+              const filteredTypes = filterValue.map((filter) => {
+                const matchFound = filter === digitization.objectid;
+                return matchFound;
+              });
+              return filteredTypes.includes(true);
+            })
+          : [];
         if (filterValue.length === 0) {
           return true;
         } else {

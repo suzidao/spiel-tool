@@ -3,12 +3,13 @@
 import gamesData from "../data/spiel-preview-games.json";
 import pubMetaData from "../data/spiel-preview-parents.json";
 
-export function editGame(game: any) {
+export function editGame(game: any, isBGG: boolean | false) {
   const bggData = gamesData as Entry[];
   const pubMeta = pubMetaData as PublisherMeta[];
 
   const entry = bggData.find((entry: Entry) => entry.itemid === game.itemid?.toString());
-  if (!!entry) {
+
+  if (isBGG && !!entry) {
     const matchingMeta = pubMeta.find(
       (meta: PublisherMeta) => meta.objectid === entry.publishers[0].item.objectid.toString()
     );
@@ -73,6 +74,34 @@ export function editGame(game: any) {
     };
 
     return editedGame;
+  } else {
+    const parsedContacts = game.contacts ? JSON.parse(game.contacts) : [];
+    const formattedDesigners = game.designers
+      ? game.designers.map((designer: string) => {
+          return {
+            name: designer,
+          };
+        })
+      : [];
+
+    const editedGame: CombinedGame = {
+      gameid: game.gameid,
+      title: game.title,
+      publisher: game.publisher,
+      designers: formattedDesigners,
+      minplayers: game.minplayers,
+      maxplayers: game.maxplayers,
+      minplaytime: game.minplaytime,
+      maxplaytime: game.maxplaytime,
+      complexity: game.complexity,
+      contacts: parsedContacts,
+      location: "–",
+      availability_status: null,
+      releasedate: "–",
+      thumbs: 0,
+      yearpublished: "0",
+    };
+
+    return editedGame;
   }
-  return;
 }

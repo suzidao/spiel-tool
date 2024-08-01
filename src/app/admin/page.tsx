@@ -2,10 +2,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { scrapePreview, getNewGames, addBGGGames } from "../actions";
 import bggData from "../../data/spiel-preview-games.json";
 import parentData from "../../data/spiel-preview-parents.json";
-
-import { scrapePreview, getItemIds, addBGGGames } from "../actions";
 
 export default function AdminPage() {
   const [gameIds, setGameIds] = useState<string[]>([]);
@@ -14,7 +14,7 @@ export default function AdminPage() {
   const metaData = parentData as PublisherMeta[];
 
   useEffect(() => {
-    getItemIds().then((res) => setGameIds(res));
+    getNewGames().then((res) => setGameIds(res));
   }, []);
 
   return (
@@ -26,13 +26,14 @@ export default function AdminPage() {
         <button className="p-2 mx-2" onClick={() => addBGGGames()}>
           Add New Games
         </button>
+        <Link href="/games/add">Add New Game</Link>
       </div>
       <div>
-        <button className="p-2 mx-2" onClick={() => scrapePreview(66, "spiel-preview-games.json")}>
+        <button className="p-2 mx-2" onClick={() => scrapePreview(69, "spiel-preview-games.json")}>
           Scrape Preview Items
         </button>
         |
-        <button className="p-2 mx-2" onClick={() => scrapePreview(4, "spiel-preview-parents.json", true)}>
+        <button className="p-2 mx-2" onClick={() => scrapePreview(5, "spiel-preview-parents.json", true)}>
           Scrape Parent Items
         </button>
       </div>

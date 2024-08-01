@@ -6,23 +6,27 @@ export declare global {
     username: string;
     password: string;
     email?: string;
-    comments?: UserComment[];
-    rankings?: UserRanking[];
+    comments?: Comment[];
+    rankings?: Ranking[];
     interest?: Game[];
   };
 
-  type UserComment = {
+  type Comment = {
     commentid: number;
     userid: number;
     gameid: number;
     comment?: string;
+    created_at: string;
+    updated_at: string;
   };
 
-  type UserRanking = {
+  type Ranking = {
     rankingid: number;
     userid: number;
     gameid: number;
     ranking: number;
+    created_at: string;
+    updated_at: string;
   };
 
   type CombinedGame = {
@@ -35,32 +39,32 @@ export declare global {
     minplaytime: string;
     maxplaytime: string;
     complexity: string;
-    contact?: string;
+    contacts?: Contact[] | [];
     decision?: Decision;
     negotiation?: Negotiation;
     acquisition?: Acquisition;
-    comments?: UserComment[] | [];
-    rankings?: UserRanking[] | [];
-    interest?: User[] | [];
+    comments?: Comment[] | [];
+    rankings?: Ranking[] | [];
+    interest?: number[] | [];
     // fields from BGG Data
-    game_link: string;
-    publisher_link: string;
-    location: string;
-    msrp?: number;
-    showprice?: number;
-    msrp_currency?: string;
-    showprice_currency?: string;
-    availability_status?: string;
-    thumbs?: number;
-    subtypes: string[] | [];
-    yearpublished?: string;
-    releasedate: string | undefined;
-    releasestatus: string | null;
-    minage?: string;
-    mechanics: GameMeta[] | [];
-    expands: GameLink[] | [];
-    reimplements: GameLink[] | [];
-    digitized: GameMeta[] | [];
+    game_link?: string | null;
+    publisher_link?: string | null;
+    location?: string | null;
+    msrp?: number | null;
+    showprice?: number | null;
+    msrp_currency?: string | null;
+    showprice_currency?: string | null;
+    availability_status?: string | null;
+    thumbs?: number | null;
+    subtypes?: string[] | [];
+    yearpublished?: string | null;
+    releasedate?: string | undefined;
+    releasestatus?: string | null;
+    minage?: string | null;
+    mechanics?: GameMeta[] | [];
+    expands?: GameLink[] | [];
+    reimplements?: GameLink[] | [];
+    digitized?: GameMeta[] | [];
   };
 
   type Game = {
@@ -73,48 +77,44 @@ export declare global {
     minplaytime?: number;
     maxplaytime?: number;
     complexity?: number;
-    contact?: string;
+    contacts?: Contact[] | [];
     decision?: Decision;
     negotiation?: Negotiation;
     acquisition?: Acquisition;
-    comments?: UserComment[];
-    rankings?: UserRanking[];
-    interest?: User[];
+    numneed?: number;
+    numhave?: number;
+    numpromise?: number;
+    comments?: Comment[];
+    rankings?: Ranking[];
+    interest?: number[];
     itemid?: number;
   };
-
-  enum Decision {
-    none = "None",
-    rejected = "Rejected",
-    evaluate = "Evaluate",
-    alternate = "Alternate",
-    selected = "Selected",
-    soft_locked = "Soft-Locked",
-    placed = "Placed",
-  }
-
-  enum Negotiation {
-    none = "None",
-    emailed = "Emailed",
-    promised = "Promised",
-    deal = "Deal @ SPIEL",
-    rejected = "Rejected",
-  }
-
-  enum Acquisition {
-    none = "None",
-    acquired = "Acquired",
-    shipping = "Shipping",
-    pickup = "SPIEL Pickup",
-    dropoff = "PAX Dropoff",
-  }
 
   type UserInput = {
     username: string;
     password: string;
     email: string;
-    created_at: string;
-    updated_at: string;
+  };
+
+  type GameInput = {
+    title: string;
+    publisher?: string;
+    designers?: string[];
+    minplayers?: number;
+    maxplayers?: number;
+    minplaytime?: number;
+    maxplaytime?: number;
+    complexity?: number;
+    contacts?: ContactInput[];
+    numneed?: number;
+    numhave?: number;
+    numpromise?: number;
+    decision?: Decision;
+    negotiation?: Negotiation;
+    acquisition?: Acquisition;
+    comments?: CommentInput[];
+    rankings?: RankingInput[];
+    interest?: number[];
   };
 
   // BGG Data Fields
@@ -220,5 +220,29 @@ export declare global {
   type PublisherMeta = {
     objectid: string;
     location: string | null;
+  };
+
+  type Contact = {
+    name?: string;
+    email?: string;
+  };
+
+  type ContactInput = {
+    name?: string;
+    email?: string;
+  };
+
+  type CommentInput = {
+    commentid: number;
+    userid: number;
+    gameid: number;
+    comment?: string;
+  };
+
+  type RankingInput = {
+    rankingid: number;
+    userid: number;
+    gameid: number;
+    ranking: number;
   };
 }

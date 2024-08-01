@@ -17,19 +17,19 @@ export async function addNewUser(formData: FormData) {
 
 export async function scrapePreview(pageCount: number, filename: string, parent?: boolean) {
   const previewItems: Entry[] = [];
-
   for (let i = 1; i <= pageCount; i++) {
-    const response = await fetch(
-      `https://api.geekdo.com/api/geekpreview${!!parent && "parent"}items?nosession=1&pageid=${i}&previewid=68`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store",
-        },
-        cache: "no-store",
-      }
-    );
+    const url = `https://api.geekdo.com/api/geekpreview${
+      !!parent ? "parent" : ""
+    }items?nosession=1&pageid=${i}&previewid=68`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
+      cache: "no-store",
+    });
     const batchItems = await response.json();
     for (let i = 0; i < batchItems.length; i++) {
       previewItems.push(batchItems[i]);
@@ -46,7 +46,7 @@ export async function scrapePreview(pageCount: number, filename: string, parent?
   });
 }
 
-export async function getItemIds() {
+export async function getNewGames() {
   const rawdata = await fetch("http://localhost:4000/graphql", {
     method: "POST",
     headers: {
@@ -65,17 +65,19 @@ export async function getItemIds() {
   });
 
   const { data } = await rawdata.json();
-  const games = data.games;
-  const gamesData = bggData as Entry[];
+  const dbGames = data.games;
+  const bggGames = bggData as Entry[];
+  const gameIdList = dbGames ? dbGames.filter((dbGame: Game) => dbGame.itemid !== null && dbGame.itemid) : [];
 
-  const newGames = gamesData.filter((game: Entry) => {
-    return Number(game.itemid) > games[games.length - 1].itemid;
+  const newGames = bggGames.filter((bggGame: Entry) => {
+    return gameIdList.length === 0 ? bggGame : Number(bggGame.itemid) > gameIdList[gameIdList.length - 1].itemid;
   });
 
   return newGames.map((game) => game.itemid);
 }
 
 export async function addBGGGames() {
+  // all the action happens in the resolver because we need dbGames
   const rawdata = await fetch("http://localhost:4000/graphql", {
     method: "POST",
     headers: {
@@ -92,4 +94,13 @@ export async function addBGGGames() {
   const data = await rawdata.json();
 
   return data;
+}
+
+export async function addNewGame(formState: GameInput) {
+  await fetch("http://localhost:3000/api/games/add", {
+    method: "POST",
+    body: JSON.stringify(formState),
+  }).then((response) => {
+    return response.json();
+  });
 }

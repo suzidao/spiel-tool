@@ -34,11 +34,27 @@ export default function GameInfo(props: { game: CombinedGame }) {
   } = props.game;
 
   const players = () => {
-    return minplayers === maxplayers ? maxplayers : `${minplayers} – ${maxplayers}`;
+    switch (!!minplayers || !!maxplayers) {
+      case minplayers === maxplayers:
+      case !!minplayers && !maxplayers:
+        return minplayers;
+      case !minplayers && !!maxplayers:
+        return maxplayers;
+      default:
+        return `${minplayers} – ${maxplayers}`;
+    }
   };
 
   const playtime = () => {
-    return minplaytime === maxplaytime ? maxplaytime : `${minplaytime} – ${maxplaytime}`;
+    switch (!!minplaytime || !!maxplaytime) {
+      case minplaytime === maxplaytime:
+      case !!minplaytime && !maxplaytime:
+        return minplaytime;
+      case !minplaytime && !!maxplaytime:
+        return maxplaytime;
+      default:
+        return `${minplaytime} – ${maxplaytime}`;
+    }
   };
 
   const price = () => {
@@ -55,7 +71,7 @@ export default function GameInfo(props: { game: CombinedGame }) {
 
   return (
     <div className="min-w-[420px] max-w-[960px] mx-auto bg-white">
-      {reimplements.length > 0 && (
+      {!!reimplements && reimplements.length > 0 && (
         <div className="mb-4 text-xs uppercase">
           <span className="pr-1 font-semibold">Reimplements:</span>
           {reimplements.map((game, idx) => {
@@ -72,7 +88,7 @@ export default function GameInfo(props: { game: CombinedGame }) {
           })}
         </div>
       )}
-      {expands.length > 0 && (
+      {!!expands && expands.length > 0 && (
         <div className="mb-4 text-xs uppercase">
           <span className="pr-1 font-semibold">Expansion For:</span>
           {expands.map((game, idx) => {
@@ -113,44 +129,58 @@ export default function GameInfo(props: { game: CombinedGame }) {
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium whitespace-nowrap">Game Title:</span>
-        <Link href={game_link} target="_blank">
-          {title} ({yearpublished})
-        </Link>
+        {!!game_link ? (
+          <Link href={game_link} target="_blank">
+            {title} ({yearpublished})
+          </Link>
+        ) : (
+          title
+        )}
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium whitespace-nowrap">Publisher:</span>
-        <Link key={publisher} href={publisher_link} target="_blank">
-          {publisher}
-        </Link>
+        {!!publisher_link ? (
+          <Link key={publisher} href={publisher_link} target="_blank">
+            {publisher}
+          </Link>
+        ) : (
+          publisher
+        )}
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium whitespace-nowrap">Designer(s):</span>
-        {designers.map((designer, idx) => {
-          const isLast = designers.length - 1 === idx;
-          return (
-            <Fragment key={designer.objectid}>
-              <Link href={designer.canonical_link} target="_blank">
+        {!!designers &&
+          designers.map((designer, idx) => {
+            const isLast = designers.length - 1 === idx;
+            return designer.canonical_link ? (
+              <Fragment key={designer.objectid}>
+                <Link href={designer.canonical_link} target="_blank">
+                  {designer.name}
+                </Link>
+                {!isLast && ", "}
+              </Fragment>
+            ) : (
+              <Fragment key={designer.name}>
                 {designer.name}
-              </Link>
-              {!isLast && ", "}
-            </Fragment>
-          );
-        })}
+                {!isLast && ", "}
+              </Fragment>
+            );
+          })}
       </div>
       <div className="my-4 flex flex-row">
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Player Count:</span>
-          {players()} players
+          {!!minplayers || !!maxplayers ? `${players()} players` : "–"}
         </div>
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Playtime:</span>
-          {playtime()} minutes
+          {!!minplaytime || !!maxplaytime ? `${playtime()} minutes` : "–"}
         </div>
       </div>
       <div className="my-4 flex flex-row">
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Age:</span>
-          {!!minage && minage.length > 0 ? minage : "–"}+
+          {!!minage && minage.length > 0 ? `${minage}+` : "–"}
         </div>
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Complexity:</span>
@@ -180,39 +210,43 @@ export default function GameInfo(props: { game: CombinedGame }) {
         </div>
       </div>
       <div className="my-4 flex flex-row">
-        <div className="w-1/2">
-          <span className="pr-2 font-medium whitespace-nowrap">Mechanics:</span>
-          <ul className="ml-4 my-2">
-            {mechanics.map((mechanic) => {
-              return (
-                <li key={mechanic.objectid} className="my-1">
-                  {mechanic.name}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="w-1/2">
-          <span className="pr-2 font-medium whitespace-nowrap">Digital Implementations:</span>
-          <ul className="ml-4 my-2">
-            {digitized.map((digitization) => {
-              const keys = BGGKeys.digital_implementations.map((key) => key.objectid);
+        {mechanics && (
+          <div className="w-1/2">
+            <span className="pr-2 font-medium whitespace-nowrap">Mechanics:</span>
+            <ul className="ml-4 my-2">
+              {mechanics.map((mechanic) => {
+                return (
+                  <li key={mechanic.objectid} className="my-1">
+                    {mechanic.name}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+        {digitized && (
+          <div className="w-1/2">
+            <span className="pr-2 font-medium whitespace-nowrap">Digital Implementations:</span>
+            <ul className="ml-4 my-2">
+              {digitized.map((digitization) => {
+                const keys = BGGKeys.digital_implementations.map((key) => key.objectid);
 
-              if (keys.includes(digitization.objectid)) {
-                const platforms = BGGKeys.digital_implementations.filter((key) => {
-                  return key.objectid === digitization.objectid;
-                });
-                return platforms.map((platform) => {
-                  return (
-                    <li key={platform.objectid} className="my-1">
-                      {platform.name}
-                    </li>
-                  );
-                });
-              }
-            })}
-          </ul>
-        </div>
+                if (keys.includes(digitization.objectid)) {
+                  const platforms = BGGKeys.digital_implementations.filter((key) => {
+                    return key.objectid === digitization.objectid;
+                  });
+                  return platforms.map((platform) => {
+                    return (
+                      <li key={platform.objectid} className="my-1">
+                        {platform.name}
+                      </li>
+                    );
+                  });
+                }
+              })}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

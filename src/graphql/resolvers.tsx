@@ -46,6 +46,7 @@ const game = async (args: { id: number }): Promise<Game> => {
     return error.message;
   }
 };
+
 // Mutations
 
 const addUser = async (args: { input: UserInput }): Promise<User> => {
@@ -64,17 +65,95 @@ const addUser = async (args: { input: UserInput }): Promise<User> => {
 
 const addBGGGames = async (): Promise<Game[]> => {
   const allGames = await games().then((games) => games);
-  const lastGameId = allGames[allGames.length - 1].gameid;
-  const allItemIds = allGames.map((game: Game) => game.itemid);
-  const lastItemId = allItemIds[allItemIds.length - 1];
+  const lastGameId = allGames.length > 0 ? allGames[allGames.length - 1].gameid : 0;
+  const allItemIds = allGames.length > 0 ? allGames.map((game: Game) => game.itemid !== null) : [];
+  const lastItemId = allGames.length > 0 ? allItemIds[allItemIds.length - 1] : 0;
 
-  const newGames = bgg_games.filter((game: Entry) => Number(game.itemid) > lastItemId!);
+  const newGames = bgg_games.filter((game: Entry) => Number(game.itemid) > Number(lastItemId!));
 
-  for (let i = 0; i < newGames.length; i++) {
-    await pool.query(`INSERT INTO games (gameid, itemid) VALUES (${lastGameId + 1 + i}, ${newGames[i].itemid})`);
+  if (newGames) {
+    for (let i = 0; i < newGames.length; i++) {
+      await pool.query(`INSERT INTO games (gameid, itemid) VALUES (${lastGameId + 1 + i}, ${newGames[i].itemid})`);
+    }
   }
 
   return allGames;
+};
+
+const addGame = async (args: { input: GameInput }): Promise<Game> => {
+  const allGames = await games().then((games) => games);
+  const gameid = allGames.length + 1;
+
+  const {
+    title,
+    publisher,
+    designers,
+    minplayers,
+    maxplayers,
+    minplaytime,
+    maxplaytime,
+    complexity,
+    contacts,
+    decision,
+    negotiation,
+    acquisition,
+    comments,
+    rankings,
+    interest,
+    numhave,
+    numneed,
+    numpromise,
+  } = args.input;
+
+  const game = { gameid, ...args.input };
+  const query = `INSERT INTO games (
+      gameid,
+      title,
+      publisher,
+      designers,
+      minplayers,
+      maxplayers,
+      minplaytime,
+      maxplaytime,
+      complexity,
+      decision,
+      negotiation,
+      acquisition,
+      comments,
+      rankings,
+      numhave,
+      numneed,
+      numpromise,
+      interest,
+      contacts
+    ) VALUES (
+      ${gameid},
+      '${title}',
+      '${publisher}',
+      '{${designers}}',
+      ${minplayers},
+      ${maxplayers},
+      ${minplaytime},
+      ${maxplaytime},
+      ${complexity},
+      '${decision}',
+      '${negotiation}',
+      '${acquisition}',
+      '{${comments}}',
+      '{${rankings}}',
+      ${numhave},
+      ${numneed},
+      ${numpromise},
+      '{${interest}}',
+      '${contacts}'
+    )`;
+
+  await pool
+    .query(query)
+    .then((res) => console.log(`Added ${res.rows[0].title} to database`))
+    .catch((error) => console.error(error));
+
+  return game;
 };
 
 // BGG data Query resolvers
@@ -135,6 +214,7 @@ export const root = {
   users,
   user,
   addBGGGames,
+  addGame,
   games,
   game,
   entries,

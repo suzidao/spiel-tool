@@ -18,16 +18,13 @@ export async function GET() {
               itemid
               title
               publisher
-              designers {
-                name
-                canonical_link
-              }
+              designers
               minplayers
               maxplayers
               minplaytime
               maxplaytime
               complexity
-              contact
+              contacts
               decision
               negotiation
               acquisition
@@ -52,18 +49,14 @@ export async function GET() {
   });
 
   const { data } = await rawDB.json();
-  const games = data.games;
 
+  const games = data.games;
   const allGames: CombinedGame[] = [];
 
   games.map((game: any) => {
-    if (game.itemid === null) {
-      allGames.push(game as CombinedGame);
-    } else {
-      const editedGame = editGame(game);
+    const editedGame = game.itemid === null ? editGame(game, false) : editGame(game, true);
 
-      allGames.push(editedGame as CombinedGame);
-    }
+    allGames.push(editedGame as CombinedGame);
   });
 
   return NextResponse.json(allGames);

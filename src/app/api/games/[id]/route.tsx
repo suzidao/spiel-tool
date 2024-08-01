@@ -21,16 +21,13 @@ export async function GET(req: NextApiRequest) {
             itemid
             title
             publisher
-            designers {
-              name
-              canonical_link
-            }
+            designers
             minplayers
             maxplayers
             minplaytime
             maxplaytime
             complexity
-            contact
+            contacts
             decision
             negotiation
             acquisition
@@ -48,6 +45,7 @@ export async function GET(req: NextApiRequest) {
             }
             numhave
             numneed
+            numpromise
           }
         }
       `,
@@ -58,7 +56,8 @@ export async function GET(req: NextApiRequest) {
 
   const game = data.game;
 
-  const editedGame = game.itemid === null ? (game as CombinedGame) : (editGame(game) as CombinedGame);
+  const editedGame =
+    game.itemid === null ? (editGame(game, false) as CombinedGame) : (editGame(game, true) as CombinedGame);
 
   return NextResponse.json(editedGame);
 }

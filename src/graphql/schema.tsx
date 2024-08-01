@@ -31,13 +31,13 @@ const schema = buildSchema(`
     gameid: Int
     title: String
     publisher: String
-    designers: [GameLink]
-    minplayers: String
-    maxplayers: String
-    minplaytime: String
-    maxplaytime: String
+    designers: [String]
+    minplayers: Int
+    maxplayers: Int
+    minplaytime: Int
+    maxplaytime: Int
     complexity: Float
-    contact: String
+    contacts: String
     decision: Decision
     negotiation: Negotiation
     acquisition: Acquisition
@@ -45,6 +45,7 @@ const schema = buildSchema(`
     rankings: [Ranking]
     numhave: Int
     numneed: Int
+    numpromise: Int
     itemid: Int
   }
 
@@ -186,6 +187,42 @@ const schema = buildSchema(`
     email: String
   }
 
+  input GameInput {
+    title: String
+    publisher: String
+    designers: [String]
+    minplayers: Int
+    maxplayers: Int
+    minplaytime: Int
+    maxplaytime: Int
+    complexity: Float
+    contacts: String
+    decision: Decision
+    negotiation: Negotiation
+    acquisition: Acquisition
+    comments: [CommentInput]
+    rankings: [RankingInput]
+    interest: [Int]
+    numhave: Int
+    numneed: Int
+    numpromise: Int
+    itemid: Int
+  }
+
+  input CommentInput {
+    commentid: Int
+    userid: Int
+    gameid: Int
+    comment: String
+  }
+
+  input RankingInput {
+    rankingid: Int
+    userid: Int
+    gameid: Int
+    ranking: Int
+  }
+
   type Query {
     games: [Game]
     game(id: Int): Game
@@ -196,6 +233,7 @@ const schema = buildSchema(`
   }
 
   type Mutation {
+    addGame(input: GameInput): Game!
     addBGGGames: [Game]
     addUser(input: UserInput): User!
   }
