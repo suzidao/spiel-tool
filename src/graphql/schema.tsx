@@ -2,7 +2,7 @@
 
 import { buildSchema } from "graphql";
 
-const schema = buildSchema(`
+export const schema = buildSchema(`
   type User {
     userid: Int
     username: String
@@ -27,26 +27,52 @@ const schema = buildSchema(`
     ranking: Int
   }
 
+  type Publisher {
+    publisherid: Int
+    bggid: Int
+    name: String
+    country: String
+    contacts: String
+  }
+
+  type Designer {
+    designerid: Int
+    bggid: Int
+    name: String
+  }
+
   type Game {
     gameid: Int
+    bggid: Int
+    previewid: Int
     title: String
-    publisher: String
-    designers: [String]
+    publisher: Publisher
+    designers: [Designer]
     minplayers: Int
     maxplayers: Int
     minplaytime: Int
     maxplaytime: Int
     complexity: Float
-    contacts: String
+    minage: Int
+    yearpublished: Int
+    location: String
     decision: Decision
     negotiation: Negotiation
     acquisition: Acquisition
     comments: [Comment]
     rankings: [Ranking]
+    interest: [User]
     numhave: Int
     numneed: Int
     numpromise: Int
-    itemid: Int
+    eventid: Int
+    paxid: Int
+  }
+
+  type DesignerGame {
+    id: Int
+    gameid: Int
+    designerid: Int
   }
 
   enum Decision {
@@ -71,114 +97,9 @@ const schema = buildSchema(`
     none
     acquired
     shipping
+    purchased
     pickup
     dropoff
-  }
-
-  type Entry {
-    objectid: String!
-    itemid: String
-    versionid: String
-    geekitem: GeekItem!
-    version: Version
-    msrp: Float
-    showprice: Float
-    msrp_currency: String
-    showprice_currency: String
-    location: String
-    availability_status: String
-    pretty_availability_status: String
-    reactions: Reactions
-    publishers: [Publisher]
-  }
-  
-  type Reactions {
-    thumbs: Int
-  }
-
-  type GeekItem {
-    item: EntryGame
-  }
-
-  type EntryGame {
-    href: String
-    subtypes: [String]
-    yearpublished: String
-    minplayers: String
-    maxplayers: String
-    minplaytime: String
-    maxplaytime: String
-    minage: String
-    links: Links
-    primaryname: Name
-    dynamicinfo: Info
-  }
-
-  type Links {
-    boardgamedesigner: [GameLink]
-    boardgamepublisher: [Publisher]
-    reimplements: [GameLink]
-    boardgamefamily: [GameMeta]
-    boardgamecategory: [GameMeta]
-    boardgameversion: [GameMeta]
-    boardgamemechanic: [GameMeta]
-    expandsboardgame: [GameLink]
-  }
-
-  type Publisher {
-    item: PublisherItem
-  }
-
-  type PublisherItem {
-    objectid: String
-    href: String
-    primaryname: Name
-  }
-
-  type GameLink {
-    objectid: String
-    name: String
-    canonical_link: String
-  }
-
-  type GameMeta {
-    name: String
-    objectid: String
-  }
-
-  type Name {
-    name: String
-    nameid: String
-  }
-
-  type Info {
-    item: InfoItem
-  }
-  
-  type InfoItem {
-    stats: Stats
-  }
-  
-  type Stats {
-    avgweight: String
-  }
-
-  type PublisherMeta {
-    objectid: String
-    location: String
-  }
-
-  type Version {
-    item: VersionItem
-  }
-    
-  type VersionItem {
-    objectid: String
-    name: String
-    releasedate: String
-    overridedate: String
-    releasestatus: String
-    orderurl: String
   }
 
   input UserInput {
@@ -188,25 +109,24 @@ const schema = buildSchema(`
   }
 
   input GameInput {
+    bggid: Int
+    previewid: Int
     title: String
-    publisher: String
-    designers: [String]
+    publisherid: Int
+    designers: [Int]
     minplayers: Int
     maxplayers: Int
     minplaytime: Int
     maxplaytime: Int
     complexity: Float
-    contacts: String
+    minage: Int
+    yearpublished: Int
     decision: Decision
     negotiation: Negotiation
     acquisition: Acquisition
-    comments: [CommentInput]
-    rankings: [RankingInput]
-    interest: [Int]
     numhave: Int
     numneed: Int
     numpromise: Int
-    itemid: Int
   }
 
   input CommentInput {
@@ -223,21 +143,41 @@ const schema = buildSchema(`
     ranking: Int
   }
 
+  input PublisherInput {
+    bggid: Int
+    name: String
+    country: String
+    contacts: String
+  }
+
+  input DesignerInput {
+    bggid: Int
+    name: String
+  }
+
+  input DesignerGameInput {
+    id: Int
+    gameid: Int
+    designerid: Int
+  }
+
   type Query {
     games: [Game]
     game(id: Int): Game
+    publishers: [Publisher]
+    publisher(id: Int): Publisher
+    designers: [Designer]
+    designer(id: Int): Designer
     users: [User]
     user(id: Int): User
-    entries: [Entry]
-    entry(id: String): Entry
   }
 
   type Mutation {
     addGame(input: GameInput): Game!
-    addBGGGames: [Game]
+    addPublisher(input: PublisherInput): Publisher!
+    addDesigner(input: DesignerInput): Designer!
     addUser(input: UserInput): User!
+    addBGGData: [Game]
   }
 
 `);
-
-export default schema;

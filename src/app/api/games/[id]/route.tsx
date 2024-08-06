@@ -18,31 +18,29 @@ export async function GET(req: NextApiRequest) {
         query ($id: Int) {
           game (id: $id) {
             gameid
-            itemid
+            bggid
+            previewid
             title
-            publisher
-            designers
+            publisher {
+              bggid
+              name
+              country
+              contacts
+            }
+            designers {
+              bggid
+              name
+            }
             minplayers
             maxplayers
             minplaytime
             maxplaytime
             complexity
-            contacts
+            minage
             decision
             negotiation
             acquisition
-            comments {
-              commentid
-              userid
-              gameid
-              comment
-            }
-            rankings {
-              rankingid
-              userid
-              gameid
-              ranking
-            }
+            yearpublished
             numhave
             numneed
             numpromise
@@ -56,8 +54,7 @@ export async function GET(req: NextApiRequest) {
 
   const game = data.game;
 
-  const editedGame =
-    game.itemid === null ? (editGame(game, false) as CombinedGame) : (editGame(game, true) as CombinedGame);
+  const editedGame = editGame(game) as Game;
 
   return NextResponse.json(editedGame);
 }

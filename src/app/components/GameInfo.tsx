@@ -4,17 +4,16 @@ import Link from "next/link";
 import { Fragment } from "react";
 import BGGKeys from "../../data/bgg-keys.json";
 
-export default function GameInfo(props: { game: CombinedGame }) {
+export default function GameInfo(props: { game: Game }) {
   const {
+    bggid,
     title,
     publisher,
-    publisher_link,
     designers,
     thumbs,
     location,
     releasedate,
     releasestatus,
-    game_link,
     minplayers,
     maxplayers,
     minplaytime,
@@ -79,7 +78,11 @@ export default function GameInfo(props: { game: CombinedGame }) {
 
             return (
               <Fragment key={game.objectid}>
-                <Link href={game.canonical_link} target="_blank" className="ml-1 tracking-wide">
+                <Link
+                  href={`https://boardgamegeek.com/boardgame/${game.objectid}`}
+                  target="_blank"
+                  className="ml-1 tracking-wide"
+                >
                   {game.name}
                 </Link>
                 {!isLast && ", "}
@@ -96,7 +99,11 @@ export default function GameInfo(props: { game: CombinedGame }) {
 
             return (
               <Fragment key={game.objectid}>
-                <Link href={game.canonical_link} target="_blank" className="ml-1 tracking-wide">
+                <Link
+                  href={`https://boardgamegeek.com/boardgame/${game.objectid}`}
+                  target="_blank"
+                  className="ml-1 tracking-wide"
+                >
                   {game.name}
                 </Link>
                 {!isLast && ", "}
@@ -129,8 +136,8 @@ export default function GameInfo(props: { game: CombinedGame }) {
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium whitespace-nowrap">Game Title:</span>
-        {!!game_link ? (
-          <Link href={game_link} target="_blank">
+        {!!bggid ? (
+          <Link href={`https://boardgamegeek.com/boardgame/${bggid}`} target="_blank">
             {title} ({yearpublished})
           </Link>
         ) : (
@@ -139,9 +146,13 @@ export default function GameInfo(props: { game: CombinedGame }) {
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium whitespace-nowrap">Publisher:</span>
-        {!!publisher_link ? (
-          <Link key={publisher} href={publisher_link} target="_blank">
-            {publisher}
+        {!!publisher ? (
+          <Link
+            key={publisher.publisherid}
+            href={`https://boardgamegeek.com/publisher/${publisher.publisherid}`}
+            target="_blank"
+          >
+            {publisher.name}
           </Link>
         ) : (
           publisher
@@ -152,9 +163,9 @@ export default function GameInfo(props: { game: CombinedGame }) {
         {!!designers &&
           designers.map((designer, idx) => {
             const isLast = designers.length - 1 === idx;
-            return designer.canonical_link ? (
-              <Fragment key={designer.objectid}>
-                <Link href={designer.canonical_link} target="_blank">
+            return designer.bggid ? (
+              <Fragment key={designer.bggid}>
+                <Link href={`https://boardgamegeek.com/boardgamedesigner/${designer.designerid}`} target="_blank">
                   {designer.name}
                 </Link>
                 {!isLast && ", "}
@@ -180,7 +191,7 @@ export default function GameInfo(props: { game: CombinedGame }) {
       <div className="my-4 flex flex-row">
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Age:</span>
-          {!!minage && minage.length > 0 ? `${minage}+` : "–"}
+          {!!minage && minage > 0 ? `${minage}+` : "–"}
         </div>
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Complexity:</span>

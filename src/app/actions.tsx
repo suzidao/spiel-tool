@@ -16,7 +16,7 @@ export async function addNewUser(formData: FormData) {
 }
 
 export async function scrapePreview(pageCount: number, filename: string, parent?: boolean) {
-  const previewItems: Entry[] = [];
+  const previewItems: ImportedData[] = [];
   for (let i = 1; i <= pageCount; i++) {
     const url = `https://api.geekdo.com/api/geekpreview${
       !!parent ? "parent" : ""
@@ -57,7 +57,7 @@ export async function getNewGames() {
       query: `
         query {
           games {
-            itemid
+            previewid
           }
         }
       `,
@@ -65,18 +65,19 @@ export async function getNewGames() {
   });
 
   const { data } = await rawdata.json();
-  const dbGames = data.games;
-  const bggGames = bggData as Entry[];
-  const gameIdList = dbGames ? dbGames.filter((dbGame: Game) => dbGame.itemid !== null && dbGame.itemid) : [];
+  const dbGames = data ? data.games : [];
 
-  const newGames = bggGames.filter((bggGame: Entry) => {
-    return gameIdList.length === 0 ? bggGame : Number(bggGame.itemid) > gameIdList[gameIdList.length - 1].itemid;
+  const bggGames = bggData as ImportedData[];
+  const gameIdList = dbGames ? dbGames.filter((dbGame: Game) => dbGame.previewid !== null && dbGame.previewid) : [];
+
+  const newGames = bggGames.filter((bggGame: ImportedData) => {
+    return gameIdList.length === 0 ? bggGame : Number(bggGame.itemid) > gameIdList[gameIdList.length - 1].previewid;
   });
 
   return newGames.map((game) => game.itemid);
 }
 
-export async function addBGGGames() {
+export async function addBGGData() {
   // all the action happens in the resolver because we need dbGames
   const rawdata = await fetch("http://localhost:4000/graphql", {
     method: "POST",
@@ -86,7 +87,7 @@ export async function addBGGGames() {
     body: JSON.stringify({
       query: `
         mutation {
-          addBGGGames { gameid }
+          addBGGData { gameid }
         }
       `,
     }),

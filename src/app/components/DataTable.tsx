@@ -19,7 +19,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
     columnName?: string;
@@ -31,12 +31,12 @@ declare module "@tanstack/react-table" {
     filterMax?: number;
     externalFilter?: boolean;
     filterList?: { objectid: string; name: string }[];
-    pairedColumn?: string;
+    pairedColumns?: string[];
     hasPair?: boolean;
   }
 }
 
-export default function DataTable(props: { data: CombinedGame[] }) {
+export default function DataTable(props: { data: Game[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: "AvailabilityStatus", value: "all" }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -44,11 +44,17 @@ export default function DataTable(props: { data: CombinedGame[] }) {
     SubTypes: false,
     BoardGameFamily: false,
     AvailabilityStatus: false,
+    MinPlayers: false,
+    MaxPlayers: false,
+    MinPlaytime: false,
+    MaxPlaytime: false,
+    Complexity: false,
+    Location: false,
   });
 
   const data = props.data;
 
-  const columnHelper = createColumnHelper<CombinedGame>();
+  const columnHelper = createColumnHelper<Game>();
 
   const columns = [
     columnHelper.accessor("title", {
@@ -57,15 +63,15 @@ export default function DataTable(props: { data: CombinedGame[] }) {
         const game = row.original;
         return (
           <Fragment key={game.gameid}>
-            <Link href={`/games/${row.original.gameid}`} className="mr-2" scroll={false}>
+            <Link href={`/games/${game.gameid}`} className="mr-2" scroll={false}>
               ℹ️
             </Link>
-            {game.game_link ? (
-              <Link href={game.game_link} target="_blank">
-                {row.original.title}
+            {game.bggid ? (
+              <Link href={`https://boardgamegeek.com/boardgame/${game.bggid}`} target="_blank">
+                {game.title}
               </Link>
             ) : (
-              <>{row.original.title}</>
+              <>{game.title}</>
             )}
           </Fragment>
         );
@@ -73,7 +79,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       header: () => <span>Game Title</span>,
       sortingFn: "text",
       enableHiding: false,
-      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
+      filterFn: (row: Row<Game>, _columnId: string, filterValue: string) => {
         return row.original
           .title!.normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
@@ -85,19 +91,23 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       id: "Publisher",
       cell: ({ row }) => {
         const game = row.original;
-        return game.publisher_link ? (
-          <Link key={game.publisher} href={game.publisher_link} target="_blank">
-            {game.publisher}
+        return game.publisher.bggid ? (
+          <Link
+            key={game.publisher.publisherid}
+            href={`https://boardgamegeek.com/publisher/${game.publisher.bggid}`}
+            target="_blank"
+          >
+            {game.publisher.name}
           </Link>
         ) : (
-          <Fragment key={game.publisher}>{game.publisher}</Fragment>
+          <Fragment key={game.publisher.publisherid}>{game.publisher.name}</Fragment>
         );
       },
       header: () => <span>Publisher</span>,
       sortingFn: "text",
       enableHiding: false,
-      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
-        return row.original.publisher
+      filterFn: (row: Row<Game>, _columnId: string, filterValue: string) => {
+        return row.original.publisher.name
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
@@ -112,18 +122,16 @@ export default function DataTable(props: { data: CombinedGame[] }) {
         if (!!designers && designers.length > 0) {
           return designers.map((designer, idx) => {
             const isLast = designers.length - 1 === idx;
-            const designerLink = (
-              <Fragment key={designer.objectid}>
-                <Link href={designer.canonical_link!} target="_blank">
+
+            return designer.bggid ? (
+              <Fragment key={`${row.index}-${designer.designerid}-${game.gameid}`}>
+                <Link href={`https://boardgamegeek.com/boardgamedesigner/${designer.bggid}`} target="_blank">
                   {designer.name}
                 </Link>
                 {!isLast && ", "}
               </Fragment>
-            );
-            return designer.canonical_link ? (
-              designerLink
             ) : (
-              <Fragment key={designer && idx}>
+              <Fragment key={`${row.index}-${designer.designerid}-${game.gameid}`}>
                 {designer.name}
                 {!isLast && ", "}
               </Fragment>
@@ -135,7 +143,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       },
       header: () => <span>Designer(s)</span>,
       enableSorting: false,
-      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
+      filterFn: (row: Row<Game>, _columnId: string, filterValue: string) => {
         const designers = row.original.designers;
         return designers
           .map((designer) => {
@@ -170,7 +178,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       enableColumnFilter: false,
       meta: {
         columnName: "👍",
-        headerClasses: "align-bottom pb-4 text-center",
+        headerClasses: "align-bottom pb-4 text-center text-xl",
         classes: "text-center min-w-12",
       },
     }),
@@ -184,6 +192,64 @@ export default function DataTable(props: { data: CombinedGame[] }) {
         headerClasses: "align-bottom pb-4",
         classes: "whitespace-nowrap",
       },
+    }),
+    columnHelper.group({
+      id: "InterestStats",
+      header: () => <span>Interest Stats</span>,
+      meta: {
+        columnName: "Interest Stats",
+        headerClasses: "text-center",
+      },
+      columns: [
+        columnHelper.accessor("musthave_stats", {
+          id: "MustHaveStats",
+          cell: (info) => {
+            const statsNum = info.getValue();
+            return statsNum > 0 ? statsNum : "–";
+          },
+          header: () => <span>😍</span>,
+          sortDescFirst: true,
+          enableColumnFilter: false,
+          meta: {
+            columnName: "Must Have",
+            headerClasses: "text-center font-normal text-xl",
+            classes: "text-center",
+            hasPair: true,
+          },
+        }),
+        columnHelper.accessor("interested_stats", {
+          id: "InterestedStats",
+          cell: (info) => {
+            const statsNum = info.getValue();
+            return statsNum > 0 ? statsNum : "–";
+          },
+          header: () => <span>😗</span>,
+          sortDescFirst: true,
+          enableColumnFilter: false,
+          meta: {
+            columnName: "Interested",
+            headerClasses: "text-center font-normal text-xl",
+            classes: "text-center",
+            hasPair: true,
+          },
+        }),
+        columnHelper.accessor("undecided_stats", {
+          id: "UndecidedStats",
+          cell: (info) => {
+            const statsNum = info.getValue();
+            return statsNum > 0 ? statsNum : "–";
+          },
+          header: () => <span>🤔</span>,
+          sortDescFirst: true,
+          enableColumnFilter: false,
+          meta: {
+            columnName: "Undecided",
+            headerClasses: "text-center font-normal text-xl",
+            classes: "text-center",
+            pairedColumns: ["InterestedStats", "MustHaveStats"],
+          },
+        }),
+      ],
     }),
     columnHelper.group({
       id: "PlayerCount",
@@ -208,7 +274,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
             classes: "text-center",
             filterClasses: "w-12",
             filterVariant: "min",
-            pairedColumn: "MaxPlayers",
+            pairedColumns: ["MaxPlayers"],
           },
         }),
         columnHelper.accessor("maxplayers", {
@@ -253,7 +319,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
             classes: "text-center",
             filterVariant: "min",
             filterClasses: "w-12",
-            pairedColumn: "MaxPlaytime",
+            pairedColumns: ["MaxPlaytime"],
           },
         }),
         columnHelper.accessor("maxplaytime", {
@@ -299,7 +365,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       cell: (info) => info.getValue(),
       header: () => <span>Availability</span>,
       enableSorting: false,
-      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string) => {
+      filterFn: (row: Row<Game>, _columnId: string, filterValue: string) => {
         if (filterValue === "all") {
           return true;
         } else {
@@ -348,7 +414,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       },
       header: () => <span>SubTypes</span>,
       enableSorting: false,
-      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string[]) => {
+      filterFn: (row: Row<Game>, _columnId: string, filterValue: string[]) => {
         const subtypes = row.original.subtypes;
 
         return subtypes
@@ -377,7 +443,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
           return digitized.map((family, idx) => {
             const isLast = digitized.length - 1 === idx;
             const familyList = (
-              <Fragment key={family.objectid}>
+              <Fragment key={family.objectid + idx}>
                 {family.objectid}
                 {!isLast && ", "}
               </Fragment>
@@ -390,7 +456,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
       },
       header: () => <span>Digital Implementation(s)</span>,
       enableSorting: false,
-      filterFn: (row: Row<CombinedGame>, _columnId: string, filterValue: string[]) => {
+      filterFn: (row: Row<Game>, _columnId: string, filterValue: string[]) => {
         const digitizations = row.original.digitized;
         const matches = digitizations
           ? digitizations.map((digitization) => {
@@ -444,7 +510,7 @@ export default function DataTable(props: { data: CombinedGame[] }) {
         <div className="flex flex-wrap gap-2">
           <div className="font-semibold">Hide/Show Columns:</div>
           {table.getAllLeafColumns().map((column) => {
-            const pairedColumn = column.columnDef.meta?.pairedColumn;
+            const pairedColumns = column.columnDef.meta?.pairedColumns;
             const hasPair = column.columnDef.meta?.hasPair;
 
             return (
@@ -457,12 +523,17 @@ export default function DataTable(props: { data: CombinedGame[] }) {
                         type: "checkbox",
                         checked: column.getIsVisible(),
                         onChange: () => {
-                          if (pairedColumn) table.getColumn(pairedColumn!)?.toggleVisibility();
+                          if (pairedColumns) {
+                            for (let i = 0; i < pairedColumns.length; i++) {
+                              table.getColumn(pairedColumns[i])?.toggleVisibility();
+                            }
+                          }
+
                           column.toggleVisibility();
                         },
                       }}
                     />{" "}
-                    {pairedColumn ? column.parent?.columnDef.meta?.columnName : column.columnDef.meta?.columnName}
+                    {pairedColumns ? column.parent?.columnDef.meta?.columnName : column.columnDef.meta?.columnName}
                   </label>
                 </div>
               ))
@@ -512,10 +583,12 @@ export default function DataTable(props: { data: CombinedGame[] }) {
                         }
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {{
-                          asc: " ↑",
-                          desc: " ↓",
-                        }[header.column.getIsSorted() as string] ?? null}
+                        <span className="text-sm font-medium">
+                          {{
+                            asc: " ↑",
+                            desc: " ↓",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </span>
                       </div>
                       {header.column.getCanFilter() ? (
                         <div

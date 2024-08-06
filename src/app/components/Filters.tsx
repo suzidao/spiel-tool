@@ -107,7 +107,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
           column.columnDef.meta?.filterList.map((filterItem, idx) => (
             <label
               key={filterItem.objectid}
-              className="flex items-center gap-2 py-1 pr-2 whitespace-nowrap first-of-type:font-semibold"
+              className="flex items-center gap-2 py-1 pr-1 whitespace-nowrap first-of-type:font-semibold"
             >
               <input
                 type="radio"

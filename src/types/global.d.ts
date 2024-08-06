@@ -11,6 +11,12 @@ export declare global {
     interest?: Game[];
   };
 
+  type UserInput = {
+    username: string;
+    password: string;
+    email: string;
+  };
+
   type Comment = {
     commentid: number;
     userid: number;
@@ -18,6 +24,13 @@ export declare global {
     comment?: string;
     created_at: string;
     updated_at: string;
+  };
+
+  type CommentInput = {
+    commentid: number;
+    userid: number;
+    gameid: number;
+    comment?: string;
   };
 
   type Ranking = {
@@ -29,170 +42,188 @@ export declare global {
     updated_at: string;
   };
 
-  type CombinedGame = {
+  type RankingInput = {
+    rankingid: number;
+    userid: number;
     gameid: number;
-    title: string;
-    publisher: string;
-    designers: GameLink[] | [];
-    minplayers: string;
-    maxplayers: string;
-    minplaytime: string;
-    maxplaytime: string;
-    complexity: string;
-    contacts?: Contact[] | [];
-    decision?: Decision;
-    negotiation?: Negotiation;
-    acquisition?: Acquisition;
-    comments?: Comment[] | [];
-    rankings?: Ranking[] | [];
-    interest?: number[] | [];
-    // fields from BGG Data
-    game_link?: string | null;
-    publisher_link?: string | null;
-    location?: string | null;
-    msrp?: number | null;
-    showprice?: number | null;
-    msrp_currency?: string | null;
-    showprice_currency?: string | null;
-    availability_status?: string | null;
-    thumbs?: number | null;
-    subtypes?: string[] | [];
-    yearpublished?: string | null;
-    releasedate?: string | undefined;
-    releasestatus?: string | null;
-    minage?: string | null;
-    mechanics?: GameMeta[] | [];
-    expands?: GameLink[] | [];
-    reimplements?: GameLink[] | [];
-    digitized?: GameMeta[] | [];
+    ranking: number;
   };
 
-  type Game = {
-    gameid: number;
-    title?: string;
-    publisher?: string;
-    designers?: string[];
-    minplayers?: number;
-    maxplayers?: number;
-    minplaytime?: number;
-    maxplaytime?: number;
-    complexity?: number;
-    contacts?: Contact[] | [];
-    decision?: Decision;
-    negotiation?: Negotiation;
-    acquisition?: Acquisition;
-    numneed?: number;
-    numhave?: number;
-    numpromise?: number;
-    comments?: Comment[];
-    rankings?: Ranking[];
-    interest?: number[];
-    itemid?: number;
+  type Publisher = {
+    publisherid: number;
+    bggid: number;
+    name: string;
+    country: string | null;
+    contacts: string | null;
   };
 
-  type UserInput = {
-    username: string;
-    password: string;
+  type PublisherInput = {
+    bggid: number;
+    name: string;
+    country: string | null;
+    contacts: string | null;
+  };
+
+  type Contact = {
+    name: string;
     email: string;
   };
 
-  type GameInput = {
-    title: string;
-    publisher?: string;
-    designers?: string[];
-    minplayers?: number;
-    maxplayers?: number;
-    minplaytime?: number;
-    maxplaytime?: number;
-    complexity?: number;
-    contacts?: ContactInput[];
-    numneed?: number;
-    numhave?: number;
-    numpromise?: number;
-    decision?: Decision;
-    negotiation?: Negotiation;
-    acquisition?: Acquisition;
-    comments?: CommentInput[];
-    rankings?: RankingInput[];
-    interest?: number[];
+  type Designer = {
+    designerid: number;
+    bggid: number;
+    name: string;
   };
 
-  // BGG Data Fields
-  type Entry = {
-    itemid: string;
-    objectid: string;
-    versionid: string;
-    geekitem: GeekItem;
+  type DesignerInput = {
+    bggid: number;
+    name: string;
+  };
+
+  type BaseGameData = {
+    gameid: number;
+    title: string;
+    publisher: Publisher;
+    designers: Designer[];
+    minplayers: number;
+    maxplayers: number;
+    minplaytime: number;
+    maxplaytime: number;
+    complexity: number;
+    minage: number;
+    location: string | null;
+    yearpublished: number | null;
+  };
+
+  interface DatabaseData extends BaseGameData {
+    bggid?: number;
+    readonly previewid?: number;
+    decision: Decision;
+    negotiation: Negotiation;
+    acquisition: Acquisition;
+    numneed: number;
+    numhave: number;
+    numpromise: number;
+    // comments?: number[] | [];
+    // rankings?: number[] | [];
+    // interest?: number[] | [];
+  }
+
+  interface BGGData extends BaseGameData {
     msrp: number;
     showprice: number;
     msrp_currency: string;
     showprice_currency: string;
-    location: string | null;
-    availability_status: string;
-    pretty_availability_status: string;
-    reactions: Reactions;
-    version: Version;
-    publishers: Publisher[];
-  };
-
-  type Reactions = {
+    availability_status: string | null;
     thumbs: number;
-  };
-
-  type GeekItem = {
-    item: EntryGame;
-  };
-
-  type Version = {
-    item: VersionItem;
-  };
-
-  type VersionItem = {
-    objectid: string;
-    name: string;
-    releasedate: string | undefined;
-    overridedate: string;
-    releasestatus: string | null;
-  };
-
-  type EntryGame = {
-    href: string;
+    releasedate: string;
+    releasestatus: string;
+    musthave_stats: number;
+    interested_stats: number;
+    undecided_stats: number;
     subtypes: string[];
-    yearpublished: string;
-    minplayers: string;
-    maxplayers: string;
-    minplaytime: string;
-    maxplaytime: string;
-    minage: string;
-    links: Links;
-    primaryname: Name;
-    dynamicinfo: Info;
+    reimplements: GameMeta[];
+    digitized: GameMeta[];
+    mechanics: GameMeta[];
+    expands: GameMeta[];
+  }
+
+  type Game = DatabaseData & BGGData;
+
+  type GameInput = {
+    bggid: number;
+    previewid?: number;
+    title: string;
+    publisher: number;
+    minplayers: number;
+    maxplayers: number;
+    minplaytime: number;
+    maxplaytime: number;
+    complexity: number;
+    minage: number;
+    location: string;
+    yearpublished: number;
+    // decision: Decision;
+    // negotiation: Negotiation;
+    // acquisition: Acquisition;
+    // numneed: number;
+    // numhave: number;
+    // numpromise: number;
   };
 
-  type Links = {
-    boardgamedesigner: GameLink[];
-    reimplements: GameLink[];
-    boardgamefamily: GameMeta[];
-    boardgamemechanic: GameMeta[];
-    boardgamecategory: GameMeta[];
-    boardgameversion: GameMeta[];
-    expandsboardgame: GameLink[];
+  type DesignerGame = {
+    id: Int;
+    gameid: Int;
+    designerid: Int;
   };
 
-  type Publisher = {
-    item: {
-      objectid: string;
-      href: string;
-      primaryname: {
+  type DesignerGameInput = {
+    gameid: Int;
+    designerid: Int;
+  };
+
+  type ImportedData = {
+    objectid: string;
+    itemid: string;
+    msrp: number;
+    showprice: number;
+    msrp_currency: string;
+    showprice_currency: string;
+    location: string;
+    availability_status: string;
+    reactions: {
+      thumbs: number;
+    };
+    version: {
+      item: {
+        objectid: number;
         name: string;
+        releasedate: string;
+        overridedate: string;
+        releasestatus: string;
       };
     };
-  };
-
-  type GameLink = {
-    objectid: string;
-    name: string;
-    canonical_link: string;
+    publishers: {
+      item: {
+        objectid: number;
+        primaryname: {
+          name: string;
+        };
+      };
+    }[];
+    stats: {
+      musthave: number;
+      interested: number;
+      undecided: number;
+    };
+    geekitem: {
+      item: {
+        subtypes: string[];
+        yearpublished: string;
+        minplayers: string;
+        maxplayers: string;
+        minplaytime: string;
+        maxplaytime: string;
+        minage: string;
+        links: {
+          boardgamedesigner: GameMeta[];
+          reimplements: GameMeta[];
+          boardgamefamily: GameMeta[];
+          boardgamemechanic: GameMeta[];
+          expandsboardgame: GameMeta[];
+        };
+        primaryname: {
+          name: string;
+        };
+        dynamicinfo: {
+          item: {
+            stats: {
+              avgweight: string;
+            };
+          };
+        };
+      };
+    };
   };
 
   type GameMeta = {
@@ -200,49 +231,8 @@ export declare global {
     name: string;
   };
 
-  type Name = {
-    name: string;
-    nameid: string;
-  };
-
-  type Info = {
-    item: InfoItem;
-  };
-
-  type InfoItem = {
-    stats: Stats;
-  };
-
-  type Stats = {
-    avgweight: string;
-  };
-
   type PublisherMeta = {
     objectid: string;
-    location: string | null;
-  };
-
-  type Contact = {
-    name?: string;
-    email?: string;
-  };
-
-  type ContactInput = {
-    name?: string;
-    email?: string;
-  };
-
-  type CommentInput = {
-    commentid: number;
-    userid: number;
-    gameid: number;
-    comment?: string;
-  };
-
-  type RankingInput = {
-    rankingid: number;
-    userid: number;
-    gameid: number;
-    ranking: number;
+    location: string;
   };
 }

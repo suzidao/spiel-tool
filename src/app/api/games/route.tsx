@@ -15,33 +15,30 @@ export async function GET() {
           query {
             games {
               gameid
-              itemid
+              bggid
+              previewid
               title
-              publisher
-              designers
+              publisher {
+                publisherid
+                bggid
+                name
+              }
+              designers {
+                designerid
+                bggid
+                name
+              }
               minplayers
               maxplayers
               minplaytime
               maxplaytime
               complexity
-              contacts
+              minage
+              location
+              yearpublished
               decision
               negotiation
               acquisition
-              comments {
-                commentid
-                userid
-                gameid
-                comment
-              }
-              rankings {
-                rankingid
-                userid
-                gameid
-                ranking
-              }
-              numhave
-              numneed
             }
           }
         `,
@@ -49,14 +46,14 @@ export async function GET() {
   });
 
   const { data } = await rawDB.json();
-
   const games = data.games;
-  const allGames: CombinedGame[] = [];
 
-  games.map((game: any) => {
-    const editedGame = game.itemid === null ? editGame(game, false) : editGame(game, true);
+  let allGames: Game[] = [];
 
-    allGames.push(editedGame as CombinedGame);
+  games.map((game: Game) => {
+    const editedGame = game.previewid === null ? game : editGame(game);
+
+    allGames.push(editedGame as Game);
   });
 
   return NextResponse.json(allGames);

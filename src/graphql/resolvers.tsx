@@ -1,222 +1,186 @@
 /** @format */
+import {
+  getUsers,
+  getPublishers,
+  getDesigners,
+  getGames,
+  getUser,
+  getPublisher,
+  getDesigner,
+  getGame,
+  getGameDesigners,
+  createDesigner,
+  createDesignerGame,
+  createGame,
+  createPublisher,
+  createUser,
+} from "./queries";
 
-import { pool } from "../data/db";
 import gamesData from "../data/spiel-preview-games.json";
-import pubMetaData from "../data/spiel-preview-parents.json";
+import type * as Global from "../types/global.d.ts";
+import { editLocation } from "../utils/editData";
 
-import type Entry from "../types/global.d.ts";
+const bggGames = gamesData as unknown as ImportedData[];
 
-const bgg_games = gamesData as unknown as Entry[];
-const pubMeta = pubMetaData as unknown as PublisherMeta[];
+export const resolvers = {
+  Query: {
+    games: () => getGames(),
+    game: (_root: any, args: { id: number }) => getGame(args.id),
+    publishers: () => getPublishers(),
+    publisher: (_root: any, args: { id: number }) => getPublisher(args.id),
+    designers: () => getDesigners(),
+    designer: (_root: any, args: { id: number }) => getDesigner(args.id),
+    users: () => getUsers(),
+    user: (_root: any, args: { id: number }) => getUser(args.id),
+  },
 
-// Queries
+  Game: {
+    gameid: (root: Game) => root.gameid,
+    bggid: (root: Game) => root.bggid,
+    previewid: (root: Game) => root.previewid,
+    title: (root: Game) => root.title,
+    publisher: (root: Game) => getPublisher(root.publisher as unknown as number),
+    designers: (root: Game) => getGameDesigners(root.gameid),
+    minplayers: (root: Game) => root.minplayers,
+    maxplayers: (root: Game) => root.maxplayers,
+    minplaytime: (root: Game) => root.minplaytime,
+    maxplaytime: (root: Game) => root.maxplaytime,
+    complexity: (root: Game) => root.complexity,
+    minage: (root: Game) => root.minage,
+    yearpublished: (root: Game) => root.yearpublished,
+    numhave: (root: Game) => root.numhave,
+    numneed: (root: Game) => root.numneed,
+    numpromise: (root: Game) => root.numpromise,
+    decision: (root: Game) => root.decision,
+    negotiation: (root: Game) => root.negotiation,
+    acquisition: (root: Game) => root.acquisition,
+  },
 
-const users = async (): Promise<User[]> => {
-  try {
-    const result = await pool.query(`SELECT * FROM users`);
-    return result.rows;
-  } catch (error: any) {
-    return error.message;
-  }
-};
+  Publisher: {
+    publisherid: (root: Publisher) => root.publisherid,
+    bggid: (root: Publisher) => root.bggid,
+    name: (root: Publisher) => root.name,
+    country: (root: Publisher) => root.country,
+    contacts: (root: Publisher) => root.contacts,
+  },
 
-const user = async (args: { id: number }): Promise<User> => {
-  try {
-    const result = await pool.query(`SELECT * FROM users WHERE userid=${args.id}`);
-    return result.rows[0];
-  } catch (error: any) {
-    return error.message;
-  }
-};
+  Designer: {
+    designerid: (root: Designer) => root.designerid,
+    bggid: (root: Designer) => root.bggid,
+    name: (root: Designer) => root.name,
+  },
 
-const games = async (): Promise<Game[]> => {
-  try {
-    const result = await pool.query(`SELECT * FROM games`);
-    return result.rows;
-  } catch (error: any) {
-    return error.message;
-  }
-};
+  User: {
+    userid: (root: User) => root.userid,
+    username: (root: User) => root.username,
+    email: (root: User) => root.email,
+    password: (root: User) => root.password,
+  },
 
-const game = async (args: { id: number }): Promise<Game> => {
-  try {
-    const result = await pool.query(`SELECT * FROM games WHERE gameid=${args.id}`);
-    return result.rows[0];
-  } catch (error: any) {
-    return error.message;
-  }
-};
+  Mutation: {
+    addUser: (root: User, args: { input: UserInput }) => createUser(args.input),
+    addPublisher: (root: Publisher, args: { input: PublisherInput }) => createPublisher(args.input),
+    addDesigner: (root: Designer, args: { input: DesignerInput }) => createDesigner(args.input).then((res) => res),
+    addGame: (root: Game, args: { input: GameInput }) => createGame(args.input),
+    addBGGData: async () => {
+      const dbGames = await getGames().then((games) => games);
+      const previewGames = dbGames.length > 0 ? dbGames.filter((game) => game.previewid !== null) : [];
+      const lastPreviewID = previewGames.length > 0 ? previewGames[previewGames.length - 1].previewid : 0;
 
-// Mutations
+      const newGames = bggGames.filter((game) => Number(game.itemid) > lastPreviewID);
 
-const addUser = async (args: { input: UserInput }): Promise<User> => {
-  const allUsers = await users().then((users) => users);
-  const userid = allUsers.length + 1;
+      if (newGames) {
+        // iterate through each new game and add to database
+        for (let i = 0; i < newGames.length; i++) {
+          const newGameId = dbGames[dbGames.length - 1].gameid + 1 + i;
 
-  const { username, password, email } = args.input;
-  const user = { userid, ...args.input };
+          // check existing publishers for game publisher and add if none
+          const dbPublishers = await getPublishers().then((publishers) => publishers);
+          const lastPublisherId = dbPublishers.length > 0 ? dbPublishers[dbPublishers.length - 1].publisherid : 0;
 
-  await pool.query(
-    `INSERT INTO users (userid, username, password, email) VALUES (${userid}, '${username}', '${password}', '${email}')`
-  );
+          const bggPublisher = newGames[i].publishers[0].item;
+          const bggPublisherId = Number(bggPublisher.objectid);
 
-  return user;
-};
+          const existingPublisher = dbPublishers.find((dbPublisher) => dbPublisher.bggid === bggPublisherId);
 
-const addBGGGames = async (): Promise<Game[]> => {
-  const allGames = await games().then((games) => games);
-  const lastGameId = allGames.length > 0 ? allGames[allGames.length - 1].gameid : 0;
-  const allItemIds = allGames.length > 0 ? allGames.map((game: Game) => game.itemid !== null) : [];
-  const lastItemId = allGames.length > 0 ? allItemIds[allItemIds.length - 1] : 0;
+          if (!existingPublisher) {
+            const publisherInput = {
+              bggid: bggPublisherId,
+              name: bggPublisher.primaryname.name,
+              country: null,
+              contacts: null,
+            };
 
-  const newGames = bgg_games.filter((game: Entry) => Number(game.itemid) > Number(lastItemId!));
+            createPublisher(publisherInput)
+              .then((res) => res)
+              .catch((error) => console.error(error));
+          }
 
-  if (newGames) {
-    for (let i = 0; i < newGames.length; i++) {
-      await pool.query(`INSERT INTO games (gameid, itemid) VALUES (${lastGameId + 1 + i}, ${newGames[i].itemid})`);
-    }
-  }
+          const gamePublisherId = existingPublisher ? existingPublisher.publisherid : lastPublisherId + 1;
 
-  return allGames;
-};
+          const bggDesigners = newGames[i].geekitem.item.links.boardgamedesigner;
 
-const addGame = async (args: { input: GameInput }): Promise<Game> => {
-  const allGames = await games().then((games) => games);
-  const gameid = allGames.length + 1;
+          let gameDesignerIds: number[] = [];
 
-  const {
-    title,
-    publisher,
-    designers,
-    minplayers,
-    maxplayers,
-    minplaytime,
-    maxplaytime,
-    complexity,
-    contacts,
-    decision,
-    negotiation,
-    acquisition,
-    comments,
-    rankings,
-    interest,
-    numhave,
-    numneed,
-    numpromise,
-  } = args.input;
+          for (let j = 0; j < bggDesigners.length; j++) {
+            const dbDesigners = await getDesigners().then((designers) =>
+              designers.length > 0 ? designers.filter((des) => des.bggid !== null) : []
+            );
 
-  const game = { gameid, ...args.input };
-  const query = `INSERT INTO games (
-      gameid,
-      title,
-      publisher,
-      designers,
-      minplayers,
-      maxplayers,
-      minplaytime,
-      maxplaytime,
-      complexity,
-      decision,
-      negotiation,
-      acquisition,
-      comments,
-      rankings,
-      numhave,
-      numneed,
-      numpromise,
-      interest,
-      contacts
-    ) VALUES (
-      ${gameid},
-      '${title}',
-      '${publisher}',
-      '{${designers}}',
-      ${minplayers},
-      ${maxplayers},
-      ${minplaytime},
-      ${maxplaytime},
-      ${complexity},
-      '${decision}',
-      '${negotiation}',
-      '${acquisition}',
-      '{${comments}}',
-      '{${rankings}}',
-      ${numhave},
-      ${numneed},
-      ${numpromise},
-      '{${interest}}',
-      '${contacts}'
-    )`;
+            const bggDesigner = newGames[i].geekitem.item.links.boardgamedesigner[j];
+            const bggDesignerId = Number(bggDesigner.objectid);
 
-  await pool
-    .query(query)
-    .then((res) => console.log(`Added ${res.rows[0].title} to database`))
-    .catch((error) => console.error(error));
+            const existingDesigner = dbDesigners.find((dbDesigner) => dbDesigner.bggid === bggDesignerId);
 
-  return game;
-};
+            if (!existingDesigner) {
+              const designerInput = {
+                bggid: bggDesignerId,
+                name: bggDesigner.name,
+              };
 
-// BGG data Query resolvers
+              await createDesigner(designerInput)
+                .then((res) => {
+                  gameDesignerIds.push(res);
+                })
+                .catch((error) => console.error(error));
+            } else {
+              gameDesignerIds.push(existingDesigner.designerid);
+            }
+          }
 
-const editGameData = (game: Entry) => {
-  // retrieve and replace location from publisher meta
-  const matchingMeta = pubMeta.find((meta) => meta.objectid === game.publishers[0].item.objectid.toString());
+          for (let k = 0; k < gameDesignerIds.length; k++) {
+            const designerGameInput = {
+              gameid: newGameId,
+              designerid: gameDesignerIds[k],
+            };
 
-  const newLocation = matchingMeta?.location === null || matchingMeta?.location === "" ? "–" : matchingMeta!.location;
+            createDesignerGame(designerGameInput)
+              .then((res) => res)
+              .catch((error) => console.error(error));
+          }
+          const thisGame = newGames[i];
 
-  game.location = newLocation;
+          const gameInput = {
+            bggid: Number(thisGame.objectid),
+            previewid: Number(thisGame.itemid),
+            title: thisGame.version.item.name,
+            publisher: gamePublisherId,
+            designers: gameDesignerIds,
+            minplayers: Number(thisGame.geekitem.item.minplayers),
+            maxplayers: Number(thisGame.geekitem.item.maxplayers),
+            minplaytime: Number(thisGame.geekitem.item.minplaytime),
+            maxplaytime: Number(thisGame.geekitem.item.maxplaytime),
+            complexity: Number(Number(thisGame.geekitem.item.dynamicinfo.item.stats.avgweight).toFixed(2)),
+            minage: Number(thisGame.geekitem.item.minage),
+            location: editLocation(thisGame),
+            yearpublished: Number(thisGame.geekitem.item.yearpublished),
+          };
 
-  // consolidate & format release dates and release overrides
-  const releasedate = game.version.item.releasedate;
-  const overridedate = game.version.item.overridedate;
-
-  const formattedReleaseDate = () => {
-    if (overridedate) {
-      return overridedate;
-    } else if (releasedate) {
-      let splitDate = releasedate.split("-");
-      let [year, month, day] = splitDate;
-
-      if (releasedate === "0000-00-00") {
-        return "–";
-      } else if (releasedate.endsWith("-00-00")) {
-        return year;
-      } else if (releasedate.endsWith("-00")) {
-        return month + "-" + year;
-      } else if (splitDate.length > 2 && splitDate[0].length === 4) {
-        return month + "-" + day + "-" + year;
-      } else {
-        return releasedate;
+          createGame(gameInput)
+            .then((res) => res)
+            .catch((error) => console.error(error));
+        }
       }
-    }
-  };
-  game.version.item.releasedate = formattedReleaseDate();
-
-  return game;
-};
-
-// Queries
-
-const entries = (): Entry[] => {
-  return bgg_games.map((game) => {
-    return editGameData(game);
-  });
-};
-
-const entry = (args: { id: string }): Entry | undefined => {
-  const game = bgg_games.find((game) => game.objectid === args.id);
-  editGameData(game!);
-  return game;
-};
-
-export const root = {
-  addUser,
-  users,
-  user,
-  addBGGGames,
-  addGame,
-  games,
-  game,
-  entries,
-  entry,
+    },
+  },
 };

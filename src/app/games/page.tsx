@@ -4,9 +4,7 @@ import Link from "next/link";
 import DataTable from "../components/DataTable";
 
 export default async function GamesPage() {
-  const rawdata = await fetch("http://localhost:3000/api/games", { cache: "no-store" });
-
-  const games = await rawdata.json();
+  const games = await fetch("http://localhost:3000/api/games", { cache: "no-store" }).then((data) => data.json());
 
   return !!games ? (
     <div className="flex min-h-screen flex-col p-6 lg:p-24">

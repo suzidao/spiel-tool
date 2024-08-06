@@ -2,8 +2,14 @@
 
 import express from "express";
 import { createHandler } from "graphql-http/lib/use/express";
-import schema from "./schema";
-import { root } from "./resolvers";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { schema } from "./schema";
+import { resolvers } from "./resolvers";
+
+const fullSchema = makeExecutableSchema({
+  typeDefs: schema,
+  resolvers,
+});
 
 const server = express();
 server.set("etag", false);
@@ -13,10 +19,7 @@ server.use(
     res.set("Cache-Control", "no-store");
     next();
   },
-  createHandler({
-    schema: schema,
-    rootValue: root,
-  })
+  createHandler({ schema: fullSchema })
 );
 
 export default server;
