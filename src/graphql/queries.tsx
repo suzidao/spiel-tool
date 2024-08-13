@@ -14,12 +14,8 @@ export async function getPublishers() {
 export async function getDesigners() {
   return await pool.query(`SELECT * FROM designers`).then((res) => res.rows);
 }
-export async function getGameDesigners(id: number) {
-  const joints = await pool.query(`SELECT designerid FROM designer_game WHERE gameid=${id}`).then((res) => res.rows);
-  const designers = joints.map((joint) => {
-    return getDesigner(joint.designerid);
-  });
-  return designers;
+export async function getAllGameDesigners() {
+  return await pool.query(`SELECT * FROM game_designer`).then((res) => res.rows);
 }
 
 export async function getUser(id: number) {
@@ -33,6 +29,13 @@ export async function getPublisher(id: number) {
 }
 export async function getDesigner(id: number) {
   return await pool.query(`SELECT * FROM designers WHERE designerid=${id}`).then((res) => res.rows[0]);
+}
+export async function getGameDesigners(id: number) {
+  const joints = await pool.query(`SELECT designerid FROM game_designer WHERE gameid=${id}`).then((res) => res.rows);
+  const designers = joints.map((joint) => {
+    return getDesigner(joint.designerid);
+  });
+  return designers;
 }
 
 export async function createUser(input: UserInput) {
@@ -55,6 +58,7 @@ export async function createGame(input: GameInput) {
     maxplaytime,
     complexity,
     minage,
+    location,
     yearpublished,
   } = input;
 
@@ -69,6 +73,7 @@ export async function createGame(input: GameInput) {
     maxplaytime,
     complexity,
     minage,
+    location,
     yearpublished
   ) VALUES (
     ${bggid},
@@ -81,6 +86,7 @@ export async function createGame(input: GameInput) {
     ${maxplaytime},
     ${complexity},
     ${minage},
+    '${location}',
     ${yearpublished}
   ) RETURNING *`;
 
@@ -108,7 +114,7 @@ export async function createPublisher(input: PublisherInput) {
       ) RETURNING *
     `
     )
-    .then((res) => res)
+    .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }
 
@@ -130,12 +136,12 @@ export async function createDesigner(input: DesignerInput) {
     .catch((error) => console.error(error));
 }
 
-export async function createDesignerGame(input: DesignerGameInput) {
+export async function createGameDesigner(input: GameDesignerInput) {
   const { gameid, designerid } = input;
 
   return await pool
     .query(
-      `INSERT INTO designer_game (
+      `INSERT INTO game_designer (
         gameid,
         designerid
       ) VALUES (
@@ -145,4 +151,79 @@ export async function createDesignerGame(input: DesignerGameInput) {
     )
     .then((res) => res)
     .catch((error) => console.error(error));
+}
+
+export async function updateGame(gameid: number, input: GameInput) {
+  const {
+    title,
+    publisher,
+    minplayers,
+    maxplayers,
+    minplaytime,
+    maxplaytime,
+    complexity,
+    minage,
+    location,
+    yearpublished,
+  } = input;
+
+  return await pool
+    .query(
+      `UPDATE games SET
+        title=$$${title}$$
+        publisher=${publisher}
+        minplayers=${minplayers}
+        maxplayers=${maxplayers}
+        minplaytime=${minplaytime}
+        maxplaytime=${maxplaytime}
+        complexity=${complexity}
+        minage=${minage}
+        location='${location}'
+        yearpublished=${yearpublished}
+      WHERE gameid=${gameid}`
+    )
+    .then((res) => res)
+    .catch((error) => console.error(error));
+}
+
+export async function updatePublisher(publisherid: number, input: PublisherInput) {
+  const { bggid, name, country, contacts } = input;
+
+  return await pool
+    .query(
+      `UPDATE publishers SET
+        bggid=${bggid},
+        name=$$${name}$$,
+        country='${country}',
+        contacts='${contacts}'
+      WHERE publisherid=${publisherid}
+    `
+    )
+    .then((res) => res)
+    .catch((error) => console.error(error));
+}
+
+export async function updateDesigner(designerid: number, input: DesignerInput) {
+  const { bggid, name } = input;
+
+  return await pool
+    .query(
+      `UPDATE designers SET
+        bggid=${bggid},
+        name=$$${name}$$
+      WHERE designerid=${designerid}
+    `
+    )
+    .then((res) => res.rows[0].designerid)
+    .catch((error) => console.error(error));
+}
+
+export async function deleteGame(gameid: number) {
+  return await pool.query(`DELETE from games WHERE gameid=${gameid} RETURNING gameid`);
+}
+export async function deletePublisher(publisherid: number) {
+  return await pool.query(`DELETE from publishers WHERE publisherid=${publisherid} RETURNING publisherid`);
+}
+export async function deleteDesigner(designerid: number) {
+  return await pool.query(`DELETE from designers WHERE designerid=${designerid} RETURNING designerid`);
 }

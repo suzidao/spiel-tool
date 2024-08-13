@@ -6,6 +6,13 @@ import pubMetaData from "../data/spiel-preview-parents.json";
 const bggData = gamesData as ImportedData[];
 const pubMeta = pubMetaData as PublisherMeta[];
 
+export function normalizeText(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
 export function editLocation(data: ImportedData) {
   const matchingMeta = pubMeta.find(
     (meta: PublisherMeta) => Number(meta.objectid) === data.publishers[0].item.objectid
@@ -18,7 +25,7 @@ export function editLocation(data: ImportedData) {
     : "–";
 }
 
-export function editGame(game: Game) {
+export function extendGame(game: Game) {
   const data = bggData.find((data: ImportedData) => Number(data.itemid) === game.previewid);
 
   if (!!data) {

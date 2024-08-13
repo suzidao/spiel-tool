@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
     headers: {
       "Content-Type": "application/json",
     },
+    cache: "no-store",
     body: JSON.stringify({
       query: `
         mutation ($input: UserInput){

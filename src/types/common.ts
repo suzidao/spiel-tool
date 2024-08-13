@@ -22,7 +22,7 @@ export enum ACQUISITION {
   none = "None",
   acquired = "Acquired",
   shipping = "Shipping",
-  purchased = "Purchased",
+  purchase = "Purchase",
   pickup = "SPIEL Pickup",
   dropoff = "PAX Dropoff",
 }

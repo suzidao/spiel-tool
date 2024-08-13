@@ -28,8 +28,18 @@ export default function AdminPage() {
         </button>
         <Link href="/games/add">Add New Game</Link>
       </div>
+      {!!gameIds && (
+        <div>
+          <h2>NEW GAMES:</h2>
+          <ul>
+            {gameIds.map((id) =>
+              gamesData.map((game) => game.itemid === id && <li key={game.itemid}>{game.version.item.name}</li>)
+            )}
+          </ul>
+        </div>
+      )}
       <div>
-        <button className="p-2 mx-2" onClick={() => scrapePreview(69, "spiel-preview-games.json")}>
+        <button className="p-2 mx-2" onClick={() => scrapePreview(73, "spiel-preview-games.json")}>
           Scrape Preview Items
         </button>
         |

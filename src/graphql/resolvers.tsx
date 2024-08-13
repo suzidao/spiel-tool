@@ -10,10 +10,17 @@ import {
   getGame,
   getGameDesigners,
   createDesigner,
-  createDesignerGame,
+  createGameDesigner,
   createGame,
   createPublisher,
   createUser,
+  updateGame,
+  updatePublisher,
+  updateDesigner,
+  deleteGame,
+  deletePublisher,
+  deleteDesigner,
+  getAllGameDesigners,
 } from "./queries";
 
 import gamesData from "../data/spiel-preview-games.json";
@@ -32,6 +39,7 @@ export const resolvers = {
     designer: (_root: any, args: { id: number }) => getDesigner(args.id),
     users: () => getUsers(),
     user: (_root: any, args: { id: number }) => getUser(args.id),
+    gamedesignerjoin: () => getAllGameDesigners(),
   },
 
   Game: {
@@ -77,18 +85,32 @@ export const resolvers = {
     password: (root: User) => root.password,
   },
 
+  GameDesigner: {
+    id: (root: GameDesigner) => root.id,
+    designerid: (root: GameDesigner) => root.designerid,
+    gameid: (root: GameDesigner) => root.gameid,
+  },
+
   Mutation: {
     addUser: (root: User, args: { input: UserInput }) => createUser(args.input),
-    addPublisher: (root: Publisher, args: { input: PublisherInput }) => createPublisher(args.input),
+    addPublisher: (root: Publisher, args: { input: PublisherInput }) => createPublisher(args.input).then((res) => res),
     addDesigner: (root: Designer, args: { input: DesignerInput }) => createDesigner(args.input).then((res) => res),
     addGame: (root: Game, args: { input: GameInput }) => createGame(args.input),
+    editGame: (root: Game, args: { gameid: number; input: GameInput }) => updateGame(args.gameid, args.input),
+    editPublisher: (root: Publisher, args: { publisherid: number; input: PublisherInput }) =>
+      updatePublisher(args.publisherid, args.input),
+    editDesigner: (root: Designer, args: { designerid: number; input: DesignerInput }) =>
+      updateDesigner(args.designerid, args.input),
+    cullGame: (root: Game, args: { gameid: number }) => deleteGame(args.gameid).then((res) => res),
+    cullPublisher: (root: Publisher, args: { publisherid: number }) =>
+      deletePublisher(args.publisherid).then((res) => res),
+    cullDesigner: (root: Designer, args: { designerid: number }) => deleteDesigner(args.designerid).then((res) => res),
     addBGGData: async () => {
       const dbGames = await getGames().then((games) => games);
       const previewGames = dbGames.length > 0 ? dbGames.filter((game) => game.previewid !== null) : [];
       const lastPreviewID = previewGames.length > 0 ? previewGames[previewGames.length - 1].previewid : 0;
 
       const newGames = bggGames.filter((game) => Number(game.itemid) > lastPreviewID);
-
       if (newGames) {
         // iterate through each new game and add to database
         for (let i = 0; i < newGames.length; i++) {
@@ -149,12 +171,12 @@ export const resolvers = {
           }
 
           for (let k = 0; k < gameDesignerIds.length; k++) {
-            const designerGameInput = {
+            const gameDesignerInput = {
               gameid: newGameId,
               designerid: gameDesignerIds[k],
             };
 
-            createDesignerGame(designerGameInput)
+            createGameDesigner(gameDesignerInput)
               .then((res) => res)
               .catch((error) => console.error(error));
           }

@@ -58,7 +58,7 @@ export declare global {
   };
 
   type PublisherInput = {
-    bggid: number;
+    bggid: number | null;
     name: string;
     country: string | null;
     contacts: string | null;
@@ -91,8 +91,8 @@ export declare global {
     maxplaytime: number;
     complexity: number;
     minage: number;
-    location: string | null;
-    yearpublished: number | null;
+    location?: string;
+    yearpublished?: number;
   };
 
   interface DatabaseData extends BaseGameData {
@@ -104,9 +104,6 @@ export declare global {
     numneed: number;
     numhave: number;
     numpromise: number;
-    // comments?: number[] | [];
-    // rankings?: number[] | [];
-    // interest?: number[] | [];
   }
 
   interface BGGData extends BaseGameData {
@@ -131,33 +128,34 @@ export declare global {
   type Game = DatabaseData & BGGData;
 
   type GameInput = {
-    bggid: number;
-    previewid?: number;
+    bggid?: number = null;
+    previewid?: number = null;
     title: string;
-    publisher: number;
-    minplayers: number;
-    maxplayers: number;
-    minplaytime: number;
-    maxplaytime: number;
-    complexity: number;
-    minage: number;
-    location: string;
-    yearpublished: number;
-    // decision: Decision;
-    // negotiation: Negotiation;
-    // acquisition: Acquisition;
-    // numneed: number;
-    // numhave: number;
-    // numpromise: number;
+    publisher: number | null;
+    designers: number[] = [];
+    minplayers?: number = 0;
+    maxplayers?: number = 0;
+    minplaytime?: number = 0;
+    maxplaytime?: number = 0;
+    complexity?: number = 0;
+    minage?: number = 0;
+    location?: string = null;
+    yearpublished?: number;
+    decision?: Decision;
+    negotiation?: Negotiation;
+    acquisition?: Acquisition;
+    numneed?: number;
+    numhave?: number;
+    numpromise?: number;
   };
 
-  type DesignerGame = {
+  type GameDesigner = {
     id: Int;
     gameid: Int;
     designerid: Int;
   };
 
-  type DesignerGameInput = {
+  type GameDesignerInput = {
     gameid: Int;
     designerid: Int;
   };

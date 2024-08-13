@@ -69,7 +69,7 @@ export const schema = buildSchema(`
     paxid: Int
   }
 
-  type DesignerGame {
+  type GameDesigner {
     id: Int
     gameid: Int
     designerid: Int
@@ -155,7 +155,7 @@ export const schema = buildSchema(`
     name: String
   }
 
-  input DesignerGameInput {
+  input GameDesignerInput {
     id: Int
     gameid: Int
     designerid: Int
@@ -170,6 +170,7 @@ export const schema = buildSchema(`
     designer(id: Int): Designer
     users: [User]
     user(id: Int): User
+    gamedesignerjoin: [GameDesigner]
   }
 
   type Mutation {
@@ -178,6 +179,12 @@ export const schema = buildSchema(`
     addDesigner(input: DesignerInput): Designer!
     addUser(input: UserInput): User!
     addBGGData: [Game]
+    editGame(gameid: Int, input: GameInput): Game!
+    editPublisher(publisherid: Int, input: PublisherInput): Publisher!
+    editDesigner(designerid: Int, input: DesignerInput): Designer!
+    cullGame(gameid: Int): Int
+    cullPublisher(publisherid: Int): Int
+    cullDesigner(designerid: Int): Int
   }
 
 `);

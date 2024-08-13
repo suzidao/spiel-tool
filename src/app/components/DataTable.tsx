@@ -2,6 +2,7 @@
 
 "use client";
 
+import { normalizeText } from "@/utils/editData";
 import BGGKeys from "../../data/bgg-keys.json";
 import Filters from "./Filters";
 
@@ -80,14 +81,10 @@ export default function DataTable(props: { data: Game[] }) {
       sortingFn: "text",
       enableHiding: false,
       filterFn: (row: Row<Game>, _columnId: string, filterValue: string) => {
-        return row.original
-          .title!.normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .includes(filterValue);
+        return normalizeText(row.original.title!).includes(filterValue);
       },
     }),
-    columnHelper.accessor("publisher", {
+    columnHelper.accessor("publisher.name", {
       id: "Publisher",
       cell: ({ row }) => {
         const game = row.original;
@@ -107,11 +104,7 @@ export default function DataTable(props: { data: Game[] }) {
       sortingFn: "text",
       enableHiding: false,
       filterFn: (row: Row<Game>, _columnId: string, filterValue: string) => {
-        return row.original.publisher.name
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .includes(filterValue);
+        return normalizeText(row.original.publisher.name).includes(filterValue);
       },
     }),
     columnHelper.accessor("designers", {
@@ -147,11 +140,7 @@ export default function DataTable(props: { data: Game[] }) {
         const designers = row.original.designers;
         return designers
           .map((designer) => {
-            return designer.name
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .includes(filterValue);
+            return normalizeText(designer.name).includes(filterValue);
           })
           .includes(true);
       },

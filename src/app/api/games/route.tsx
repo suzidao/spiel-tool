@@ -1,7 +1,7 @@
 /** @format */
 
 import { NextResponse } from "next/server";
-import { editGame } from "../../../utils/editData";
+import { extendGame } from "../../../utils/editData";
 
 export async function GET() {
   const rawDB = await fetch("http://localhost:4000/graphql", {
@@ -51,7 +51,7 @@ export async function GET() {
   let allGames: Game[] = [];
 
   games.map((game: Game) => {
-    const editedGame = game.previewid === null ? game : editGame(game);
+    const editedGame = game.previewid === null ? game : extendGame(game);
 
     allGames.push(editedGame as Game);
   });

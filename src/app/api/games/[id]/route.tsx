@@ -1,6 +1,6 @@
 /** @format */
 
-import { editGame } from "@/utils/editData";
+import { extendGame } from "@/utils/editData";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
@@ -22,12 +22,14 @@ export async function GET(req: NextApiRequest) {
             previewid
             title
             publisher {
+              publisherid
               bggid
               name
               country
               contacts
             }
             designers {
+              designerid
               bggid
               name
             }
@@ -54,7 +56,7 @@ export async function GET(req: NextApiRequest) {
 
   const game = data.game;
 
-  const editedGame = editGame(game) as Game;
+  const editedGame = extendGame(game) as Game;
 
   return NextResponse.json(editedGame);
 }
