@@ -4,8 +4,10 @@
 import { useRef, useState } from "react";
 import { DECISION, NEGOTIATION, ACQUISITION } from "../../types/common";
 import { addNewGame } from "../actions";
+import { useGameMetadataContext } from "../contexts";
 
 export default function NewGameForm() {
+  const { publishers, designers } = useGameMetadataContext();
   const initialState = {
     title: "",
     publisher: "",
@@ -40,12 +42,12 @@ export default function NewGameForm() {
 
     switch (fieldName) {
       case "designers":
-        newFormState[fieldName]![idx!] = e.target.value;
+        newFormState["designers"]![idx!] = e.target.value;
         break;
-      case "name":
-      case "email":
-        newFormState["contacts"]![idx!][fieldName] = e.target.value;
-        break;
+      // case "name":
+      // case "email":
+      //   newFormState["contacts"]![idx!][fieldName] = e.target.value;
+      //   break;
       default:
         newFormState[e.target.name as keyof typeof formState] = e.target.value;
     }
@@ -67,19 +69,19 @@ export default function NewGameForm() {
     setFormState({ ...formState, designers });
   };
 
-  const AddContact = (e: any) => {
-    e.preventDefault();
-    let contacts = formState.contacts;
-    contacts!.push({ name: "", email: "" });
-    setFormState({ ...formState, contacts });
-  };
+  // const AddContact = (e: any) => {
+  //   e.preventDefault();
+  //   let contacts = formState.contacts;
+  //   contacts!.push({ name: "", email: "" });
+  //   setFormState({ ...formState, contacts });
+  // };
 
-  const RemoveContact = (e: any, idx: number) => {
-    e.preventDefault();
-    let contacts = formState.contacts;
-    contacts!.splice(idx, 1);
-    setFormState({ ...formState, contacts });
-  };
+  // const RemoveContact = (e: any, idx: number) => {
+  //   e.preventDefault();
+  //   let contacts = formState.contacts;
+  //   contacts!.splice(idx, 1);
+  //   setFormState({ ...formState, contacts });
+  // };
 
   return (
     <form
@@ -104,7 +106,7 @@ export default function NewGameForm() {
             <input
               className="px-2 py-1"
               type="text"
-              value={designer}
+              defaultValue={designer}
               name="designers"
               onChange={(e) => handleChange(e, idx)}
             />
@@ -175,7 +177,7 @@ export default function NewGameForm() {
           onChange={handleChange}
         />
       </label>
-      <label className="flex flex-row items-center max-w-96 p-2 gap-2">
+      {/* <label className="flex flex-row items-center max-w-96 p-2 gap-2">
         Contact:
         {formState.contacts!.map((contact: Contact, idx: number) => (
           <div key={idx}>
@@ -205,7 +207,7 @@ export default function NewGameForm() {
         <button className="place-self-center" onClick={AddContact}>
           +
         </button>
-      </label>
+      </label> */}
       <div>
         <label className="flex flex-row max-w-96 p-2">
           Decision Status:

@@ -128,18 +128,18 @@ export declare global {
   type Game = DatabaseData & BGGData;
 
   type GameInput = {
-    bggid?: number = null;
-    previewid?: number = null;
+    bggid?: number;
+    previewid?: number;
     title: string;
     publisher: number | null;
-    designers: number[] = [];
-    minplayers?: number = 0;
-    maxplayers?: number = 0;
-    minplaytime?: number = 0;
-    maxplaytime?: number = 0;
-    complexity?: number = 0;
-    minage?: number = 0;
-    location?: string = null;
+    designers: number[];
+    minplayers?: number;
+    maxplayers?: number;
+    minplaytime?: number;
+    maxplaytime?: number;
+    complexity?: number;
+    minage?: number;
+    location?: string;
     yearpublished?: number;
     decision?: Decision;
     negotiation?: Negotiation;

@@ -112,7 +112,7 @@ export const schema = buildSchema(`
     bggid: Int
     previewid: Int
     title: String
-    publisherid: Int
+    publisher: Int
     designers: [Int]
     minplayers: Int
     maxplayers: Int
@@ -120,6 +120,7 @@ export const schema = buildSchema(`
     maxplaytime: Int
     complexity: Float
     minage: Int
+    location: String
     yearpublished: Int
     decision: Decision
     negotiation: Negotiation

@@ -63,7 +63,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
     />
   ) : filterVariant === "checklist" ? (
     <div key={column.id} className="px-1 flex flex-wrap gap-1">
-      <label className="flex font-semibold items-center gap-1 py-1 mr-4">
+      <label className="flex font-semibold items-center gap-1 py-1 mr-2">
         <input
           {...{
             type: "checkbox",
@@ -81,7 +81,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
       </label>
       {column.columnDef.meta?.filterList &&
         column.columnDef.meta?.filterList.map((filterItem) => (
-          <label key={filterItem.objectid} className="flex items-center gap-2 py-1 mr-4 whitespace-nowrap">
+          <label key={filterItem.objectid} className="flex items-center gap-1 py-1 mr-2 whitespace-nowrap">
             <input
               type="checkbox"
               name={column.columnDef.id}
@@ -107,7 +107,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
           column.columnDef.meta?.filterList.map((filterItem, idx) => (
             <label
               key={filterItem.objectid}
-              className="flex items-center gap-2 py-1 pr-1 whitespace-nowrap first-of-type:font-semibold"
+              className="flex items-center gap-1 py-1 pr-1 whitespace-nowrap first-of-type:font-semibold"
             >
               <input
                 type="radio"

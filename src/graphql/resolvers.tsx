@@ -8,9 +8,9 @@ import {
   getPublisher,
   getDesigner,
   getGame,
+  getGamePublisher,
   getGameDesigners,
   createDesigner,
-  createGameDesigner,
   createGame,
   createPublisher,
   createUser,
@@ -47,7 +47,7 @@ export const resolvers = {
     bggid: (root: Game) => root.bggid,
     previewid: (root: Game) => root.previewid,
     title: (root: Game) => root.title,
-    publisher: (root: Game) => getPublisher(root.publisher as unknown as number),
+    publisher: (root: Game) => getGamePublisher(root.gameid),
     designers: (root: Game) => getGameDesigners(root.gameid),
     minplayers: (root: Game) => root.minplayers,
     maxplayers: (root: Game) => root.maxplayers,
@@ -96,7 +96,8 @@ export const resolvers = {
     addPublisher: (root: Publisher, args: { input: PublisherInput }) => createPublisher(args.input).then((res) => res),
     addDesigner: (root: Designer, args: { input: DesignerInput }) => createDesigner(args.input).then((res) => res),
     addGame: (root: Game, args: { input: GameInput }) => createGame(args.input),
-    editGame: (root: Game, args: { gameid: number; input: GameInput }) => updateGame(args.gameid, args.input),
+    editGame: (root: Game, args: { gameid: number; input: GameInput }) =>
+      updateGame(args.gameid, args.input).then((res) => res),
     editPublisher: (root: Publisher, args: { publisherid: number; input: PublisherInput }) =>
       updatePublisher(args.publisherid, args.input),
     editDesigner: (root: Designer, args: { designerid: number; input: DesignerInput }) =>
@@ -109,12 +110,11 @@ export const resolvers = {
       const dbGames = await getGames().then((games) => games);
       const previewGames = dbGames.length > 0 ? dbGames.filter((game) => game.previewid !== null) : [];
       const lastPreviewID = previewGames.length > 0 ? previewGames[previewGames.length - 1].previewid : 0;
-
       const newGames = bggGames.filter((game) => Number(game.itemid) > lastPreviewID);
       if (newGames) {
         // iterate through each new game and add to database
         for (let i = 0; i < newGames.length; i++) {
-          const newGameId = dbGames[dbGames.length - 1].gameid + 1 + i;
+          // const newGameId = dbGames[dbGames.length - 1].gameid + 1 + i;
 
           // check existing publishers for game publisher and add if none
           const dbPublishers = await getPublishers().then((publishers) => publishers);
@@ -162,7 +162,7 @@ export const resolvers = {
 
               await createDesigner(designerInput)
                 .then((res) => {
-                  gameDesignerIds.push(res);
+                  gameDesignerIds.push(res.designerid);
                 })
                 .catch((error) => console.error(error));
             } else {
@@ -170,16 +170,6 @@ export const resolvers = {
             }
           }
 
-          for (let k = 0; k < gameDesignerIds.length; k++) {
-            const gameDesignerInput = {
-              gameid: newGameId,
-              designerid: gameDesignerIds[k],
-            };
-
-            createGameDesigner(gameDesignerInput)
-              .then((res) => res)
-              .catch((error) => console.error(error));
-          }
           const thisGame = newGames[i];
 
           const gameInput = {

@@ -10,9 +10,30 @@ export async function addNewUser(formData: FormData) {
   await fetch("http://localhost:3000/api/users/add", {
     method: "POST",
     body: formData,
-  }).then((response) => {
-    return response.json();
-  });
+  }).then((res) => res.json());
+}
+
+export async function addNewPublisher(name: string) {
+  let newPubID;
+  await fetch("http://localhost:3000/api/publishers/add", {
+    method: "POST",
+    body: JSON.stringify(name),
+  })
+    .then((res) => res.json().then((data) => (newPubID = data.addPublisher.publisherid)))
+    .catch((error) => console.error(error));
+
+  return newPubID;
+}
+
+export async function addNewDesigner(name: string) {
+  let newDesignerID;
+  await fetch("http://localhost:3000/api/designers/add", {
+    method: "POST",
+    body: JSON.stringify(name),
+  })
+    .then((res) => res.json().then((data) => (newDesignerID = data.addDesigner.designerid)))
+    .catch((error) => console.error(error));
+  return newDesignerID;
 }
 
 export async function scrapePreview(pageCount: number, filename: string, parent?: boolean) {
@@ -84,6 +105,7 @@ export async function addBGGData() {
     headers: {
       "Content-Type": "application/json",
     },
+    cache: "no-store",
     body: JSON.stringify({
       query: `
         mutation {
@@ -104,4 +126,42 @@ export async function addNewGame(formState: GameInput) {
   }).then((response) => {
     return response.json();
   });
+}
+
+export async function editGame(gameid: number, formState: GameInput) {
+  await fetch(`http://localhost:3000/api/games/${gameid}/edit`, {
+    method: "POST",
+    body: JSON.stringify(formState),
+  }).then((res) => res.json());
+}
+
+export async function getGameMetadata() {
+  const rawdata = await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    body: JSON.stringify({
+      query: `
+        query {
+          publishers {
+            publisherid
+            bggid
+            name
+            country
+            contacts
+          }
+          designers {
+            designerid
+            bggid
+            name
+          }
+        }
+      `,
+    }),
+  });
+  const { data } = await rawdata.json();
+
+  return data;
 }

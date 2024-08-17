@@ -23,6 +23,12 @@ body {
   line-height: 1.2;
 }
 
+input {
+  border: 1px solid #aaa;
+  margin: 2px 0;
+  padding: 2px 4px;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

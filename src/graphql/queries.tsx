@@ -27,14 +27,19 @@ export async function getGame(id: number) {
 export async function getPublisher(id: number) {
   return await pool.query(`SELECT * FROM publishers WHERE publisherid=${id}`).then((res) => res.rows[0]);
 }
+export async function getGamePublisher(id: number) {
+  return await pool
+    .query(
+      `SELECT games.publisher, publishers.* FROM games JOIN publishers ON games.publisher=publishers.publisherid WHERE gameid=${id}`
+    )
+    .then((res) => res.rows[0]);
+}
 export async function getDesigner(id: number) {
   return await pool.query(`SELECT * FROM designers WHERE designerid=${id}`).then((res) => res.rows[0]);
 }
 export async function getGameDesigners(id: number) {
-  const joints = await pool.query(`SELECT designerid FROM game_designer WHERE gameid=${id}`).then((res) => res.rows);
-  const designers = joints.map((joint) => {
-    return getDesigner(joint.designerid);
-  });
+  const designerList = await pool.query(`SELECT designers FROM games WHERE gameid=${id}`).then((res) => res.rows);
+  const designers = designerList[0].designers.map((id: number) => getDesigner(id));
   return designers;
 }
 
@@ -52,6 +57,7 @@ export async function createGame(input: GameInput) {
     previewid,
     title,
     publisher,
+    designers,
     minplayers,
     maxplayers,
     minplaytime,
@@ -67,6 +73,7 @@ export async function createGame(input: GameInput) {
     previewid,
     title,
     publisher,
+    designers,
     minplayers,
     maxplayers,
     minplaytime,
@@ -80,6 +87,7 @@ export async function createGame(input: GameInput) {
     ${previewid},
     $$${title}$$,
     ${publisher},
+    '{${designers}}',
     ${minplayers},
     ${maxplayers},
     ${minplaytime},
@@ -92,7 +100,7 @@ export async function createGame(input: GameInput) {
 
   return await pool
     .query(query)
-    .then((res) => res)
+    .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }
 
@@ -132,7 +140,7 @@ export async function createDesigner(input: DesignerInput) {
       ) RETURNING *
     `
     )
-    .then((res) => res.rows[0].designerid)
+    .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }
 
@@ -149,7 +157,7 @@ export async function createGameDesigner(input: GameDesignerInput) {
         ${designerid}
       ) RETURNING *`
     )
-    .then((res) => res)
+    .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }
 
@@ -157,6 +165,7 @@ export async function updateGame(gameid: number, input: GameInput) {
   const {
     title,
     publisher,
+    designers,
     minplayers,
     maxplayers,
     minplaytime,
@@ -170,19 +179,21 @@ export async function updateGame(gameid: number, input: GameInput) {
   return await pool
     .query(
       `UPDATE games SET
-        title=$$${title}$$
-        publisher=${publisher}
-        minplayers=${minplayers}
-        maxplayers=${maxplayers}
-        minplaytime=${minplaytime}
-        maxplaytime=${maxplaytime}
-        complexity=${complexity}
-        minage=${minage}
-        location='${location}'
+        title=$$${title}$$,
+        publisher=${publisher},
+        designers='{${designers}}',
+        minplayers=${minplayers},
+        maxplayers=${maxplayers},
+        minplaytime=${minplaytime},
+        maxplaytime=${maxplaytime},
+        complexity=${complexity},
+        minage=${minage},
+        location='${location}',
         yearpublished=${yearpublished}
-      WHERE gameid=${gameid}`
+      WHERE gameid=${gameid}
+      RETURNING *`
     )
-    .then((res) => res)
+    .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }
 
@@ -197,9 +208,10 @@ export async function updatePublisher(publisherid: number, input: PublisherInput
         country='${country}',
         contacts='${contacts}'
       WHERE publisherid=${publisherid}
+      RETURNING *
     `
     )
-    .then((res) => res)
+    .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }
 
@@ -212,9 +224,10 @@ export async function updateDesigner(designerid: number, input: DesignerInput) {
         bggid=${bggid},
         name=$$${name}$$
       WHERE designerid=${designerid}
+      RETURNING *
     `
     )
-    .then((res) => res.rows[0].designerid)
+    .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }
 

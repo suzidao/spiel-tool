@@ -146,16 +146,16 @@ export default function GameInfo(props: { game: Game }) {
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium whitespace-nowrap">Publisher:</span>
-        {!!publisher ? (
+        {!!publisher.bggid ? (
           <Link
             key={publisher.publisherid}
-            href={`https://boardgamegeek.com/publisher/${publisher.publisherid}`}
+            href={`https://boardgamegeek.com/publisher/${publisher.bggid}`}
             target="_blank"
           >
             {publisher.name}
           </Link>
         ) : (
-          publisher
+          publisher.name
         )}
       </div>
       <div className="my-4">
@@ -165,7 +165,7 @@ export default function GameInfo(props: { game: Game }) {
             const isLast = designers.length - 1 === idx;
             return designer.bggid ? (
               <Fragment key={designer.bggid}>
-                <Link href={`https://boardgamegeek.com/boardgamedesigner/${designer.designerid}`} target="_blank">
+                <Link href={`https://boardgamegeek.com/boardgamedesigner/${designer.bggid}`} target="_blank">
                   {designer.name}
                 </Link>
                 {!isLast && ", "}

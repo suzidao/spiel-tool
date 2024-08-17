@@ -14,13 +14,12 @@ export async function POST(req: NextRequest) {
     minplaytime: Number(reqData.minplaytime),
     maxplaytime: Number(reqData.maxplaytime),
     complexity: Number(reqData.complexity),
-    contacts: JSON.stringify(reqData.contacts),
+    minage: Number(reqData.minage),
+    location: reqData.location,
+    yearpublished: Number(reqData.yearpublished),
     decision: reqData.decision,
     negotiation: reqData.negotiation,
     acquisition: reqData.acquisition,
-    comments: reqData.comments,
-    rankings: reqData.rankings,
-    interest: reqData.interest,
     numhave: Number(reqData.numhave),
     numneed: Number(reqData.numneed),
     numpromise: Number(reqData.numpromise),
@@ -31,6 +30,7 @@ export async function POST(req: NextRequest) {
     headers: {
       "Content-Type": "application/json",
     },
+    cache: "no-store",
     body: JSON.stringify({
       query: `
         mutation ($input: GameInput){
