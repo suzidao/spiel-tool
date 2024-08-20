@@ -1,14 +1,14 @@
 /** @format */
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { DECISION, NEGOTIATION, ACQUISITION } from "@/types/common";
-import { addNewPublisher, addNewDesigner, editGame } from "../actions";
+import { addNewPublisher, addNewDesigner, editGame, addNewGame } from "../actions";
 import { useGameMetadataContext } from "../contexts";
 import AutoCompleteInput from "./AutoCompleteInput";
 import { normalizeText } from "@/utils/editData";
 
-export default function EditGameForm(props: { game: Game }) {
+export default function EditGameForm(props: { game?: Game }) {
   const { publishers, designers } = useGameMetadataContext();
   const publisherList = publishers.map((pub) => {
     return { id: pub.publisherid, name: pub.name };
@@ -16,28 +16,30 @@ export default function EditGameForm(props: { game: Game }) {
   const designerList = designers.map((des) => {
     return { id: des.designerid, name: des.name };
   });
-  const game = { ...props.game };
+
+  const game = props.game ? { ...props.game } : null;
+
+  const designerNames = game && game.designers ? game.designers.map((d) => d.name) : [];
 
   const initialState = {
-    gameid: game.gameid,
-    bggid: game.bggid,
-    title: game.title,
-    publisher: game.publisher.publisherid,
-    designers: game.designers.map((d) => d.designerid),
-    minplayers: game.minplayers,
-    maxplayers: game.maxplayers,
-    minplaytime: game.minplaytime,
-    maxplaytime: game.maxplaytime,
-    complexity: game.complexity,
-    minage: game.minage,
-    location: game.location,
-    yearpublished: game.yearpublished,
-    decision: game.decision,
-    negotiation: game.negotiation,
-    acquisition: game.acquisition,
-    numneed: game.numneed,
-    numhave: game.numhave,
-    numpromise: game.numpromise,
+    bggid: game ? game.bggid : undefined,
+    title: game ? game.title! : "",
+    publisher: game ? game.publisher!.publisherid : null,
+    designers: game && game.designers ? game.designers.map((d) => d.designerid) : [],
+    minplayers: game ? game.minplayers : undefined,
+    maxplayers: game ? game.maxplayers : undefined,
+    minplaytime: game ? game.minplaytime : undefined,
+    maxplaytime: game ? game.maxplaytime : undefined,
+    complexity: game ? game.complexity : undefined,
+    minage: game ? game.minage : undefined,
+    location: game ? game.location : undefined,
+    yearpublished: game ? game.yearpublished : undefined,
+    decision: game ? game.decision : "none",
+    negotiation: game ? game.negotiation : "none",
+    acquisition: game ? game.acquisition : "none",
+    numhave: game ? game.numhave : 0,
+    numneed: game ? game.numneed : undefined,
+    numpromise: game ? game.numpromise : undefined,
   };
 
   const decisionOptions = Object.entries(DECISION);
@@ -45,9 +47,22 @@ export default function EditGameForm(props: { game: Game }) {
   const acquisitionOptions = Object.entries(ACQUISITION);
 
   const [formState, setFormState] = useState<GameInput>(initialState);
+  const [publisherName, setPublisherName] = useState<string>("");
   const [newPublisher, setNewPublisher] = useState<string>("");
-  const [formDesigners, setFormDesigners] = useState<string[]>(game.designers.map((d) => d.name));
+  const [formDesigners, setFormDesigners] = useState<string[]>(designerNames.length ? designerNames : [""]);
   const [newDesigners, setNewDesigners] = useState<string[]>([]);
+
+  useEffect(() => {
+    let newFormState = { ...formState };
+    newFormState["designers"] = designerList
+      .filter((designer) => formDesigners.includes(designer.name))
+      .map((designer) => designer.id);
+    setFormState({ ...formState, ...newFormState });
+  }, [formDesigners]);
+
+  useEffect(() => {
+    if (!!formState["publisher"]) setNewPublisher("");
+  }, [formState]);
 
   const handleInput = (name: string, value: string, valueId?: number) => {
     let newFormState = { ...formState };
@@ -55,6 +70,7 @@ export default function EditGameForm(props: { game: Game }) {
 
     switch (fieldName) {
       case "publisher":
+        setPublisherName(value);
         const existingPublisher = publishers.find(
           (pub) => pub.publisherid === valueId || normalizeText(pub.name) === normalizeText(value)
         );
@@ -84,14 +100,14 @@ export default function EditGameForm(props: { game: Game }) {
 
         newFormState["designers"] = matchingIds;
 
-        if (matchingIds.length !== formDesigners.length && !existingDesigner) {
+        if (matchingIds.length === formDesigners.length && existingDesigner) {
+          setNewDesigners([]);
+        } else {
           let unknownDesigners = fieldValues.filter(
             (fieldValue) =>
               !designerList.map((d) => normalizeText(d.name)).includes(normalizeText(fieldValue)) && !!fieldValue
           );
           setNewDesigners(unknownDesigners);
-        } else {
-          setNewDesigners([]);
         }
 
         setFormState({ ...formState, ...newFormState });
@@ -129,7 +145,19 @@ export default function EditGameForm(props: { game: Game }) {
       }
     }
 
-    await editGame(game.gameid, formState);
+    game ? await editGame(game.gameid!, formState) : await addNewGame(formState);
+  };
+
+  const AddDesigner = (e: any) => {
+    e.preventDefault();
+    setFormDesigners([...formDesigners, ""]);
+  };
+
+  const RemoveDesigner = (e: any, idx: number) => {
+    e.preventDefault();
+    let designers = [...formDesigners];
+    designers.splice(idx, 1);
+    setFormDesigners(designers);
   };
 
   return (
@@ -140,52 +168,48 @@ export default function EditGameForm(props: { game: Game }) {
       </label>
       <label>
         Publisher:
-        <AutoCompleteInput
-          name="publisher"
-          dataList={publisherList}
-          value={game.publisher.name}
-          onSelect={handleInput}
-        />
+        <AutoCompleteInput name="publisher" dataList={publisherList} value={publisherName} onSelect={handleInput} />
       </label>
       <label>
         Designer(s):
-        {formDesigners.length ? (
-          formDesigners.map((designer, idx) => (
-            <AutoCompleteInput
-              key={`designer${idx}`}
-              name="designers"
-              dataList={designerList}
-              value={designer}
-              onSelect={handleInput}
-            />
-          ))
-        ) : (
-          <AutoCompleteInput name="designers" dataList={designerList} value="" onSelect={handleInput} />
-        )}
+        {formDesigners.map((designer, idx) => (
+          <Fragment key={`designer${idx}`}>
+            <AutoCompleteInput name="designers" dataList={designerList} value={designer} onSelect={handleInput} />
+            {formDesigners.length > 1 && <button onClick={(e) => RemoveDesigner(e, idx)}> – </button>}
+          </Fragment>
+        ))}
+        <button onClick={AddDesigner}> + </button>
       </label>
       <label>
         Min:
-        <input type="number" name="minplayers" defaultValue={formState.minplayers} onChange={handleChange} />
+        <input type="number" min={1} name="minplayers" defaultValue={formState.minplayers} onChange={handleChange} />
       </label>
       <label>
         Max:
-        <input type="number" name="maxplayers" defaultValue={formState.maxplayers} onChange={handleChange} />
+        <input type="number" min={1} name="maxplayers" defaultValue={formState.maxplayers} onChange={handleChange} />
       </label>
       <label>
         Min:
-        <input type="number" name="minplaytime" defaultValue={formState.minplaytime} onChange={handleChange} />
+        <input type="number" min={1} name="minplaytime" defaultValue={formState.minplaytime} onChange={handleChange} />
       </label>
       <label>
         Max:
-        <input type="number" name="maxplaytime" defaultValue={formState.maxplaytime} onChange={handleChange} />
+        <input type="number" min={1} name="maxplaytime" defaultValue={formState.maxplaytime} onChange={handleChange} />
       </label>
       <label>
         Age:
-        <input type="number" name="minage" defaultValue={formState.minage} onChange={handleChange} />
+        <input type="number" min={1} name="minage" defaultValue={formState.minage} onChange={handleChange} />
       </label>
       <label>
         Complexity:
-        <input type="number" name="complexity" defaultValue={formState.complexity} onChange={handleChange} />
+        <input
+          type="number"
+          min={1}
+          step={0.01}
+          name="complexity"
+          defaultValue={formState.complexity}
+          onChange={handleChange}
+        />
       </label>
       <label>
         Location:
@@ -225,7 +249,7 @@ export default function EditGameForm(props: { game: Game }) {
           ))}
         </select>
       </label>
-      <button type="submit">Edit Game</button>
+      <button type="submit">{game ? "Edit" : "Add New"} Game</button>
     </form>
   );
 }

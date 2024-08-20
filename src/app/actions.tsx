@@ -60,7 +60,7 @@ export async function scrapePreview(pageCount: number, filename: string, parent?
 
   fs.writeFile(path.join(process.cwd(), "src/data", filename), data, (err) => {
     if (err) {
-      console.log(err);
+      console.error(err);
     } else {
       console.log("SUCCESS!!");
     }
@@ -89,11 +89,11 @@ export async function getNewGames() {
   const dbGames = data ? data.games : [];
 
   const bggGames = bggData as ImportedData[];
-  const gameIdList = dbGames ? dbGames.filter((dbGame: Game) => dbGame.previewid !== null && dbGame.previewid) : [];
+  const gameIdList = dbGames
+    ? dbGames.filter((dbGame: Game) => dbGame.previewid !== null).map((game: Game) => game.previewid)
+    : [];
 
-  const newGames = bggGames.filter((bggGame: ImportedData) => {
-    return gameIdList.length === 0 ? bggGame : Number(bggGame.itemid) > gameIdList[gameIdList.length - 1].previewid;
-  });
+  const newGames = bggGames.filter((bggGame: ImportedData) => !gameIdList.includes(Number(bggGame.itemid)));
 
   return newGames.map((game) => game.itemid);
 }
@@ -123,16 +123,18 @@ export async function addNewGame(formState: GameInput) {
   await fetch("http://localhost:3000/api/games/add", {
     method: "POST",
     body: JSON.stringify(formState),
-  }).then((response) => {
-    return response.json();
-  });
+  })
+    .then((res) => res.json())
+    .catch((error) => console.error(error));
 }
 
 export async function editGame(gameid: number, formState: GameInput) {
   await fetch(`http://localhost:3000/api/games/${gameid}/edit`, {
     method: "POST",
     body: JSON.stringify(formState),
-  }).then((res) => res.json());
+  })
+    .then((res) => res.json())
+    .catch((error) => console.error(error));
 }
 
 export async function getGameMetadata() {

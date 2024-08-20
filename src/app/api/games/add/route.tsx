@@ -39,8 +39,9 @@ export async function POST(req: NextRequest) {
       `,
       variables: { input: gameInput },
     }),
-  });
-  const data = await rawdata.json();
+  })
+    .then((res) => res.json())
+    .catch((error) => console.error(error));
 
-  return NextResponse.json(data);
+  return NextResponse.json(rawdata);
 }

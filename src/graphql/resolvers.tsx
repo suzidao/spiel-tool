@@ -95,7 +95,7 @@ export const resolvers = {
     addUser: (root: User, args: { input: UserInput }) => createUser(args.input),
     addPublisher: (root: Publisher, args: { input: PublisherInput }) => createPublisher(args.input).then((res) => res),
     addDesigner: (root: Designer, args: { input: DesignerInput }) => createDesigner(args.input).then((res) => res),
-    addGame: (root: Game, args: { input: GameInput }) => createGame(args.input),
+    addGame: (root: Game, args: { input: GameInput }) => createGame(args.input).then((res) => res),
     editGame: (root: Game, args: { gameid: number; input: GameInput }) =>
       updateGame(args.gameid, args.input).then((res) => res),
     editPublisher: (root: Publisher, args: { publisherid: number; input: PublisherInput }) =>
@@ -108,9 +108,12 @@ export const resolvers = {
     cullDesigner: (root: Designer, args: { designerid: number }) => deleteDesigner(args.designerid).then((res) => res),
     addBGGData: async () => {
       const dbGames = await getGames().then((games) => games);
-      const previewGames = dbGames.length > 0 ? dbGames.filter((game) => game.previewid !== null) : [];
-      const lastPreviewID = previewGames.length > 0 ? previewGames[previewGames.length - 1].previewid : 0;
-      const newGames = bggGames.filter((game) => Number(game.itemid) > lastPreviewID);
+      const previewGameIds = dbGames
+        ? dbGames.filter((game) => game.previewid !== null).map((game) => game.previewid)
+        : [];
+
+      const newGames = bggGames.filter((game) => !previewGameIds.includes(Number(game.itemid)));
+
       if (newGames) {
         // iterate through each new game and add to database
         for (let i = 0; i < newGames.length; i++) {
@@ -186,6 +189,12 @@ export const resolvers = {
             minage: Number(thisGame.geekitem.item.minage),
             location: editLocation(thisGame),
             yearpublished: Number(thisGame.geekitem.item.yearpublished),
+            decision: "none",
+            negotiation: "none",
+            acquisition: "none",
+            numhave: 0,
+            numneed: 0,
+            numpromise: 0,
           };
 
           createGame(gameInput)

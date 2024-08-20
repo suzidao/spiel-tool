@@ -150,7 +150,10 @@ export default function DataTable(props: { data: Game[] }) {
     }),
     columnHelper.accessor("location", {
       id: "Location",
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const location = info.getValue();
+        return location ? location : "–";
+      },
       header: () => <span>Location</span>,
       sortingFn: "text",
       meta: {
@@ -173,7 +176,10 @@ export default function DataTable(props: { data: Game[] }) {
     }),
     columnHelper.accessor("releasedate", {
       id: "ReleaseDate",
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const date = info.getValue();
+        return date ? date : "–";
+      },
       header: () => <span>Release Date</span>,
       enableColumnFilter: false,
       meta: {

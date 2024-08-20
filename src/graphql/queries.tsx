@@ -66,6 +66,12 @@ export async function createGame(input: GameInput) {
     minage,
     location,
     yearpublished,
+    decision,
+    negotiation,
+    acquisition,
+    numhave,
+    numneed,
+    numpromise,
   } = input;
 
   const query = `INSERT INTO games (
@@ -81,21 +87,33 @@ export async function createGame(input: GameInput) {
     complexity,
     minage,
     location,
-    yearpublished
+    yearpublished,
+    decision,
+    negotiation,
+    acquisition,
+    numhave,
+    numneed,
+    numpromise
   ) VALUES (
-    ${bggid},
-    ${previewid},
+    ${bggid ?? null},
+    ${previewid ?? null},
     $$${title}$$,
     ${publisher},
     '{${designers}}',
-    ${minplayers},
-    ${maxplayers},
-    ${minplaytime},
-    ${maxplaytime},
-    ${complexity},
-    ${minage},
-    '${location}',
-    ${yearpublished}
+    ${minplayers ?? null},
+    ${maxplayers ?? null},
+    ${minplaytime ?? null},
+    ${maxplaytime ?? null},
+    ${complexity ?? null},
+    ${minage ?? null},
+    '${location ?? "–"}',
+    ${yearpublished ?? null},
+    '${decision}',
+    '${negotiation}',
+    '${acquisition}',
+    ${numhave ?? null},
+    ${numneed ?? null},
+    ${numpromise ?? null}
   ) RETURNING *`;
 
   return await pool

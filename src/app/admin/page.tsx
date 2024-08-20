@@ -39,7 +39,7 @@ export default function AdminPage() {
         </div>
       )}
       <div>
-        <button className="p-2 mx-2" onClick={() => scrapePreview(76, "spiel-preview-games.json")}>
+        <button className="p-2 mx-2" onClick={() => scrapePreview(77, "spiel-preview-games.json")}>
           Scrape Preview Items
         </button>
         |

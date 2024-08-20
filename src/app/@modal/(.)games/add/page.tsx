@@ -1,12 +1,12 @@
 /** @format */
 
 import Modal from "@/app/components/Modal";
-import NewGameForm from "@/app/components/NewGameForm";
+import EditGameForm from "@/app/components/EditGameForm";
 
 export default function AddGamesModal() {
   return (
     <Modal title="Add New Game">
-      <NewGameForm />
+      <EditGameForm />
     </Modal>
   );
 }

@@ -3,7 +3,7 @@
 "use client";
 
 import { normalizeText } from "@/utils/editData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type DataObject = {
   id: any;
@@ -19,6 +19,15 @@ export default function AutoCompleteInput(props: {
   const { name, value, dataList, onSelect } = props;
   const [searchTerm, setSearchTerm] = useState<string>(value);
   const [results, setResults] = useState<DataObject[]>([]);
+  const [match, setMatch] = useState<number>();
+
+  useEffect(() => {
+    onSelect(name, searchTerm, match);
+  }, [match, searchTerm]);
+
+  useEffect(() => {
+    setSearchTerm(value);
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let term = e.target.value;
@@ -36,13 +45,7 @@ export default function AutoCompleteInput(props: {
 
   return (
     <div className="relative">
-      <input
-        type="text"
-        name={name}
-        value={searchTerm}
-        onChange={handleChange}
-        onBlur={() => onSelect(name, searchTerm)}
-      />
+      <input type="text" name={name} value={searchTerm} onChange={handleChange} />
       <div className="absolute z-10">
         <div className="flex flex-col max-w-60 border-zinc-600 bg-white z-10">
           {results.map((match: DataObject, idx: number) => (
@@ -52,7 +55,7 @@ export default function AutoCompleteInput(props: {
               onClick={() => {
                 setSearchTerm(match.name);
                 setResults([]);
-                onSelect(name, searchTerm, match.id);
+                setMatch(match.id);
               }}
             >
               {match.name}

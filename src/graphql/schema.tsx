@@ -97,7 +97,7 @@ export const schema = buildSchema(`
     none
     acquired
     shipping
-    purchased
+    purchase
     pickup
     dropoff
   }
