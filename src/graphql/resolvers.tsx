@@ -175,6 +175,8 @@ export const resolvers = {
 
           const thisGame = newGames[i];
 
+          const hasComplexity = !!thisGame.geekitem.item.dynamicinfo.item.stats.avgweight;
+
           const gameInput = {
             bggid: Number(thisGame.objectid),
             previewid: Number(thisGame.itemid),
@@ -185,7 +187,9 @@ export const resolvers = {
             maxplayers: Number(thisGame.geekitem.item.maxplayers),
             minplaytime: Number(thisGame.geekitem.item.minplaytime),
             maxplaytime: Number(thisGame.geekitem.item.maxplaytime),
-            complexity: Number(Number(thisGame.geekitem.item.dynamicinfo.item.stats.avgweight).toFixed(2)),
+            complexity: hasComplexity
+              ? Number(Number(thisGame.geekitem.item.dynamicinfo.item.stats.avgweight).toFixed(2))
+              : undefined,
             minage: Number(thisGame.geekitem.item.minage),
             location: editLocation(thisGame),
             yearpublished: Number(thisGame.geekitem.item.yearpublished),

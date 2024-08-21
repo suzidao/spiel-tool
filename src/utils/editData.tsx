@@ -25,7 +25,7 @@ export function editLocation(data: ImportedData) {
     : "–";
 }
 
-export function extendGame(game: Game) {
+export function extendGame(game: DatabaseData) {
   const data = bggData.find((data: ImportedData) => Number(data.itemid) === game.previewid);
 
   if (!!data) {
@@ -58,7 +58,7 @@ export function extendGame(game: Game) {
       }
     };
 
-    const editedGame: BGGData = {
+    const extendedGame: BGGData = {
       ...game,
       location: retrievedLocation,
       msrp: data.msrp,
@@ -73,13 +73,21 @@ export function extendGame(game: Game) {
       subtypes: data.geekitem.item.subtypes,
       releasedate: formattedReleaseDate(),
       releasestatus: data.version.item.releasestatus,
-      mechanics: data.geekitem.item.links.boardgamemechanic,
-      expands: data.geekitem.item.links.expandsboardgame,
-      reimplements: data.geekitem.item.links.reimplements,
-      digitized: data.geekitem.item.links.boardgamefamily,
+      mechanics: data.geekitem.item.links.boardgamemechanic.map((mechanic) => {
+        return { objectid: mechanic.objectid, name: mechanic.name };
+      }),
+      expands: data.geekitem.item.links.expandsboardgame.map((expansion) => {
+        return { objectid: expansion.objectid, name: expansion.name };
+      }),
+      reimplements: data.geekitem.item.links.reimplements.map((reimplementation) => {
+        return { objectid: reimplementation.objectid, name: reimplementation.name };
+      }),
+      digitized: data.geekitem.item.links.boardgamefamily.map((family) => {
+        return { objectid: family.objectid, name: family.name };
+      }),
     };
 
-    return editedGame as Game;
+    return extendedGame as Game;
   } else {
     return {
       ...game,
