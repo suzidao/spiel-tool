@@ -99,6 +99,6 @@ export function extendGame(game: DatabaseData) {
       undecided_stats: 0,
       releasedate: "–",
       location: "–",
-    };
+    } as Game;
   }
 }

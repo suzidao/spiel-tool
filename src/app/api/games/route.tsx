@@ -51,7 +51,7 @@ export async function GET() {
   let allGames: Game[] = [];
 
   games.map((game: Game) => {
-    const editedGame = game.previewid === null ? game : extendGame(game);
+    const editedGame = extendGame(game);
 
     allGames.push(editedGame as Game);
   });

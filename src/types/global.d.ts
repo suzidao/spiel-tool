@@ -216,7 +216,7 @@ export declare global {
         dynamicinfo: {
           item: {
             stats: {
-              avgweight: string;
+              avgweight?: string;
             };
           };
         };

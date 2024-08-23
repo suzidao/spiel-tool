@@ -21,6 +21,8 @@ export default function EditGameForm(props: { game?: Game }) {
 
   const designerNames = game && game.designers ? game.designers.map((d) => d.name) : [];
 
+  const publisherName = game && game.publisher ? game.publisher.name : "";
+
   const initialState = {
     bggid: game ? game.bggid : undefined,
     title: game ? game.title! : "",
@@ -47,9 +49,9 @@ export default function EditGameForm(props: { game?: Game }) {
   const acquisitionOptions = Object.entries(ACQUISITION);
 
   const [formState, setFormState] = useState<GameInput>(initialState);
-  const [publisherName, setPublisherName] = useState<string>("");
+  const [formPublisher, setFormPublisher] = useState<string>(publisherName ?? "");
   const [newPublisher, setNewPublisher] = useState<string>("");
-  const [formDesigners, setFormDesigners] = useState<string[]>(designerNames.length ? designerNames : [""]);
+  const [formDesigners, setFormDesigners] = useState<string[]>(designerNames ?? [""]);
   const [newDesigners, setNewDesigners] = useState<string[]>([]);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function EditGameForm(props: { game?: Game }) {
 
     switch (fieldName) {
       case "publisher":
-        setPublisherName(value);
+        setFormPublisher(value);
         const existingPublisher = publishers.find(
           (pub) => pub.publisherid === valueId || normalizeText(pub.name) === normalizeText(value)
         );
@@ -168,7 +170,7 @@ export default function EditGameForm(props: { game?: Game }) {
       </label>
       <label>
         Publisher:
-        <AutoCompleteInput name="publisher" dataList={publisherList} value={publisherName} onSelect={handleInput} />
+        <AutoCompleteInput name="publisher" dataList={publisherList} value={formPublisher} onSelect={handleInput} />
       </label>
       <label>
         Designer(s):
