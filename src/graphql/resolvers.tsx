@@ -27,7 +27,7 @@ import gamesData from "../data/spiel-preview-games.json";
 import type * as Global from "../types/global.d.ts";
 import { editLocation } from "../utils/editData";
 
-const bggGames = gamesData as unknown as ImportedData[];
+const bggGames = gamesData as ImportedData[];
 
 export const resolvers = {
   Query: {
@@ -107,14 +107,22 @@ export const resolvers = {
       deletePublisher(args.publisherid).then((res) => res),
     cullDesigner: (root: Designer, args: { designerid: number }) => deleteDesigner(args.designerid).then((res) => res),
     addBGGData: async () => {
+      console.log("LET'S ADD SOME GAAAAMES!");
       const dbGames = await getGames().then((games) => games);
       const previewGameIds = dbGames
         ? dbGames.filter((game) => game.previewid !== null).map((game) => game.previewid)
         : [];
 
+      console.log(dbGames.length, "IN DATABASE");
+      console.log(previewGameIds.length);
+
       const newGames = bggGames.filter((game) => !previewGameIds.includes(Number(game.itemid)));
 
-      if (newGames) {
+      console.log("THERE ARE", bggGames.length, "BGG GAMES");
+
+      console.log("THERE ARE", newGames.length, "NEW GAMES");
+      if (newGames.length > 0) {
+        console.log("ADDING NEW GAMES");
         // iterate through each new game and add to database
         for (let i = 0; i < newGames.length; i++) {
           // const newGameId = dbGames[dbGames.length - 1].gameid + 1 + i;
@@ -205,6 +213,7 @@ export const resolvers = {
             .then((res) => res)
             .catch((error) => console.error(error));
         }
+        console.log("NEW GAMES WERE ADDED");
       }
     },
   },
