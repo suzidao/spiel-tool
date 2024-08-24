@@ -1,0 +1,350 @@
+[
+  {
+    "ID": "CATEGORIES.18",
+    "TITEL": "Educative game",
+    "S_ORDER": "EDUCATIVE GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.37", "TITEL": "Dice game", "S_ORDER": "DICE GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  { "ID": "LEVEL.4", "TITEL": "Expert", "S_ORDER": "D", "PARENT_ID": "LEVEL", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.14",
+    "TITEL": "Modular Board",
+    "S_ORDER": "MODULAR BOARD",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "MECHANISMS", "TITEL": "Mechanisms", "S_ORDER": "MECHANISMS", "PARENT_ID": "ROOT", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.9",
+    "TITEL": "Dungeon Crawler",
+    "S_ORDER": "DUNGEON CRAWLER",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.6",
+    "TITEL": "Dexterity game",
+    "S_ORDER": "DEXTERITY GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.17",
+    "TITEL": "Tile placement game",
+    "S_ORDER": "TILE PLACEMENT GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "LEVEL.3", "TITEL": "Connoisseur", "S_ORDER": "C", "PARENT_ID": "LEVEL", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.20",
+    "TITEL": "Trick taking",
+    "S_ORDER": "TRICK TAKING",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.14",
+    "TITEL": "Cooperative",
+    "S_ORDER": "COOPERATIVE",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.1",
+    "TITEL": "Area Control",
+    "S_ORDER": "AREA CONTROL",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.31", "TITEL": "Solo game", "S_ORDER": "SOLO GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.6",
+    "TITEL": "Dice Placement",
+    "S_ORDER": "DICE PLACEMENT",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.11",
+    "TITEL": "Escape Game",
+    "S_ORDER": "ESCAPE GAME",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.17",
+    "TITEL": "Ressource Management",
+    "S_ORDER": "RESSOURCE MANAGEMENT",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.13",
+    "TITEL": "Communication game",
+    "S_ORDER": "COMMUNICATION GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.16", "TITEL": "Legacy", "S_ORDER": "LEGACY", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  { "ID": "TYPE.1", "TITEL": "Expansion", "S_ORDER": "EXPANSION", "PARENT_ID": "TYPE", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.5",
+    "TITEL": "Deck Building",
+    "S_ORDER": "DECK BUILDING",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.39",
+    "TITEL": "Numbers game",
+    "S_ORDER": "NUMBERS GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.4",
+    "TITEL": "Bag Building",
+    "S_ORDER": "BAG BUILDING",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.29",
+    "TITEL": "Roleplaying game",
+    "S_ORDER": "ROLEPLAYING GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.10",
+    "TITEL": "Engine Building",
+    "S_ORDER": "ENGINE BUILDING",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.7",
+    "TITEL": "Game of luck",
+    "S_ORDER": "GAME OF LUCK",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.28",
+    "TITEL": "Traveling game",
+    "S_ORDER": "TRAVELING GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.27", "TITEL": "Riddle", "S_ORDER": "RIDDLE", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.9",
+    "TITEL": "Campaign game",
+    "S_ORDER": "CAMPAIGN GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "MECHANISMS.13", "TITEL": "Trade", "S_ORDER": "TRADE", "PARENT_ID": "MECHANISMS", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.33",
+    "TITEL": "Story game",
+    "S_ORDER": "STORY GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.19",
+    "TITEL": "Set Collection",
+    "S_ORDER": "SET COLLECTION",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.10", "TITEL": "Card Game", "S_ORDER": "CARD GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.2",
+    "TITEL": "Area Movement",
+    "S_ORDER": "AREA MOVEMENT",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.20", "TITEL": "Memo game", "S_ORDER": "MEMO GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  { "ID": "MECHANISMS.23", "TITEL": "Others", "S_ORDER": "Z", "PARENT_ID": "MECHANISMS", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.24",
+    "TITEL": "Planning game",
+    "S_ORDER": "PLANNING GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.21",
+    "TITEL": "Tile Placement",
+    "S_ORDER": "TILE PLACEMENT",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.18",
+    "TITEL": "Roll'n'Write",
+    "S_ORDER": "ROLL'N'WRITE",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "LEVEL", "TITEL": "Level", "S_ORDER": "LEVEL", "PARENT_ID": "ROOT", "ROOT_ID": "-1" },
+  { "ID": "CATEGORIES.36", "TITEL": "Word game", "S_ORDER": "WORD GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.32",
+    "TITEL": "Game accessories",
+    "S_ORDER": "GAME ACCESSORIES",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.5", "TITEL": "Euro game", "S_ORDER": "EURO GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  { "ID": "MECHANISMS.3", "TITEL": "Auction", "S_ORDER": "AUCTION", "PARENT_ID": "MECHANISMS", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.22",
+    "TITEL": "Outdoor game",
+    "S_ORDER": "OUTDOOR GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.4",
+    "TITEL": "Escape game",
+    "S_ORDER": "ESCAPE GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.1", "TITEL": "4x game", "S_ORDER": "4X GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.8",
+    "TITEL": "Hybrid game",
+    "S_ORDER": "HYBRID GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.22",
+    "TITEL": "Worker Placement",
+    "S_ORDER": "WORKER PLACEMENT",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "TYPE", "TITEL": "Type", "S_ORDER": "TYPE", "PARENT_ID": "ROOT", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.34",
+    "TITEL": "Strategy game",
+    "S_ORDER": "STRATEGY GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "LEVEL.2", "TITEL": "Intermediate", "S_ORDER": "B", "PARENT_ID": "LEVEL", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.16",
+    "TITEL": "Push your Luck",
+    "S_ORDER": "PUSH YOUR LUCK",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.19",
+    "TITEL": "Logic game",
+    "S_ORDER": "LOGIC GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.23",
+    "TITEL": "Party game",
+    "S_ORDER": "PARTY GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.15",
+    "TITEL": "Pick-up and Deliver",
+    "S_ORDER": "PICK-UP AND DELIVER",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "TYPE.2", "TITEL": "Base game", "S_ORDER": "BASE GAME", "PARENT_ID": "TYPE", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.30",
+    "TITEL": "Trading card game",
+    "S_ORDER": "TRADING CARD GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.21",
+    "TITEL": "Miniatures games",
+    "S_ORDER": "MINIATURES GAMES",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.35",
+    "TITEL": "Knowledge game",
+    "S_ORDER": "KNOWLEDGE GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.38", "TITEL": "Other", "S_ORDER": "Z", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.2",
+    "TITEL": "Action game",
+    "S_ORDER": "ACTION GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "MECHANISMS.8", "TITEL": "Drafting", "S_ORDER": "DRAFTING", "PARENT_ID": "MECHANISMS", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.15",
+    "TITEL": "Crime and detective game",
+    "S_ORDER": "CRIME AND DETECTIVE GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "CATEGORIES.12",
+    "TITEL": "Brain game",
+    "S_ORDER": "BRAIN GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES", "TITEL": "Categories", "S_ORDER": "CATEGORIES", "PARENT_ID": "ROOT", "ROOT_ID": "-1" },
+  { "ID": "LEVEL.1", "TITEL": "Beginner", "S_ORDER": "A", "PARENT_ID": "LEVEL", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.11",
+    "TITEL": "Childrens game",
+    "S_ORDER": "CHILDRENS GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  {
+    "ID": "MECHANISMS.12",
+    "TITEL": "Flip'n'Write",
+    "S_ORDER": "FLIP'N'WRITE",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.26", "TITEL": "Quiz game", "S_ORDER": "QUIZ GAME", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "CATEGORIES.3",
+    "TITEL": "Board Game",
+    "S_ORDER": "BOARD GAME",
+    "PARENT_ID": "CATEGORIES",
+    "ROOT_ID": "-1"
+  },
+  { "ID": "CATEGORIES.25", "TITEL": "Puzzle", "S_ORDER": "PUZZLE", "PARENT_ID": "CATEGORIES", "ROOT_ID": "-1" },
+  {
+    "ID": "MECHANISMS.7",
+    "TITEL": "Dice Rolling",
+    "S_ORDER": "DICE ROLLING",
+    "PARENT_ID": "MECHANISMS",
+    "ROOT_ID": "-1"
+  }
+]

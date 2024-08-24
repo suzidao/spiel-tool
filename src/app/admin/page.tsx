@@ -3,15 +3,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { scrapePreview, getNewGames, addBGGData } from "../actions";
+import { scrapePreview, getNewGames, addBGGData, scrapeSPIEL } from "../actions";
 import bggData from "../../data/spiel-preview-games.json";
 import parentData from "../../data/spiel-preview-parents.json";
+import SPIELData from "../../data/spiel-app-games.json";
 
 export default function AdminPage() {
   const [gameIds, setGameIds] = useState<string[]>([]);
 
-  const gamesData = bggData as unknown as ImportedData[];
+  const BGGGames = bggData as unknown as ImportedData[];
   const metaData = parentData as PublisherMeta[];
+  const SPIELGames = SPIELData.filter((product) => !product.THEMEN.includes("CATEGORIES.32")) as SPIELProductData[];
 
   useEffect(() => {
     getNewGames().then((res) => setGameIds(res));
@@ -20,20 +22,23 @@ export default function AdminPage() {
   return (
     <div className="flex justify-between p-24">
       <div>
-        <div>total games: {gamesData.length}</div>
+        <div>total BGG games: {BGGGames.length}</div>
         <div className="mb-4">total publishers: {metaData.length}</div>
-        <div>total new games: {gameIds.length}</div>
+        <div>total new BGG games: {gameIds.length}</div>
         <button className="p-2 mx-2" onClick={() => addBGGData()}>
           Add New Games
         </button>
         <Link href="/games/add">Add New Game</Link>
       </div>
-      {!!gameIds && (
+      <div>
+        <div>total SPIEL games: {SPIELGames.length}</div>
+      </div>
+      {gameIds.length > 0 && (
         <div>
           <h2>NEW GAMES:</h2>
           <ul>
             {gameIds.map((id) =>
-              gamesData.map(
+              BGGGames.map(
                 (game) =>
                   game.itemid === id && (
                     <li key={game.itemid}>
@@ -51,7 +56,11 @@ export default function AdminPage() {
         </button>
         |
         <button className="p-2 mx-2" onClick={() => scrapePreview(6, "spiel-preview-parents.json", true)}>
-          Scrape Parent Items
+          Scrape BGG Parent Items
+        </button>
+        |
+        <button className="p-2 mx-2" onClick={() => scrapeSPIEL()}>
+          Scrape SPIEL App
         </button>
       </div>
     </div>
