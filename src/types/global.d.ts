@@ -233,4 +233,25 @@ export declare global {
     objectid: string;
     location: string;
   };
+
+  type SPIELProductData = {
+    INFO: string;         // contains designer info
+    S_ORDER: string;      // sorting order
+    TITEL: string;        // game title
+    FIRMA_ID: string;     // publisher id
+    UNTERTITEL: string;   // publisher name
+    THEMEN: string[];     // categories
+    STAENDE: {            // locations
+      ID: string;
+      HALLE: string;
+      NAME: string;
+    }[];
+  };
+
+  type SPIELTheme = {
+    ID: string;
+    TITEL: string;
+    S_ORDER: string;
+    PARENT_ID: string;
+  };
 }
