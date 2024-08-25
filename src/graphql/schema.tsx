@@ -68,6 +68,22 @@ export const schema = buildSchema(`
     eventid: Int
     paxid: Int
   }
+  
+  type SPIELGame {
+    spielid: Int
+    gameid: Int
+    title: String
+    publisher: String
+    designers: [String]
+    minplayers: Int
+    maxplayers: Int
+    playtime: Int
+    minage: Int
+    price: Float
+    location: String
+    releasedate: String
+    mechanics: [String]
+  }
 
   type GameDesigner {
     id: Int
@@ -162,9 +178,24 @@ export const schema = buildSchema(`
     designerid: Int
   }
 
+  input SPIELInput {
+    title: String
+    publisher: String
+    designers: [String]
+    minplayers: Int
+    maxplayers: Int
+    playtime: Int
+    minage: Int
+    price: Float
+    location: String
+    releasedate: String
+    mechanics: [String]
+  }
+
   type Query {
     games: [Game]
     game(id: Int): Game
+    SPIELgames: [SPIELGame]
     publishers: [Publisher]
     publisher(id: Int): Publisher
     designers: [Designer]
@@ -176,6 +207,7 @@ export const schema = buildSchema(`
 
   type Mutation {
     addGame(input: GameInput): Game!
+    importSPIELData(input: SPIELInput): SPIELGame!
     addPublisher(input: PublisherInput): Publisher!
     addDesigner(input: DesignerInput): Designer!
     addUser(input: UserInput): User!

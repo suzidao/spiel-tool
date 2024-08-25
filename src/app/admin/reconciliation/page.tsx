@@ -1,6 +1,7 @@
 /** @format */
 
 import SPIELData from "../../../data/spiel-app-games.json";
+import SPIELThemes from "../../../data/spiel-app-themes.json";
 
 export default function ReconciliationPage() {
   const SPIELGames = SPIELData.filter((product) => !product.THEMEN.includes("CATEGORIES.32")) as SPIELProductData[];
@@ -19,9 +20,10 @@ export default function ReconciliationPage() {
             <th>Playtime</th>
             <th>Age</th>
             <th>Booth</th>
+            <th>Mechanics</th>
           </tr>
           {SPIELGames.map((game) => {
-            const { S_ORDER, TITEL, UNTERTITEL, INFO, STAENDE, FIRMA_ID } = game;
+            const { S_ORDER, TITEL, UNTERTITEL, INFO, STAENDE, FIRMA_ID, THEMEN } = game;
 
             const price = INFO.split("price:</td><td>")[1].split("</td>")[0].split("&nbsp;")[0];
             const playercount = INFO.split("players:</td><td>")[1].split("</td>")[0];
@@ -32,6 +34,9 @@ export default function ReconciliationPage() {
             const designers = INFO.split("</td><td>")[1].split("</td>")[0];
             const playtime = INFO.split("time:</td><td>")[1].split("minutes</td>")[0];
             const releasedate = INFO.split("date:</td><td>")[1].split("</td>")[0];
+            const mechanics = THEMEN.filter((theme) => theme.includes("MECHANISMS") && theme !== "MECHANISMS.23")
+              .map((mechanic) => SPIELThemes.find((theme) => theme.ID === mechanic))
+              .map((mechanic) => mechanic?.TITEL);
 
             return (
               <tr key={FIRMA_ID + S_ORDER}>
@@ -44,6 +49,7 @@ export default function ReconciliationPage() {
                 <td>{playtime}</td>
                 <td>{age}</td>
                 <td>{booths.map((booth, idx) => booth + (booths.length - 1 !== idx ? ", " : ""))}</td>
+                <td>{mechanics.map((mechanic, idx) => mechanic + (mechanics.length - 1 !== idx ? ", " : ""))}</td>
               </tr>
             );
           })}

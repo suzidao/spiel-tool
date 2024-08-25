@@ -8,6 +8,9 @@ export async function getUsers() {
 export async function getGames() {
   return await pool.query(`SELECT * FROM games`).then((res) => res.rows);
 }
+export async function getSPIELGames() {
+  return await pool.query(`SELECT * FROM spielgames`).then((res) => res.rows);
+}
 export async function getPublishers() {
   return await pool.query(`SELECT * FROM publishers`).then((res) => res.rows);
 }
@@ -175,6 +178,53 @@ export async function createGameDesigner(input: GameDesignerInput) {
         ${designerid}
       ) RETURNING *`
     )
+    .then((res) => res.rows[0])
+    .catch((error) => console.error(error));
+}
+
+export async function createSPIELGame(input: SPIELInput) {
+  const {
+    title,
+    publisher,
+    designers,
+    minplayers,
+    maxplayers,
+    playtime,
+    minage,
+    price,
+    location,
+    releasedate,
+    mechanics,
+  } = input;
+
+  const query = `INSERT INTO spielgames (
+        title,
+        publisher,
+        designers,
+        minplayers,
+        maxplayers,
+        playtime,
+        minage,
+        price,
+        location,
+        releasedate,
+        mechanics
+      ) VALUES (
+        $$${title}$$,
+        $$${publisher}$$,
+        string_to_array($$${designers}$$, ','),
+        ${minplayers},
+        ${maxplayers},
+        ${playtime},
+        ${minage},
+        ${price ?? null},
+        '${location}',
+        '${releasedate}',
+        string_to_array($$${mechanics}$$, ',')
+      ) RETURNING *`;
+
+  return await pool
+    .query(query)
     .then((res) => res.rows[0])
     .catch((error) => console.error(error));
 }

@@ -97,7 +97,8 @@ export declare global {
 
   interface DatabaseData extends BaseGameData {
     bggid?: number;
-    readonly previewid?: number;
+    previewid?: number;
+    spielid?: number;
     decision: Decision;
     negotiation: Negotiation;
     acquisition: Acquisition;
@@ -124,6 +125,11 @@ export declare global {
     digitized: GameMeta[];
     mechanics: GameMeta[];
     expands: GameMeta[];
+  }
+
+  interface SpielData extends BaseGameData {
+    mechanics?: string[];
+    price?: number;
   }
 
   type Game = DatabaseData & BGGData;
@@ -236,13 +242,14 @@ export declare global {
   };
 
   type SPIELProductData = {
-    INFO: string;         // contains designer info
-    S_ORDER: string;      // sorting order
-    TITEL: string;        // game title
-    FIRMA_ID: string;     // publisher id
-    UNTERTITEL: string;   // publisher name
-    THEMEN: string[];     // categories
-    STAENDE: {            // locations
+    INFO: string; // contains designer info
+    S_ORDER: string; // sorting order
+    TITEL: string; // game title
+    FIRMA_ID: string; // publisher id
+    UNTERTITEL: string; // publisher name
+    THEMEN: string[]; // categories
+    STAENDE: {
+      // locations
       ID: string;
       HALLE: string;
       NAME: string;
@@ -254,5 +261,35 @@ export declare global {
     TITEL: string;
     S_ORDER: string;
     PARENT_ID: string;
+  };
+
+  type SPIELGame = {
+    spielid: number;
+    gameid?: number;
+    title: string;
+    publisher: string;
+    designers: string[];
+    minplayers: number;
+    maxplayers: number;
+    playtime: number;
+    minage: number;
+    price: number;
+    location: string;
+    releasedate: string;
+    mechanics?: string[];
+  };
+
+  type SPIELInput = {
+    title: string;
+    publisher: string;
+    designers: string;
+    minplayers: number;
+    maxplayers: number;
+    playtime: number;
+    minage: number;
+    price?: number;
+    location: string;
+    releasedate: string;
+    mechanics?: string;
   };
 }
