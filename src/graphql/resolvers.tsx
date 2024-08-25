@@ -4,6 +4,7 @@ import {
   getPublishers,
   getDesigners,
   getGames,
+  getSPIELGames,
   getUser,
   getPublisher,
   getDesigner,
@@ -12,6 +13,7 @@ import {
   getGameDesigners,
   createDesigner,
   createGame,
+  createSPIELGame,
   createPublisher,
   createUser,
   updateGame,
@@ -24,13 +26,18 @@ import {
 } from "./queries";
 
 import gamesData from "../data/spiel-preview-games.json";
+import SPIELData from "../data/spiel-app-games.json";
+import SPIELThemeData from "../data/spiel-app-themes.json";
 import type * as Global from "../types/global.d.ts";
 import { editLocation } from "../utils/editData";
 
-const bggGames = gamesData as unknown as ImportedData[];
+const bggGames = gamesData as ImportedData[];
+const SPIELGames = SPIELData as SPIELProductData[];
+const SPIELThemes = SPIELThemeData as SPIELTheme[];
 
 export const resolvers = {
   Query: {
+    SPIELgames: () => getSPIELGames(),
     games: () => getGames(),
     game: (_root: any, args: { id: number }) => getGame(args.id),
     publishers: () => getPublishers(),
@@ -106,6 +113,58 @@ export const resolvers = {
     cullPublisher: (root: Publisher, args: { publisherid: number }) =>
       deletePublisher(args.publisherid).then((res) => res),
     cullDesigner: (root: Designer, args: { designerid: number }) => deleteDesigner(args.designerid).then((res) => res),
+    importSPIELData: async () => {
+      const dbGames = await getSPIELGames().then((games) => games);
+      const existingGames = dbGames
+        ? dbGames.map((game) => {
+            return { title: game.title, publisher: game.publisher };
+          })
+        : [];
+
+      const newGames = SPIELGames.filter(
+        (game) =>
+          !existingGames.find(
+            (existingGame) => existingGame.title === game.TITEL && existingGame.publisher === game.UNTERTITEL
+          )
+      );
+
+      if (newGames) {
+        for (let i = 0; i < newGames.length; i++) {
+          const thisGame = newGames[i];
+
+          const playerCount = thisGame.INFO.split("players:</td><td>")[1].split("</td>")[0];
+
+          const booths = !!thisGame.STAENDE
+            ? thisGame.STAENDE.map((location) => [location.NAME.slice(0, 1), "-", location.NAME.slice(1)].join(""))
+            : [];
+
+          const pricing = Number(
+            Number(thisGame.INFO.split("price:</td><td>")[1].split("</td>")[0].split("&nbsp;")[0]).toFixed(2)
+          );
+
+          const SPIELInput = {
+            title: thisGame.TITEL,
+            publisher: thisGame.UNTERTITEL,
+            designers: thisGame.INFO.split("</td><td>")[1].split("</td>")[0].toString(),
+            minplayers: Number(playerCount.split("-")[0]),
+            maxplayers: Number(playerCount.split("-")[1] ?? 0),
+            playtime: Number(thisGame.INFO.split("time:</td><td>")[1].split("minutes</td>")[0]),
+            minage: Number(thisGame.INFO.split("Age:</td><td>")[1].split("and up</td>")[0]),
+            price: isNaN(pricing) ? undefined : pricing,
+            location: booths.toString() ?? "–",
+            releasedate: thisGame.INFO.split("date:</td><td>")[1].split("</td>")[0],
+            mechanics: thisGame.THEMEN.filter((theme) => theme.includes("MECHANISMS") && theme !== "MECHANISMS.23")
+              .map((mechanic) => SPIELThemes.find((theme) => theme.ID === mechanic))
+              .map((mechanic) => mechanic?.TITEL)
+              .toString(),
+          };
+
+          createSPIELGame(SPIELInput)
+            .then((res) => res)
+            .catch((error) => console.error(error));
+        }
+      }
+    },
     addBGGData: async () => {
       const dbGames = await getGames().then((games) => games);
       const previewGameIds = dbGames

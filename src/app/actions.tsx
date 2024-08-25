@@ -126,6 +126,27 @@ export async function getNewGames() {
   return newGames.map((game) => game.itemid);
 }
 
+export async function importSPIELData() {
+  // all the action happens in the resolver because we need dbGames
+  const rawdata = await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    body: JSON.stringify({
+      query: `
+        mutation {
+          importSPIELData { spielid }
+        }
+      `,
+    }),
+  });
+  const data = await rawdata.json();
+
+  return data;
+}
+
 export async function addBGGData() {
   // all the action happens in the resolver because we need dbGames
   const rawdata = await fetch("http://localhost:4000/graphql", {
@@ -143,7 +164,7 @@ export async function addBGGData() {
     }),
   });
   const data = await rawdata.json();
-  !!data && console.log("ACTION SUCCESSFUL");
+
   return data;
 }
 

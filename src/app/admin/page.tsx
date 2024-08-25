@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { scrapePreview, getNewGames, addBGGData, scrapeSPIEL } from "../actions";
+import { scrapePreview, getNewGames, addBGGData, scrapeSPIEL, importSPIELData } from "../actions";
 import bggData from "../../data/spiel-preview-games.json";
 import parentData from "../../data/spiel-preview-parents.json";
 import SPIELData from "../../data/spiel-app-games.json";
@@ -32,6 +32,9 @@ export default function AdminPage() {
       </div>
       <div>
         <div>total SPIEL games: {SPIELGames.length}</div>
+        <button className="p-2 mx-2" onClick={() => importSPIELData()}>
+          Import SPIEL Games
+        </button>
       </div>
       {gameIds.length > 0 && (
         <div>
