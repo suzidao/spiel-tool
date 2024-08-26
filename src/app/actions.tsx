@@ -67,6 +67,10 @@ export async function scrapePreview(pageCount: number, filename: string, parent?
   });
 }
 
+export async function getGames() {
+  return await fetch("http://localhost:3000/api/games", { cache: "no-store" }).then((data) => data.json());
+}
+
 export async function getNewGames() {
   const rawdata = await fetch("http://localhost:4000/graphql", {
     method: "POST",
