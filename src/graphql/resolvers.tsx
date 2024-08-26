@@ -23,6 +23,7 @@ import {
   deletePublisher,
   deleteDesigner,
   getAllGameDesigners,
+  associateGames,
 } from "./queries";
 
 import gamesData from "../data/spiel-preview-games.json";
@@ -113,6 +114,9 @@ export const resolvers = {
     cullPublisher: (root: Publisher, args: { publisherid: number }) =>
       deletePublisher(args.publisherid).then((res) => res),
     cullDesigner: (root: Designer, args: { designerid: number }) => deleteDesigner(args.designerid).then((res) => res),
+    assignGame: (root: Game, args: { spielid: number; gameid: number }) => {
+      associateGames(args.spielid, args.gameid);
+    },
     importSPIELData: async () => {
       const dbGames = await getSPIELGames().then((games) => games);
       const existingGames = dbGames
@@ -127,7 +131,7 @@ export const resolvers = {
             (existingGame) => existingGame.title === game.TITEL && existingGame.publisher === game.UNTERTITEL
           )
       );
-
+      console.log("THERE ARE", newGames.length, "NEW GAMES");
       if (newGames) {
         for (let i = 0; i < newGames.length; i++) {
           const thisGame = newGames[i];

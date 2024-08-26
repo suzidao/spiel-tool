@@ -45,6 +45,7 @@ export const schema = buildSchema(`
     gameid: Int
     bggid: Int
     previewid: Int
+    spielid: Int
     title: String
     publisher: Publisher
     designers: [Designer]
@@ -212,6 +213,7 @@ export const schema = buildSchema(`
     addDesigner(input: DesignerInput): Designer!
     addUser(input: UserInput): User!
     addBGGData: [Game]
+    assignGame(spielid: Int, gameid: Int): [Game]
     editGame(gameid: Int, input: GameInput): Game!
     editPublisher(publisherid: Int, input: PublisherInput): Publisher!
     editDesigner(designerid: Int, input: DesignerInput): Designer!

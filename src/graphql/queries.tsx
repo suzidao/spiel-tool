@@ -308,3 +308,11 @@ export async function deletePublisher(publisherid: number) {
 export async function deleteDesigner(designerid: number) {
   return await pool.query(`DELETE from designers WHERE designerid=${designerid} RETURNING designerid`);
 }
+
+export async function associateGames(spielid: number, gameid: number) {
+  const SPIELGame = await pool.query(`UPDATE spielgames SET gameid=${gameid} WHERE spielid=${spielid} RETURNING *`);
+
+  const game = await pool.query(`UPDATE games SET spielid=${spielid} WHERE gameid=${gameid} RETURNING *`);
+
+  return { SPIELGame, game };
+}

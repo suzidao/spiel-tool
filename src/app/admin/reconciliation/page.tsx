@@ -1,60 +1,106 @@
 /** @format */
 
-import SPIELData from "../../../data/spiel-app-games.json";
-import SPIELThemes from "../../../data/spiel-app-themes.json";
+"use client";
+
+import { useEffect, useState } from "react";
+import { assignGame, getAllGames } from "@/app/actions";
+import { normalizeText } from "@/utils/editData";
 
 export default function ReconciliationPage() {
-  const SPIELGames = SPIELData.filter((product) => !product.THEMEN.includes("CATEGORIES.32")) as SPIELProductData[];
+  const [dbGames, setDBGames] = useState<Game[]>([]);
+  const [SPIELGames, setSPIELGames] = useState<SPIELGame[]>([]);
+  const [matchTerm, setMatchTerm] = useState<string>("");
+  const [results, setResults] = useState<Game[]>([]);
+  const [gameMatch, setGameMatch] = useState<SPIELGame>();
+
+  useEffect(() => {
+    getAllGames().then((res) => {
+      setSPIELGames(res.SPIELgames);
+      setDBGames(res.games);
+    });
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let term = e.target.value;
+    setMatchTerm(term);
+    match(term);
+  };
+
+  const match = (term: string) => {
+    const filteredResults = dbGames.filter((game) => {
+      return normalizeText(game.title).includes(normalizeText(term));
+    });
+
+    term !== "" ? setResults(filteredResults) : setResults([]);
+  };
 
   return (
-    <div>
-      <table>
+    <div className="flex flex-row gap-4 justify-between">
+      <table className="w-1/2">
         <thead>
           <tr>
             <th>Title</th>
             <th>Publisher</th>
-            <th>Price</th>
-            <th>Release Date</th>
-            <th>Designer(s)</th>
-            <th>Player Count</th>
-            <th>Playtime</th>
-            <th>Age</th>
-            <th>Booth</th>
-            <th>Mechanics</th>
+            <th>Reconcile</th>
           </tr>
-          {SPIELGames.map((game) => {
-            const { S_ORDER, TITEL, UNTERTITEL, INFO, STAENDE, FIRMA_ID, THEMEN } = game;
-
-            const price = INFO.split("price:</td><td>")[1].split("</td>")[0].split("&nbsp;")[0];
-            const playercount = INFO.split("players:</td><td>")[1].split("</td>")[0];
-            const minplayers = playercount.split("-")[0];
-            const maxplayers = playercount.split("-")[1];
-            const age = INFO.split("Age:</td><td>")[1].split("and up</td>")[0];
-            const booths = STAENDE.map((location) => [location.NAME.slice(0, 1), "-", location.NAME.slice(1)].join(""));
-            const designers = INFO.split("</td><td>")[1].split("</td>")[0];
-            const playtime = INFO.split("time:</td><td>")[1].split("minutes</td>")[0];
-            const releasedate = INFO.split("date:</td><td>")[1].split("</td>")[0];
-            const mechanics = THEMEN.filter((theme) => theme.includes("MECHANISMS") && theme !== "MECHANISMS.23")
-              .map((mechanic) => SPIELThemes.find((theme) => theme.ID === mechanic))
-              .map((mechanic) => mechanic?.TITEL);
-
+        </thead>
+        <tbody>
+          {SPIELGames.map((game: SPIELGame) => {
+            const { spielid, gameid, title, publisher } = game;
             return (
-              <tr key={FIRMA_ID + S_ORDER}>
-                <td>{TITEL}</td>
-                <td>{UNTERTITEL}</td>
-                <td>{price}</td>
-                <td>{releasedate}</td>
-                <td>{designers}</td>
-                <td>{minplayers + (maxplayers ? `– ${maxplayers}` : "")}</td>
-                <td>{playtime}</td>
-                <td>{age}</td>
-                <td>{booths.map((booth, idx) => booth + (booths.length - 1 !== idx ? ", " : ""))}</td>
-                <td>{mechanics.map((mechanic, idx) => mechanic + (mechanics.length - 1 !== idx ? ", " : ""))}</td>
+              <tr key={spielid}>
+                <td className="py-2">{title}</td>
+                <td className="py-2">{publisher}</td>
+                <td className="py-2">
+                  {!!gameid ? (
+                    "✅"
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setMatchTerm(title);
+                        match(title);
+                        setGameMatch(game);
+                      }}
+                    >
+                      Reconcile
+                    </button>
+                  )}
+                </td>
               </tr>
             );
           })}
-        </thead>
+        </tbody>
       </table>
+      <div className="w-1/2 fixed right-0 top-0">
+        <p>Currenting matching: {gameMatch?.title}</p>
+        <input type="text" name="match" value={matchTerm} onChange={handleChange} />
+        <table>
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Title</th>
+              <th>Publisher</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((match: Game) => (
+              <tr>
+                <td>
+                  <button
+                    onClick={() => {
+                      assignGame(gameMatch!.spielid, match.gameid);
+                    }}
+                  >
+                    Match
+                  </button>
+                </td>
+                <td>{match.title}</td>
+                <td>{match.publisher.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
