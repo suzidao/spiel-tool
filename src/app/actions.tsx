@@ -57,6 +57,26 @@ export async function assignGame(spielid: number, gameid: number) {
     .catch((error) => console.error(error));
 }
 
+export async function toggleIgnore(spielid: number, ignore: boolean) {
+  await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+    body: JSON.stringify({
+      query: `
+        mutation ($spielid: Int, $ignore: Boolean) {
+          toggleIgnore (spielid: $spielid, ignore: $ignore) { spielid }
+        }
+      `,
+      variables: { spielid: spielid, ignore: ignore },
+    }),
+  })
+    .then((res) => res.json().then((data) => data))
+    .catch((error) => console.error(error));
+}
+
 export async function scrapePreview(pageCount: number, filename: string, parent?: boolean) {
   const previewItems: ImportedData[] = [];
   for (let i = 1; i <= pageCount; i++) {
@@ -121,6 +141,7 @@ export async function getAllGames() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Cache-Control": "no-store",
     },
     cache: "no-store",
     body: JSON.stringify({
@@ -140,6 +161,7 @@ export async function getAllGames() {
             minage
             location
             mechanics
+            ignore
           }
           games {
             gameid

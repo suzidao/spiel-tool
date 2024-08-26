@@ -6,12 +6,10 @@ import BGGKeys from "../../data/bgg-keys.json";
 import {
   ColumnFiltersState,
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   Row,
-  RowData,
   SortingState,
   useReactTable,
   VisibilityState,
@@ -486,7 +484,7 @@ export default function GamesPage() {
   return !!data ? (
     <div className="flex min-h-screen flex-col p-6 lg:p-24">
       <Link href="/games/add">Add New Game</Link>
-      <DataTable data={data} columns={columns} table={table} />
+      <DataTable table={table} />
     </div>
   ) : (
     <div>No Games Found</div>

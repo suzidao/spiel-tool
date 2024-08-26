@@ -84,6 +84,7 @@ export const schema = buildSchema(`
     location: String
     releasedate: String
     mechanics: [String]
+    ignore: Boolean
   }
 
   type GameDesigner {
@@ -191,6 +192,7 @@ export const schema = buildSchema(`
     location: String
     releasedate: String
     mechanics: [String]
+    ignore: Boolean
   }
 
   type Query {
@@ -214,6 +216,7 @@ export const schema = buildSchema(`
     addUser(input: UserInput): User!
     addBGGData: [Game]
     assignGame(spielid: Int, gameid: Int): [Game]
+    toggleIgnore(spielid: Int, ignore: Boolean): [SPIELGame]
     editGame(gameid: Int, input: GameInput): Game!
     editPublisher(publisherid: Int, input: PublisherInput): Publisher!
     editDesigner(designerid: Int, input: DesignerInput): Designer!
