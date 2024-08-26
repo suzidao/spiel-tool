@@ -77,9 +77,10 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
             },
           }}
         />
-        All
+        {column.columnDef.meta?.filterList?.length && column.columnDef.meta?.filterList?.length > 1 ? "All" : ""}
       </label>
       {column.columnDef.meta?.filterList &&
+        column.columnDef.meta?.filterList?.length > 1 &&
         column.columnDef.meta?.filterList.map((filterItem) => (
           <label key={filterItem.objectid} className="flex items-center gap-1 py-1 mr-2 whitespace-nowrap">
             <input

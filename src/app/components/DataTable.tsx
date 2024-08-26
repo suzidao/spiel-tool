@@ -2,6 +2,7 @@
 
 "use client";
 
+import { useState } from "react";
 import Filters from "./Filters";
 
 import { flexRender, RowData, Table } from "@tanstack/react-table";
@@ -21,8 +22,12 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export default function DataTable(props: { data: Game[]; columns: any[]; table: Table<any> }) {
-  const { table } = props;
+export default function DataTable(props: { table: Table<any> }) {
+  const table = props.table;
+
+  const showAll =
+    table.getAllLeafColumns().map((column: any) => column.columnDef.enableHiding !== false).length ===
+    table.getAllLeafColumns().length;
 
   return (
     <>
@@ -31,39 +36,41 @@ export default function DataTable(props: { data: Game[]; columns: any[]; table: 
           Total Games: <strong>{table.getFilteredRowModel().rows.length}</strong> |{" "}
           <strong>{table.getCoreRowModel().rows.length}</strong>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <div className="font-semibold">Hide/Show Columns:</div>
-          {table.getAllLeafColumns().map((column: any) => {
-            const pairedColumns = column.columnDef.meta?.pairedColumns;
-            const hasPair = column.columnDef.meta?.hasPair;
+        {!showAll && (
+          <div className="flex flex-wrap gap-2">
+            <div className="font-semibold">Hide/Show Columns:</div>
+            {table.getAllLeafColumns().map((column: any) => {
+              const pairedColumns = column.columnDef.meta?.pairedColumns;
+              const hasPair = column.columnDef.meta?.hasPair;
 
-            return (
-              hasPair ??
-              (column.columnDef.enableHiding !== false && column.columnDef.meta?.externalFilter !== true && (
-                <div key={column.id} className="px-1">
-                  <label className="flex align-middle gap-2">
-                    <input
-                      {...{
-                        type: "checkbox",
-                        checked: column.getIsVisible(),
-                        onChange: () => {
-                          if (pairedColumns) {
-                            for (let i = 0; i < pairedColumns.length; i++) {
-                              table.getColumn(pairedColumns[i])?.toggleVisibility();
+              return (
+                hasPair ??
+                (column.columnDef.enableHiding !== false && column.columnDef.meta?.externalFilter !== true && (
+                  <div key={column.id} className="px-1">
+                    <label className="flex align-middle gap-2">
+                      <input
+                        {...{
+                          type: "checkbox",
+                          checked: column.getIsVisible(),
+                          onChange: () => {
+                            if (pairedColumns) {
+                              for (let i = 0; i < pairedColumns.length; i++) {
+                                table.getColumn(pairedColumns[i])?.toggleVisibility();
+                              }
                             }
-                          }
 
-                          column.toggleVisibility();
-                        },
-                      }}
-                    />{" "}
-                    {pairedColumns ? column.parent?.columnDef.meta?.columnName : column.columnDef.meta?.columnName}
-                  </label>
-                </div>
-              ))
-            );
-          })}
-        </div>
+                            column.toggleVisibility();
+                          },
+                        }}
+                      />{" "}
+                      {pairedColumns ? column.parent?.columnDef.meta?.columnName : column.columnDef.meta?.columnName}
+                    </label>
+                  </div>
+                ))
+              );
+            })}
+          </div>
+        )}
       </div>
       <div className="flex flex-wrap gap-2 mb-4">
         {table.getAllColumns().map((column: any) => {

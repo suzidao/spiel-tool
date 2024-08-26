@@ -277,6 +277,7 @@ export declare global {
     location: string;
     releasedate: string;
     mechanics?: string[];
+    ignore: boolean;
   };
 
   type SPIELInput = {
@@ -291,5 +292,6 @@ export declare global {
     location: string;
     releasedate: string;
     mechanics?: string;
+    ignore: boolean;
   };
 }

@@ -28,6 +28,7 @@ import {
   deleteDesigner,
   getAllGameDesigners,
   associateGames,
+  toggleIgnoreSPIELGame,
 } from "./queries";
 
 import SPIELData from "../data/spiel-app-games.json";
@@ -119,6 +120,8 @@ export const resolvers = {
     assignGame: (root: Game, args: { spielid: number; gameid: number }) => {
       associateGames(args.spielid, args.gameid);
     },
+    toggleIgnore: (root: SPIELGame, args: { spielid: number; ignore: boolean }) =>
+      toggleIgnoreSPIELGame(args.spielid, args.ignore).then((res) => res),
     importSPIELData: async () => {
       const dbGames = await getSPIELGames().then((games) => games);
       const existingGames = dbGames
@@ -163,6 +166,7 @@ export const resolvers = {
               .map((mechanic) => SPIELThemes.find((theme) => theme.ID === mechanic))
               .map((mechanic) => mechanic?.TITEL)
               .toString(),
+            ignore: false,
           };
 
           createSPIELGame(SPIELInput)

@@ -195,6 +195,7 @@ export async function createSPIELGame(input: SPIELInput) {
     location,
     releasedate,
     mechanics,
+    ignore,
   } = input;
 
   const query = `INSERT INTO spielgames (
@@ -208,7 +209,8 @@ export async function createSPIELGame(input: SPIELInput) {
         price,
         location,
         releasedate,
-        mechanics
+        mechanics,
+        ignore
       ) VALUES (
         $$${title}$$,
         $$${publisher}$$,
@@ -220,7 +222,8 @@ export async function createSPIELGame(input: SPIELInput) {
         ${price ?? null},
         '${location}',
         '${releasedate}',
-        string_to_array($$${mechanics}$$, ',')
+        string_to_array($$${mechanics}$$, ','),
+        ${ignore}
       ) RETURNING *`;
 
   return await pool
@@ -315,4 +318,8 @@ export async function associateGames(spielid: number, gameid: number) {
   const game = await pool.query(`UPDATE games SET spielid=${spielid} WHERE gameid=${gameid} RETURNING *`);
 
   return { SPIELGame, game };
+}
+
+export async function toggleIgnoreSPIELGame(spielid: number, ignore: boolean) {
+  return await pool.query(`UPDATE spielgames SET ignore=${!ignore} WHERE spielid=${spielid} RETURNING *`);
 }
