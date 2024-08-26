@@ -10,13 +10,17 @@ import SPIELData from "../../data/spiel-app-games.json";
 
 export default function AdminPage() {
   const [gameIds, setGameIds] = useState<string[]>([]);
+  const [newSPIELgames, setNewSPIELGames] = useState<any[]>([]);
 
   const BGGGames = bggData as unknown as ImportedData[];
   const metaData = parentData as PublisherMeta[];
   const SPIELGames = SPIELData as SPIELProductData[];
 
   useEffect(() => {
-    getNewGames().then((res) => setGameIds(res));
+    getNewGames().then((res) => {
+      setGameIds(res.newDBgames);
+      setNewSPIELGames(res.newSPIELgames);
+    });
   }, []);
 
   return (
@@ -32,6 +36,7 @@ export default function AdminPage() {
       </div>
       <div>
         <div>total SPIEL games: {SPIELGames.length}</div>
+        <div>total new SPIEL games: {newSPIELgames.length}</div>
         <button className="p-2 mx-2" onClick={() => importSPIELData()}>
           Import SPIEL Games
         </button>

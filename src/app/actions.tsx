@@ -5,6 +5,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import bggData from "../data/spiel-preview-games.json";
+import SPIELData from "../data/spiel-app-games.json";
 
 export async function addNewUser(formData: FormData) {
   await fetch("http://localhost:3000/api/users/add", {
@@ -52,7 +53,7 @@ export async function assignGame(spielid: number, gameid: number) {
       variables: { spielid: spielid, gameid: gameid },
     }),
   })
-    .then((res) => res.json().then((data) => console.log(data)))
+    .then((res) => res.json().then((data) => data))
     .catch((error) => console.error(error));
 }
 
@@ -172,6 +173,10 @@ export async function getNewGames() {
           games {
             previewid
           }
+          SPIELgames {
+            title
+            publisher
+          }
         }
       `,
     }),
@@ -179,15 +184,30 @@ export async function getNewGames() {
 
   const { data } = await rawdata.json();
   const dbGames = data ? data.games : [];
+  const dbSPIELGames = data ? data.SPIELgames : [];
 
   const bggGames = bggData as ImportedData[];
+  const SPIELGames = SPIELData as SPIELProductData[];
+
   const gameIdList = dbGames
     ? dbGames.filter((dbGame: Game) => dbGame.previewid !== null).map((game: Game) => game.previewid)
     : [];
 
-  const newGames = bggGames.filter((bggGame: ImportedData) => !gameIdList.includes(Number(bggGame.itemid)));
+  const newBGGgames = bggGames.filter((bggGame: ImportedData) => !gameIdList.includes(Number(bggGame.itemid)));
 
-  return newGames.map((game) => game.itemid);
+  const newSPIELgames = dbSPIELGames
+    ? SPIELGames.filter(
+        (SPIELGame: SPIELProductData) =>
+          !dbSPIELGames.find(
+            (dbSPIELGame: SPIELGame) =>
+              dbSPIELGame.title === SPIELGame.TITEL && dbSPIELGame.publisher === SPIELGame.UNTERTITEL
+          )
+      )
+    : SPIELGames;
+
+  const newDBgames = newBGGgames.map((game) => game.itemid);
+
+  return { newDBgames, newSPIELgames };
 }
 
 export async function importSPIELData() {
