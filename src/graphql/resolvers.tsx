@@ -131,7 +131,7 @@ export const resolvers = {
             (existingGame) => existingGame.title === game.TITEL && existingGame.publisher === game.UNTERTITEL
           )
       );
-      console.log("THERE ARE", newGames.length, "NEW GAMES");
+
       if (newGames) {
         for (let i = 0; i < newGames.length; i++) {
           const thisGame = newGames[i];
