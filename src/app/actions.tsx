@@ -36,6 +36,26 @@ export async function addNewDesigner(name: string) {
   return newDesignerID;
 }
 
+export async function assignGame(spielid: number, gameid: number) {
+  await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+    body: JSON.stringify({
+      query: `
+        mutation ($spielid: Int, $gameid: Int) {
+          assignGame (spielid: $spielid, gameid: $gameid) { spielid }
+        }
+      `,
+      variables: { spielid: spielid, gameid: gameid },
+    }),
+  })
+    .then((res) => res.json().then((data) => console.log(data)))
+    .catch((error) => console.error(error));
+}
+
 export async function scrapePreview(pageCount: number, filename: string, parent?: boolean) {
   const previewItems: ImportedData[] = [];
   for (let i = 1; i <= pageCount; i++) {
@@ -93,6 +113,50 @@ export async function scrapeSPIEL() {
 
 export async function getGames() {
   return await fetch("http://localhost:3000/api/games", { cache: "no-store" }).then((data) => data.json());
+}
+
+export async function getAllGames() {
+  const rawData = await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    body: JSON.stringify({
+      query: `
+        query getAllGames {
+          SPIELgames {
+            spielid
+            gameid
+            title
+            publisher
+            designers
+            price
+            releasedate
+            minplayers
+            maxplayers
+            playtime
+            minage
+            location
+            mechanics
+          }
+          games {
+            gameid
+            title
+            publisher {
+              name
+            }
+          }
+        }
+      `,
+    }),
+  });
+  const { data } = await rawData
+    .json()
+    .then((res) => res)
+    .catch((error) => console.error(error));
+
+  return data;
 }
 
 export async function getNewGames() {

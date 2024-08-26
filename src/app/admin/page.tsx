@@ -13,7 +13,7 @@ export default function AdminPage() {
 
   const BGGGames = bggData as unknown as ImportedData[];
   const metaData = parentData as PublisherMeta[];
-  const SPIELGames = SPIELData.filter((product) => !product.THEMEN.includes("CATEGORIES.32")) as SPIELProductData[];
+  const SPIELGames = SPIELData as SPIELProductData[];
 
   useEffect(() => {
     getNewGames().then((res) => setGameIds(res));
