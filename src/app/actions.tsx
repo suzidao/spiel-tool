@@ -158,10 +158,13 @@ export async function getAllGames() {
             minplayers
             maxplayers
             playtime
+            complexity
             minage
             location
             mechanics
+            categories
             ignore
+            subtypes
           }
           games {
             gameid

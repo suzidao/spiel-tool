@@ -80,10 +80,13 @@ export const schema = buildSchema(`
     maxplayers: Int
     playtime: Int
     minage: Int
+    complexity: Int
     price: Float
     location: String
     releasedate: String
     mechanics: [String]
+    categories: [String]
+    subtypes: [String]
     ignore: Boolean
   }
 
@@ -188,10 +191,13 @@ export const schema = buildSchema(`
     maxplayers: Int
     playtime: Int
     minage: Int
+    complexity: Int
     price: Float
     location: String
     releasedate: String
     mechanics: [String]
+    categories: [String]
+    subtypes: [String]
     ignore: Boolean
   }
 
