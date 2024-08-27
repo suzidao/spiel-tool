@@ -191,10 +191,13 @@ export async function createSPIELGame(input: SPIELInput) {
     maxplayers,
     playtime,
     minage,
+    complexity,
     price,
     location,
     releasedate,
     mechanics,
+    categories,
+    subtypes,
     ignore,
   } = input;
 
@@ -206,10 +209,13 @@ export async function createSPIELGame(input: SPIELInput) {
         maxplayers,
         playtime,
         minage,
+        complexity,
         price,
         location,
         releasedate,
         mechanics,
+        categories,
+        subtypes,
         ignore
       ) VALUES (
         $$${title}$$,
@@ -218,11 +224,14 @@ export async function createSPIELGame(input: SPIELInput) {
         ${minplayers},
         ${maxplayers},
         ${playtime},
+        ${complexity ?? null},
         ${minage},
         ${price ?? null},
         '${location}',
         '${releasedate}',
         string_to_array($$${mechanics}$$, ','),
+        string_to_array($$${categories}$$, ','),
+        string_to_array($$${subtypes}$$, ','),
         ${ignore}
       ) RETURNING *`;
 

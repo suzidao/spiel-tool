@@ -151,6 +151,12 @@ export const resolvers = {
             Number(thisGame.INFO.split("price:</td><td>")[1].split("</td>")[0].split("&nbsp;")[0]).toFixed(2)
           );
 
+          const level = Number(
+            thisGame.THEMEN.filter((theme) => theme.includes("LEVEL"))
+              .map((level) => SPIELThemes.find((theme) => theme.ID === level))
+              .map((level) => level?.ID.slice(-1))[0]
+          );
+
           const SPIELInput = {
             title: thisGame.TITEL,
             publisher: thisGame.UNTERTITEL,
@@ -159,12 +165,21 @@ export const resolvers = {
             maxplayers: Number(playerCount.split("-")[1] ?? 0),
             playtime: Number(thisGame.INFO.split("time:</td><td>")[1].split("minutes</td>")[0]),
             minage: Number(thisGame.INFO.split("Age:</td><td>")[1].split("and up</td>")[0]),
+            complexity: isNaN(level) ? undefined : level,
             price: isNaN(pricing) ? undefined : pricing,
             location: booths.toString() ?? "–",
             releasedate: thisGame.INFO.split("date:</td><td>")[1].split("</td>")[0],
             mechanics: thisGame.THEMEN.filter((theme) => theme.includes("MECHANISMS") && theme !== "MECHANISMS.23")
               .map((mechanic) => SPIELThemes.find((theme) => theme.ID === mechanic))
               .map((mechanic) => mechanic?.TITEL)
+              .toString(),
+            categories: thisGame.THEMEN.filter((theme) => theme.includes("CATEGORIES") && theme !== "CATEGORIES.38")
+              .map((category) => SPIELThemes.find((theme) => theme.ID === category))
+              .map((category) => category?.TITEL)
+              .toString(),
+            subtypes: thisGame.THEMEN.filter((theme) => theme.includes("TYPE"))
+              .map((type) => SPIELThemes.find((theme) => theme.ID === type))
+              .map((type) => type?.TITEL)
               .toString(),
             ignore: false,
           };

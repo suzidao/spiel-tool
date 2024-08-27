@@ -8,14 +8,14 @@
   },
   {
     "ID": "CATEGORIES.1",
-    "TITEL": "4x game",
+    "TITEL": "4x Game",
     "S_ORDER": "4X GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.2",
-    "TITEL": "Action game",
+    "TITEL": "Action Game",
     "S_ORDER": "ACTION GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -36,7 +36,7 @@
   },
   {
     "ID": "CATEGORIES.5",
-    "TITEL": "Euro game",
+    "TITEL": "Euro Game",
     "S_ORDER": "EURO GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -50,21 +50,21 @@
   },
   {
     "ID": "CATEGORIES.7",
-    "TITEL": "Game of luck",
+    "TITEL": "Game of Luck",
     "S_ORDER": "GAME OF LUCK",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.8",
-    "TITEL": "Hybrid game",
+    "TITEL": "Hybrid Game",
     "S_ORDER": "HYBRID GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.9",
-    "TITEL": "Campaign game",
+    "TITEL": "Campaign Game",
     "S_ORDER": "CAMPAIGN GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -78,21 +78,21 @@
   },
   {
     "ID": "CATEGORIES.11",
-    "TITEL": "Childrens game",
+    "TITEL": "Childrens Game",
     "S_ORDER": "CHILDRENS GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.12",
-    "TITEL": "Brain game",
+    "TITEL": "Brain Game",
     "S_ORDER": "BRAIN GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.13",
-    "TITEL": "Communication game",
+    "TITEL": "Communication Game",
     "S_ORDER": "COMMUNICATION GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -106,7 +106,7 @@
   },
   {
     "ID": "CATEGORIES.15",
-    "TITEL": "Crime and detective game",
+    "TITEL": "Crime and Detective Game",
     "S_ORDER": "CRIME AND DETECTIVE GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -120,56 +120,56 @@
   },
   {
     "ID": "CATEGORIES.17",
-    "TITEL": "Tile placement game",
+    "TITEL": "Tile Placement Game",
     "S_ORDER": "TILE PLACEMENT GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.18",
-    "TITEL": "Educative game",
+    "TITEL": "Educative Game",
     "S_ORDER": "EDUCATIVE GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.19",
-    "TITEL": "Logic game",
+    "TITEL": "Logic Game",
     "S_ORDER": "LOGIC GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.20",
-    "TITEL": "Memo game",
+    "TITEL": "Memo Game",
     "S_ORDER": "MEMO GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.21",
-    "TITEL": "Miniatures games",
-    "S_ORDER": "MINIATURES GAMES",
+    "TITEL": "Miniatures Game",
+    "S_ORDER": "MINIATURES GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.22",
-    "TITEL": "Outdoor game",
+    "TITEL": "Outdoor Game",
     "S_ORDER": "OUTDOOR GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.23",
-    "TITEL": "Party game",
+    "TITEL": "Party Game",
     "S_ORDER": "PARTY GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.24",
-    "TITEL": "Planning game",
+    "TITEL": "Planning Game",
     "S_ORDER": "PLANNING GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -183,7 +183,7 @@
   },
   {
     "ID": "CATEGORIES.26",
-    "TITEL": "Quiz game",
+    "TITEL": "Quiz Game",
     "S_ORDER": "QUIZ GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -197,70 +197,70 @@
   },
   {
     "ID": "CATEGORIES.28",
-    "TITEL": "Traveling game",
+    "TITEL": "Traveling Game",
     "S_ORDER": "TRAVELING GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.29",
-    "TITEL": "Roleplaying game",
+    "TITEL": "Roleplaying Game",
     "S_ORDER": "ROLEPLAYING GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.30",
-    "TITEL": "Trading card game",
+    "TITEL": "Trading Card Game",
     "S_ORDER": "TRADING CARD GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.31",
-    "TITEL": "Solo game",
+    "TITEL": "Solo Game",
     "S_ORDER": "SOLO GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.32",
-    "TITEL": "Game accessories",
+    "TITEL": "Game Accessories",
     "S_ORDER": "GAME ACCESSORIES",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.33",
-    "TITEL": "Story game",
+    "TITEL": "Story Game",
     "S_ORDER": "STORY GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.34",
-    "TITEL": "Strategy game",
+    "TITEL": "Strategy Game",
     "S_ORDER": "STRATEGY GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.35",
-    "TITEL": "Knowledge game",
+    "TITEL": "Knowledge Game",
     "S_ORDER": "KNOWLEDGE GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.36",
-    "TITEL": "Word game",
+    "TITEL": "Word Game",
     "S_ORDER": "WORD GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
   },
   {
     "ID": "CATEGORIES.37",
-    "TITEL": "Dice game",
+    "TITEL": "Dice Game",
     "S_ORDER": "DICE GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -274,7 +274,7 @@
   },
   {
     "ID": "CATEGORIES.39",
-    "TITEL": "Numbers game",
+    "TITEL": "Numbers Game",
     "S_ORDER": "NUMBERS GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -314,7 +314,7 @@
     "PARENT_ID": "LEVEL",
     "ROOT_ID": "-1"
   },
-  { 
+  {
     "ID": "MECHANISMS",
     "TITEL": "Mechanisms",
     "S_ORDER": "MECHANISMS",
@@ -428,15 +428,15 @@
   },
   {
     "ID": "MECHANISMS.16",
-    "TITEL": "Push your Luck",
+    "TITEL": "Push-Your-Luck",
     "S_ORDER": "PUSH YOUR LUCK",
     "PARENT_ID": "MECHANISMS",
     "ROOT_ID": "-1"
   },
   {
     "ID": "MECHANISMS.17",
-    "TITEL": "Ressource Management",
-    "S_ORDER": "RESSOURCE MANAGEMENT",
+    "TITEL": "Resource Management",
+    "S_ORDER": "RESOURCE MANAGEMENT",
     "PARENT_ID": "MECHANISMS",
     "ROOT_ID": "-1"
   },
@@ -456,7 +456,7 @@
   },
   {
     "ID": "MECHANISMS.20",
-    "TITEL": "Trick taking",
+    "TITEL": "Trick-Taking",
     "S_ORDER": "TRICK TAKING",
     "PARENT_ID": "MECHANISMS",
     "ROOT_ID": "-1"
@@ -498,7 +498,7 @@
   },
   {
     "ID": "TYPE.2",
-    "TITEL": "Base game",
+    "TITEL": "Base Game",
     "S_ORDER": "BASE GAME",
     "PARENT_ID": "TYPE",
     "ROOT_ID": "-1"

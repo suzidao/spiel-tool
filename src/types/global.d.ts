@@ -247,7 +247,7 @@ export declare global {
     TITEL: string; // game title
     FIRMA_ID: string; // publisher id
     UNTERTITEL: string; // publisher name
-    THEMEN: string[]; // categories
+    THEMEN: string[]; // categories, mechanics, subtypes
     STAENDE: {
       // locations
       ID: string;
@@ -273,10 +273,13 @@ export declare global {
     maxplayers: number;
     playtime: number;
     minage: number;
+    complexity: number;
     price: number;
     location: string;
     releasedate: string;
     mechanics?: string[];
+    categories?: string[];
+    subtypes?: string[];
     ignore: boolean;
   };
 
@@ -288,10 +291,13 @@ export declare global {
     maxplayers: number;
     playtime: number;
     minage: number;
+    complexity?: number;
     price?: number;
     location: string;
     releasedate: string;
     mechanics?: string;
+    categories?: string;
+    subtypes?: string;
     ignore: boolean;
   };
 }
