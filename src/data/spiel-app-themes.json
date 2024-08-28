@@ -29,7 +29,7 @@
   },
   {
     "ID": "CATEGORIES.4",
-    "TITEL": "Escape game",
+    "TITEL": "Escape Game",
     "S_ORDER": "ESCAPE GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"
@@ -43,7 +43,7 @@
   },
   {
     "ID": "CATEGORIES.6",
-    "TITEL": "Dexterity game",
+    "TITEL": "Dexterity Game",
     "S_ORDER": "DEXTERITY GAME",
     "PARENT_ID": "CATEGORIES",
     "ROOT_ID": "-1"

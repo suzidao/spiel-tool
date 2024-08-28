@@ -271,15 +271,15 @@ export declare global {
     designers: string[];
     minplayers: number;
     maxplayers: number;
-    playtime: number;
+    playtime: number; // import as minplaytime
     minage: number;
     complexity: number;
-    price: number;
     location: string;
-    releasedate: string;
+    price: number; // extended data
+    releasedate: string; // extract year for yearpublished
     mechanics?: string[];
     categories?: string[];
-    subtypes?: string[];
+    subtypes?: string[]; // set to ignore if "expansion" exists
     ignore: boolean;
   };
 

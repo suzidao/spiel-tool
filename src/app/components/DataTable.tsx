@@ -24,11 +24,9 @@ declare module "@tanstack/react-table" {
 
 export default function DataTable(props: { table: Table<any> }) {
   const table = props.table;
-
-  const showAll =
-    table.getAllLeafColumns().map((column: any) => column.columnDef.enableHiding !== false).length ===
+  const hideAll =
+    table.getAllLeafColumns().filter((column) => column.columnDef.enableHiding === false).length ===
     table.getAllLeafColumns().length;
-
   return (
     <>
       <div className="flex justify-between items-center mb-2 border-b border-black pb-3">
@@ -36,7 +34,7 @@ export default function DataTable(props: { table: Table<any> }) {
           Total Games: <strong>{table.getFilteredRowModel().rows.length}</strong> |{" "}
           <strong>{table.getCoreRowModel().rows.length}</strong>
         </div>
-        {!showAll && (
+        {!hideAll && (
           <div className="flex flex-wrap gap-2">
             <div className="font-semibold">Hide/Show Columns:</div>
             {table.getAllLeafColumns().map((column: any) => {

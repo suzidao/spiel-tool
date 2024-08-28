@@ -109,17 +109,14 @@ export async function scrapePreview(pageCount: number, filename: string, parent?
 }
 
 export async function scrapeSPIEL() {
-  const response = await fetch(
-    "https://maps.eyeled-services.de/en/spiel24/products?columns=%5B%22INFO%22%2C%22S_ORDER%22%2C%22TITEL%22%2C%22FIRMA_ID%22%2C%22UNTERTITEL%22%2C%22BILDER%22%2C%22BILDER_VERSIONEN%22%2C%22BILDER_TEXTE%22%5D",
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
-      cache: "no-store",
-    }
-  );
+  const response = await fetch("https://maps.eyeled-services.de/en/spiel24/products", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+    cache: "no-store",
+  });
 
   const data = await response.json().then((result) => JSON.stringify(result.products));
 
@@ -168,6 +165,7 @@ export async function getAllGames() {
           }
           games {
             gameid
+            spielid
             title
             publisher {
               name

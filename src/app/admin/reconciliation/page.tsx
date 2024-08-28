@@ -3,6 +3,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import SPIELThemes from "@/data/spiel-app-themes.json";
 import { assignGame, toggleIgnore, getAllGames } from "@/app/actions";
 import { normalizeText } from "@/utils/editData";
 import DataTable from "@/app/components/DataTable";
@@ -16,6 +17,7 @@ import {
   RowData,
   SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 declare module "@tanstack/react-table" {
@@ -32,6 +34,10 @@ export default function ReconciliationPage() {
   const [gameMatch, setGameMatch] = useState<SPIELGame>();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    Categories: false,
+    SubTypes: false,
+  });
 
   useEffect(() => {
     getAllGames().then((res) => {
@@ -39,6 +45,13 @@ export default function ReconciliationPage() {
       setDBGames(res.games);
     });
   }, [gameMatch]);
+
+  const categoryList = SPIELThemes.filter((theme) => theme.ID.includes("CATEGORIES.")).map((category) => {
+    return { objectid: category.ID, name: category.TITEL };
+  });
+  const typeList = SPIELThemes.filter((theme) => theme.ID.includes("TYPE.")).map((type) => {
+    return { objectid: type.ID, name: type.TITEL };
+  });
 
   // may use in future for pagination implementation
   const useSkipper = () => {
@@ -87,7 +100,7 @@ export default function ReconciliationPage() {
       enableHiding: false,
     }),
     columnHelper.accessor("gameid", {
-      id: "gameid",
+      id: "Gameid",
       cell: ({ row, row: { index }, column: { id }, table }) => {
         const game = row.original;
 
@@ -95,6 +108,7 @@ export default function ReconciliationPage() {
           "✅"
         ) : (
           <button
+            className="bg-teal-300/60 hover:bg-teal-400/80 border border-teal-500 transition-all ease-in-out py-1 px-3 rounded text-xs font-medium uppercase"
             onClick={() => {
               setMatchTerm(game.title);
               match(game.title);
@@ -119,10 +133,12 @@ export default function ReconciliationPage() {
         filterVariant: "checklist",
         externalFilter: true,
         filterList: [{ objectid: "matched", name: "" }],
+        headerClasses: "text-center",
+        classes: "text-center",
       },
     }),
     columnHelper.accessor("ignore", {
-      id: "ignore",
+      id: "Ignore",
       cell: ({ row, row: { index }, column: { id }, table }) => {
         const game = row.original;
         const ignored = game.ignore;
@@ -157,6 +173,77 @@ export default function ReconciliationPage() {
         filterVariant: "checklist",
         externalFilter: true,
         filterList: [{ objectid: "ignore", name: "" }],
+        classes: "text-center",
+      },
+    }),
+    columnHelper.accessor("categories", {
+      id: "Categories",
+      cell: (info) => info.getValue(),
+      header: () => <span>Categories</span>,
+      enableHiding: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
+        const categoryNames = row.original.categories;
+        const categories = categoryNames
+          ? categoryList.filter((listItem) => categoryNames.includes(listItem.name))
+          : [];
+
+        const matches = categories
+          ? categories.map((category) => {
+              const filteredTypes = filterValue.map((filter) => {
+                const matchFound = filter === category.objectid;
+                return matchFound;
+              });
+              return filteredTypes.includes(true);
+            })
+          : [];
+
+        if (filterValue.length === 0) {
+          return true;
+        } else {
+          return matches.includes(true);
+        }
+      },
+      meta: {
+        columnName: "Categories",
+        filterVariant: "checklist",
+        externalFilter: true,
+        filterList: categoryList,
+      },
+    }),
+    columnHelper.accessor("subtypes", {
+      id: "SubTypes",
+      cell: (info) => info.getValue(),
+      header: () => <span>SubTypes</span>,
+      enableHiding: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
+        const typeNames = row.original.subtypes;
+        const subtypes = typeNames ? typeList.filter((listItem) => typeNames.includes(listItem.name)) : [];
+
+        const matches = subtypes
+          ? subtypes.map((type) => {
+              const filteredTypes = filterValue.map((filter) => {
+                const matchFound = filter === type.objectid;
+                return matchFound;
+              });
+              return filteredTypes.includes(true);
+            })
+          : [];
+
+        if (filterValue.length === 0) {
+          return true;
+        } else {
+          return matches.includes(true);
+        }
+      },
+      meta: {
+        columnName: "SubTypes",
+        filterVariant: "checklist",
+        externalFilter: true,
+        filterList: typeList,
       },
     }),
   ];
@@ -170,10 +257,12 @@ export default function ReconciliationPage() {
     getFilteredRowModel: getFilteredRowModel(), //client side filtering
     getSortedRowModel: getSortedRowModel(), //client-side sorting
     onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
     enableSortingRemoval: false,
     state: {
       columnFilters,
       sorting,
+      columnVisibility,
     },
     autoResetPageIndex,
     meta: {
@@ -240,6 +329,10 @@ export default function ReconciliationPage() {
               <tr key={match.gameid}>
                 <td className="p-3">
                   <button
+                    className={
+                      (match.spielid ? "bg-cyan-400/80 hover:bg-cyan-300/60" : "bg-cyan-300/60 hover:bg-cyan-400/80") +
+                      " border-cyan-500 border py-1 px-3 rounded text-xs font-medium uppercase whitespace-nowrap"
+                    }
                     onClick={() => {
                       assignGame(gameMatch!.spielid, match.gameid);
                       setGameMatch(undefined);
@@ -247,7 +340,7 @@ export default function ReconciliationPage() {
                       setResults([]);
                     }}
                   >
-                    Match
+                    {match.spielid && "Re-"}Match
                   </button>
                 </td>
                 <td className="p-3">{match.title}</td>
