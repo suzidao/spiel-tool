@@ -78,7 +78,7 @@ export async function toggleIgnore(spielid: number, ignore: boolean) {
 }
 
 export async function scrapePreview(pageCount: number, filename: string, parent?: boolean) {
-  const previewItems: ImportedData[] = [];
+  const previewItems: ImportedBGGData[] = [];
   for (let i = 1; i <= pageCount; i++) {
     const url = `https://api.geekdo.com/api/geekpreview${
       !!parent ? "parent" : ""
@@ -165,9 +165,11 @@ export async function getAllGames() {
           }
           games {
             gameid
+            previewid
             spielid
             title
             publisher {
+              bggid
               name
             }
           }
@@ -181,56 +183,6 @@ export async function getAllGames() {
     .catch((error) => console.error(error));
 
   return data;
-}
-
-export async function getNewGames() {
-  const rawdata = await fetch("http://localhost:4000/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-    body: JSON.stringify({
-      query: `
-        query {
-          games {
-            previewid
-          }
-          SPIELgames {
-            title
-            publisher
-          }
-        }
-      `,
-    }),
-  });
-
-  const { data } = await rawdata.json();
-  const dbGames = data ? data.games : [];
-  const dbSPIELGames = data ? data.SPIELgames : [];
-
-  const bggGames = bggData as ImportedData[];
-  const SPIELGames = SPIELData as SPIELProductData[];
-
-  const gameIdList = dbGames
-    ? dbGames.filter((dbGame: Game) => dbGame.previewid !== null).map((game: Game) => game.previewid)
-    : [];
-
-  const newBGGgames = bggGames.filter((bggGame: ImportedData) => !gameIdList.includes(Number(bggGame.itemid)));
-
-  const newSPIELgames = dbSPIELGames
-    ? SPIELGames.filter(
-        (SPIELGame: SPIELProductData) =>
-          !dbSPIELGames.find(
-            (dbSPIELGame: SPIELGame) =>
-              dbSPIELGame.title === SPIELGame.TITEL && dbSPIELGame.publisher === SPIELGame.UNTERTITEL
-          )
-      )
-    : SPIELGames;
-
-  const newDBgames = newBGGgames.map((game) => game.itemid);
-
-  return { newDBgames, newSPIELgames };
 }
 
 export async function importSPIELData() {
@@ -274,6 +226,8 @@ export async function addBGGData() {
 
   return data;
 }
+
+export async function addSPIELGame(game: SPIELGame) {}
 
 export async function addNewGame(formState: GameInput) {
   await fetch("http://localhost:3000/api/games/add", {

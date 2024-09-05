@@ -167,7 +167,7 @@ export declare global {
     designerid: Int;
   };
 
-  type ImportedData = {
+  type ImportedBGGData = {
     objectid: string;
     itemid: string;
     msrp: number;
@@ -241,7 +241,7 @@ export declare global {
     location: string;
   };
 
-  type SPIELProductData = {
+  type ImportedSPIELData = {
     INFO: string; // contains designer info
     S_ORDER: string; // sorting order
     TITEL: string; // game title

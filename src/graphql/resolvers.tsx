@@ -36,7 +36,7 @@ import SPIELThemeData from "../data/spiel-app-themes.json";
 import type * as Global from "../types/global.d.ts";
 import { editLocation } from "../utils/editData";
 
-const SPIELGames = SPIELData as SPIELProductData[];
+const SPIELGames = SPIELData as ImportedSPIELData[];
 const SPIELThemes = SPIELThemeData as SPIELTheme[];
 
 export const resolvers = {

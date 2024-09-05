@@ -3,7 +3,7 @@
 import gamesData from "../data/spiel-preview-games.json";
 import pubMetaData from "../data/spiel-preview-parents.json";
 
-const bggData = gamesData as ImportedData[];
+const bggData = gamesData as ImportedBGGData[];
 const pubMeta = pubMetaData as PublisherMeta[];
 
 export function normalizeText(text: string) {
@@ -13,7 +13,7 @@ export function normalizeText(text: string) {
     .toLowerCase();
 }
 
-export function editLocation(data: ImportedData) {
+export function editLocation(data: ImportedBGGData) {
   const matchingMeta = pubMeta.find(
     (meta: PublisherMeta) => Number(meta.objectid) === data.publishers[0].item.objectid
   );
@@ -26,7 +26,7 @@ export function editLocation(data: ImportedData) {
 }
 
 export function extendGame(game: DatabaseData) {
-  const data = bggData.find((data: ImportedData) => Number(data.itemid) === game.previewid);
+  const data = bggData.find((data: ImportedBGGData) => Number(data.itemid) === game.previewid);
 
   if (!!data) {
     const editedLocation = editLocation(data);

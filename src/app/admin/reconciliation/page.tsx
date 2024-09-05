@@ -1,354 +1,198 @@
 /** @format */
-
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import SPIELThemes from "@/data/spiel-app-themes.json";
-import { assignGame, toggleIgnore, getAllGames } from "@/app/actions";
-import { normalizeText } from "@/utils/editData";
-import DataTable from "@/app/components/DataTable";
-import {
-  ColumnFiltersState,
-  createColumnHelper,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  Row,
-  RowData,
-  SortingState,
-  useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
-
-declare module "@tanstack/react-table" {
-  interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
-  }
-}
+import { useEffect, useState } from "react";
+import { scrapePreview, getAllGames, addBGGData, scrapeSPIEL, importSPIELData } from "../../actions";
+import bggData from "../../../data/spiel-preview-games.json";
+import parentData from "../../../data/spiel-preview-parents.json";
+import SPIELData from "../../../data/spiel-app-games.json";
+import Button from "@/app/components/Button";
 
 export default function ReconciliationPage() {
-  const [dbGames, setDBGames] = useState<Game[]>([]);
-  const [SPIELGames, setSPIELGames] = useState<SPIELGame[]>([]);
-  const [matchTerm, setMatchTerm] = useState<string>("");
-  const [results, setResults] = useState<Game[]>([]);
-  const [gameMatch, setGameMatch] = useState<SPIELGame>();
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    Categories: false,
-    SubTypes: false,
-  });
+  const [existingBGGgames, setExistingBGGgames] = useState<Game[]>([]);
+  const [existingSPIELgames, setExistingSPIELGames] = useState<SPIELGame[]>([]);
+  [];
 
   useEffect(() => {
     getAllGames().then((res) => {
-      setSPIELGames(res.SPIELgames);
-      setDBGames(res.games);
+      setExistingBGGgames(res.games.filter((game: Game) => game.previewid !== null));
+      setExistingSPIELGames(res.SPIELgames);
     });
-  }, [gameMatch]);
+  }, []);
 
-  const categoryList = SPIELThemes.filter((theme) => theme.ID.includes("CATEGORIES.")).map((category) => {
-    return { objectid: category.ID, name: category.TITEL };
-  });
-  const typeList = SPIELThemes.filter((theme) => theme.ID.includes("TYPE.")).map((type) => {
-    return { objectid: type.ID, name: type.TITEL };
-  });
+  const importedBGGGames = bggData as ImportedBGGData[];
+  const metaData = parentData as PublisherMeta[];
+  const importedSPIELGames = SPIELData as ImportedSPIELData[];
 
-  // may use in future for pagination implementation
-  const useSkipper = () => {
-    const shouldSkipRef = useRef(true);
-    const shouldSkip = shouldSkipRef.current;
+  const existingBGGPublisherIds = existingBGGgames
+    ? [...new Set(existingBGGgames.map((game: Game) => game.publisher.bggid))]
+    : [];
 
-    // Wrap a function with this to skip a pagination reset temporarily
-    const skip = useCallback(() => {
-      shouldSkipRef.current = false;
-    }, []);
+  const newBGGPublishers = existingBGGPublisherIds
+    ? metaData.filter((pub) => !existingBGGPublisherIds.includes(Number(pub.objectid)))
+    : metaData;
 
-    useEffect(() => {
-      shouldSkipRef.current = true;
-    });
+  const deletedBGGPublishers = existingBGGPublisherIds
+    ? existingBGGPublisherIds.filter((pubid) => !metaData.map((pub) => Number(pub.objectid)).includes(pubid))
+    : [];
 
-    return [shouldSkip, skip] as const;
-  };
+  const existingPreviewIds = existingBGGgames ? existingBGGgames.map((game: Game) => game.previewid) : [];
 
-  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
+  const newBGGgames = existingPreviewIds
+    ? importedBGGGames.filter((bggGame: ImportedBGGData) => !existingPreviewIds.includes(Number(bggGame.itemid)))
+    : importedBGGGames;
 
-  const columnHelper = createColumnHelper<SPIELGame>();
+  const deletedBGGGames = existingPreviewIds
+    ? existingBGGgames.filter(
+        (game: Game) => !importedBGGGames.map((game: ImportedBGGData) => Number(game.itemid)).includes(game.previewid!)
+      )
+    : [];
 
-  const columns = [
-    columnHelper.accessor("title", {
-      id: "GameTitle",
-      cell: ({ row }) => {
-        return (
-          <span className={row.original.spielid === gameMatch?.spielid ? "font-semibold" : ""}>
-            {row.original.title}
-          </span>
-        );
-      },
-      header: () => <span>Title</span>,
-      enableHiding: false,
-    }),
-    columnHelper.accessor("publisher", {
-      id: "Publisher",
-      cell: ({ row }) => {
-        return (
-          <span className={row.original.spielid === gameMatch?.spielid ? "font-semibold" : ""}>
-            {row.original.publisher}
-          </span>
-        );
-      },
-      header: () => <span>Publisher</span>,
-      enableHiding: false,
-    }),
-    columnHelper.accessor("gameid", {
-      id: "Gameid",
-      cell: ({ row, row: { index }, column: { id }, table }) => {
-        const game = row.original;
+  const newSPIELgames = existingSPIELgames
+    ? importedSPIELGames.filter(
+        (SPIELGame: ImportedSPIELData) =>
+          !existingSPIELgames.find(
+            (dbSPIELGame: SPIELGame) =>
+              dbSPIELGame.title === SPIELGame.TITEL && dbSPIELGame.publisher === SPIELGame.UNTERTITEL
+          )
+      )
+    : importedSPIELGames;
 
-        return !!game.gameid ? (
-          "✅"
-        ) : (
-          <button
-            className="bg-teal-300/60 hover:bg-teal-400/80 border border-teal-500 transition-all ease-in-out py-1 px-3 rounded text-xs font-medium uppercase"
-            onClick={() => {
-              setMatchTerm(game.title);
-              match(game.title);
-              setGameMatch(game);
-              table.options.meta?.updateData(index, id, game.gameid);
-            }}
-          >
-            Reconcile
-          </button>
-        );
-      },
-      header: () => <span>Reconcile</span>,
-      enableHiding: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const isMatched = !!row.original.gameid;
-
-        return filterValue.length === 1 ? !isMatched : true;
-      },
-      meta: {
-        columnName: "Exclude Matched Games",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: [{ objectid: "matched", name: "" }],
-        headerClasses: "text-center",
-        classes: "text-center",
-      },
-    }),
-    columnHelper.accessor("ignore", {
-      id: "Ignore",
-      cell: ({ row, row: { index }, column: { id }, table }) => {
-        const game = row.original;
-        const ignored = game.ignore;
-        const [value, setValue] = useState(ignored);
-
-        useEffect(() => {
-          setValue(ignored);
-        }, [ignored]);
-
-        return (
-          <input
-            type="checkbox"
-            checked={value}
-            onChange={() => {
-              setValue(value);
-              toggleIgnore(game.spielid, value);
-            }}
-            onBlur={() => table.options.meta?.updateData(index, id, value)}
-          />
-        );
-      },
-      header: () => <span>Ignored</span>,
-      enableHiding: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const ignored = row.original.ignore;
-
-        return filterValue.length === 1 ? !!ignored === false : true;
-      },
-      meta: {
-        columnName: "Exclude Ignored Items",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: [{ objectid: "ignore", name: "" }],
-        classes: "text-center",
-      },
-    }),
-    columnHelper.accessor("categories", {
-      id: "Categories",
-      cell: (info) => info.getValue(),
-      header: () => <span>Categories</span>,
-      enableHiding: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const categoryNames = row.original.categories;
-        const categories = categoryNames
-          ? categoryList.filter((listItem) => categoryNames.includes(listItem.name))
-          : [];
-
-        const matches = categories
-          ? categories.map((category) => {
-              const filteredTypes = filterValue.map((filter) => {
-                const matchFound = filter === category.objectid;
-                return matchFound;
-              });
-              return filteredTypes.includes(true);
-            })
-          : [];
-
-        if (filterValue.length === 0) {
-          return true;
-        } else {
-          return matches.includes(true);
-        }
-      },
-      meta: {
-        columnName: "Categories",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: categoryList,
-      },
-    }),
-    columnHelper.accessor("subtypes", {
-      id: "SubTypes",
-      cell: (info) => info.getValue(),
-      header: () => <span>SubTypes</span>,
-      enableHiding: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const typeNames = row.original.subtypes;
-        const subtypes = typeNames ? typeList.filter((listItem) => typeNames.includes(listItem.name)) : [];
-
-        const matches = subtypes
-          ? subtypes.map((type) => {
-              const filteredTypes = filterValue.map((filter) => {
-                const matchFound = filter === type.objectid;
-                return matchFound;
-              });
-              return filteredTypes.includes(true);
-            })
-          : [];
-
-        if (filterValue.length === 0) {
-          return true;
-        } else {
-          return matches.includes(true);
-        }
-      },
-      meta: {
-        columnName: "SubTypes",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: typeList,
-      },
-    }),
-  ];
-
-  const table = useReactTable({
-    data: SPIELGames,
-    columns,
-    filterFns: {},
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(), //client side filtering
-    getSortedRowModel: getSortedRowModel(), //client-side sorting
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
-    enableSortingRemoval: false,
-    state: {
-      columnFilters,
-      sorting,
-      columnVisibility,
-    },
-    autoResetPageIndex,
-    meta: {
-      updateData: (rowIndex: number, columnId: string, value: any) => {
-        setSPIELGames((old) => {
-          return old.map((row, index) => {
-            if (index === rowIndex) {
-              return {
-                ...old[rowIndex]!,
-                [columnId]: value,
-              };
-            }
-            return row;
-          });
-        });
-      },
-    },
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let term = e.target.value;
-    setMatchTerm(term);
-    match(term);
-  };
-
-  const match = (term: string) => {
-    const filteredResults = dbGames.filter((game) => {
-      return normalizeText(game.title).includes(normalizeText(term));
-    });
-
-    term !== "" ? setResults(filteredResults) : setResults([]);
-  };
+  const deletedSPIELgames = existingSPIELgames
+    ? existingSPIELgames.filter(
+        (game: SPIELGame) =>
+          !importedSPIELGames.find(
+            (importedGame: ImportedSPIELData) =>
+              importedGame.TITEL === game.title && importedGame.UNTERTITEL === game.publisher
+          )
+      )
+    : [];
 
   return (
-    <div className="w-1/2 p-12">
-      <DataTable table={table} />
-      <div className="w-1/2 fixed right-0 top-0 p-12">
-        <p className="flex gap-2 justify-start items-center">
-          Currenting matching: <strong>{gameMatch?.title}</strong>
-          {!!gameMatch && (
-            <button
-              className="ml-4 font-black text-red-600"
-              onClick={() => {
-                setGameMatch(undefined);
-                setMatchTerm("");
-                setResults([]);
-              }}
-            >
-              x
-            </button>
-          )}
-        </p>
-        <input className="my-4" type="text" name="match" value={matchTerm} size={60} onChange={handleChange} />
-        <table>
-          <thead>
-            <tr>
-              <th className="px-3">Select</th>
-              <th className="px-3">Title</th>
-              <th className="px-3">Publisher</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((match: Game) => (
-              <tr key={match.gameid}>
-                <td className="p-3">
-                  <button
-                    className={
-                      (match.spielid ? "bg-cyan-400/80 hover:bg-cyan-300/60" : "bg-cyan-300/60 hover:bg-cyan-400/80") +
-                      " border-cyan-500 border py-1 px-3 rounded text-xs font-medium uppercase whitespace-nowrap"
-                    }
-                    onClick={() => {
-                      assignGame(gameMatch!.spielid, match.gameid);
-                      setGameMatch(undefined);
-                      setMatchTerm("");
-                      setResults([]);
-                    }}
-                  >
-                    {match.spielid && "Re-"}Match
-                  </button>
-                </td>
-                <td className="p-3">{match.title}</td>
-                <td className="p-3">{match.publisher.name}</td>
+    <div className="flex flex-row p-12 gap-12">
+      <div className="flex flex-col gap-4 items-center w-1/2">
+        <div className="text-lg">BGG Data</div>
+        <div className="flex flex-row gap-4 justify-center">
+          <div className="flex flex-col gap-4 items-center justify-center">
+            <Button
+              btnText="Scrape BGG Preview Items"
+              btnColor="orange"
+              btnAction={() => scrapePreview(106, "spiel-preview-games.json")}
+            />
+            <div>
+              {newBGGgames.length > 0 && (
+                <>
+                  <span className="font-bold">{newBGGgames.length}</span>
+                  {" | "}
+                </>
+              )}
+              {importedBGGGames.length} || {existingBGGgames.length}
+              {deletedBGGGames.length > 0 && (
+                <>
+                  {" | -"}
+                  <span>{deletedBGGGames.length}</span>
+                </>
+              )}{" "}
+              Games
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 items-center justify-center">
+            <Button
+              btnText="Scrape BGG Parent Items"
+              btnColor="orange"
+              btnAction={() => scrapePreview(7, "spiel-preview-parents.json", true)}
+            />
+            <div>
+              {newBGGPublishers.length && <span className="font-medium">{newBGGPublishers.length}</span>}
+              {" | "}
+              {metaData.length} || {existingBGGPublisherIds.length}
+              {deletedBGGPublishers.length > 0 && (
+                <>
+                  {" | -"}
+                  <span>{deletedBGGPublishers.length}</span>
+                </>
+              )}{" "}
+              Publishers
+            </div>
+          </div>
+        </div>
+        <Button
+          btnText="Add New Games"
+          btnColor="yellow"
+          btnAction={() => addBGGData()}
+          disabled={newBGGgames.length === 0}
+        />
+
+        {newBGGgames.length > 0 && (
+          <table className="mt-4">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Publisher</th>
+                <th>???</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {newBGGgames.map((game) => (
+                <tr key={game.itemid}>
+                  <td className="p-2">{game.geekitem.item.primaryname.name}</td>
+                  <td className="p-2">{game.publishers[0].item.primaryname.name}</td>
+                  <td className="p-2">
+                    <Button btnColor="teal" btnText="Reconcile" btnAction={() => {}} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+      <div className="flex flex-col gap-4 items-center w-1/2">
+        <div className="text-lg">SPIEL Data</div>
+        <Button btnColor="orange" btnText="Scrape SPIEL App" btnAction={() => scrapeSPIEL()} />
+        <div>
+          {newSPIELgames.length > 0 && (
+            <>
+              <span className="font-bold">{newSPIELgames.length}</span>
+              {" | "}
+            </>
+          )}
+          {importedSPIELGames.length} || {existingSPIELgames.length}
+          {deletedSPIELgames.length > 0 && (
+            <>
+              {" | -"}
+              <span>{deletedSPIELgames.length}</span>
+            </>
+          )}{" "}
+          Games
+        </div>
+        <Button
+          btnText="Import SPIEL Games"
+          btnColor="yellow"
+          btnAction={() => importSPIELData()}
+          disabled={newSPIELgames.length === 0}
+        />
+        {newSPIELgames.length > 0 && (
+          <table className="mt-4">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Publisher</th>
+                <th>???</th>
+              </tr>
+            </thead>
+            <tbody>
+              {newSPIELgames.map((game: ImportedSPIELData, idx: number) => (
+                <tr key={idx + game.TITEL}>
+                  <td className="p-2">{game.TITEL}</td>
+                  <td className="p-2">{game.UNTERTITEL}</td>
+                  <td className="p-2">
+                    <Button btnText="Reconcile" btnColor="teal" btnAction={() => {}} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
