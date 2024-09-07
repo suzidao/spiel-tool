@@ -118,6 +118,7 @@ export declare global {
     musthave_stats: number;
     interested_stats: number;
     undecided_stats: number;
+    combined_stats: number;
     subtypes: string[];
     reimplements: GameMeta[];
     digitized: GameMeta[];

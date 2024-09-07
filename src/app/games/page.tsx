@@ -229,7 +229,23 @@ export default function GamesPage() {
             columnName: "Undecided",
             headerClasses: "text-center font-normal text-xl",
             classes: "text-center",
-            pairedColumns: ["InterestedStats", "MustHaveStats"],
+            hasPair: true,
+          },
+        }),
+        columnHelper.accessor("combined_stats", {
+          id: "CombinedStats",
+          cell: (info) => {
+            const statsNum = info.getValue();
+            return statsNum > 0 ? statsNum : "–";
+          },
+          header: () => <span>𝚺</span>,
+          sortDescFirst: true,
+          enableColumnFilter: false,
+          meta: {
+            columnName: "Combined",
+            headerClasses: "text-center font-normal text-xl",
+            classes: "text-center",
+            pairedColumns: ["InterestedStats", "MustHaveStats", "UndecidedStats"],
           },
         }),
       ],

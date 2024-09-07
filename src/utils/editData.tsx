@@ -70,6 +70,7 @@ export function extendGame(game: DatabaseData) {
       musthave_stats: data.stats.musthave,
       interested_stats: data.stats.interested,
       undecided_stats: data.stats.undecided,
+      combined_stats: data.stats.musthave + data.stats.interested + data.stats.undecided,
       subtypes: data.geekitem.item.subtypes,
       releasedate: formattedReleaseDate(),
       releasestatus: data.version.item.releasestatus,
@@ -97,6 +98,7 @@ export function extendGame(game: DatabaseData) {
       musthave_stats: 0,
       interested_stats: 0,
       undecided_stats: 0,
+      combined_stats: 0,
       releasedate: "–",
       location: "–",
     } as Game;
