@@ -136,6 +136,7 @@ export declare global {
 
   type GameInput = {
     bggid?: number;
+    spielid?: number;
     previewid?: number;
     title: string;
     publisher: number | null;

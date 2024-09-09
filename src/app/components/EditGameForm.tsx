@@ -3,12 +3,13 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { DECISION, NEGOTIATION, ACQUISITION } from "@/types/common";
-import { addNewPublisher, addNewDesigner, editGame, addNewGame } from "../actions";
+import { addNewPublisher, addNewDesigner, editGame, addNewGame, assignGame } from "../actions";
 import { useGameMetadataContext } from "../contexts";
 import AutoCompleteInput from "./AutoCompleteInput";
 import { normalizeText } from "@/utils/editData";
 
-export default function EditGameForm(props: { game?: Game }) {
+export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame }) {
+  const { game, SPIELgame } = props;
   const { publishers, designers } = useGameMetadataContext();
   const publisherList = publishers.map((pub) => {
     return { id: pub.publisherid, name: pub.name };
@@ -17,32 +18,52 @@ export default function EditGameForm(props: { game?: Game }) {
     return { id: des.designerid, name: des.name };
   });
 
-  const game = props.game ? { ...props.game } : null;
+  const designerNames =
+    game && game.designers
+      ? game.designers.map((d: Designer) => d.name)
+      : SPIELgame && SPIELgame.designers
+      ? SPIELgame.designers
+      : [];
 
-  const designerNames = game && game.designers ? game.designers.map((d) => d.name) : [];
+  const publisherName =
+    game && game.publisher ? game.publisher.name : SPIELgame && SPIELgame.publisher ? SPIELgame.publisher : "";
 
-  const publisherName = game && game.publisher ? game.publisher.name : "";
+  let existingGame = (SPIELgame ? { ...SPIELgame } : { ...game }) as unknown as GameInput;
 
-  const initialState = {
-    bggid: game ? game.bggid : undefined,
-    title: game ? game.title! : "",
-    publisher: game ? game.publisher!.publisherid : null,
-    designers: game && game.designers ? game.designers.map((d) => d.designerid) : [],
-    minplayers: game ? game.minplayers : undefined,
-    maxplayers: game ? game.maxplayers : undefined,
-    minplaytime: game ? game.minplaytime : undefined,
-    maxplaytime: game ? game.maxplaytime : undefined,
-    complexity: game ? game.complexity : undefined,
-    minage: game ? game.minage : undefined,
-    location: game ? game.location : undefined,
-    yearpublished: game ? game.yearpublished : undefined,
-    decision: game ? game.decision : "none",
-    negotiation: game ? game.negotiation : "none",
-    acquisition: game ? game.acquisition : "none",
-    numhave: game ? game.numhave : 0,
-    numneed: game ? game.numneed : undefined,
-    numpromise: game ? game.numpromise : undefined,
-  };
+  if (!!game) {
+    existingGame["publisher"] = game.publisher ? game.publisher!.publisherid : null;
+    existingGame["designers"] = game.designers ? game.designers.map((d: Designer) => d.designerid) : [];
+  }
+
+  if (!!SPIELgame) {
+    existingGame["spielid"] = SPIELgame.spielid;
+    existingGame["minplaytime"] = SPIELgame.playtime ? SPIELgame.playtime : undefined;
+    existingGame["yearpublished"] = SPIELgame.releasedate ? Number(SPIELgame.releasedate.split("/").pop()) : undefined;
+  }
+
+  const initialState =
+    !!game || !!SPIELgame
+      ? { ...existingGame }
+      : {
+          bggid: undefined,
+          title: "",
+          publisher: null,
+          designers: [],
+          minplayers: undefined,
+          maxplayers: undefined,
+          minplaytime: undefined,
+          maxplaytime: undefined,
+          complexity: undefined,
+          minage: undefined,
+          location: undefined,
+          yearpublished: undefined,
+          decision: "none",
+          negotiation: "none",
+          acquisition: "none",
+          numhave: 0,
+          numneed: undefined,
+          numpromise: undefined,
+        };
 
   const decisionOptions = Object.entries(DECISION);
   const negotiationOptions = Object.entries(NEGOTIATION);
@@ -164,15 +185,15 @@ export default function EditGameForm(props: { game?: Game }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>
+      <label className="flex flex-row items-center gap-2">
         Title:
         <input type="text" name="title" defaultValue={formState.title} onChange={handleChange} />
       </label>
-      <label>
+      <label className="flex flex-row items-center gap-2">
         Publisher:
         <AutoCompleteInput name="publisher" dataList={publisherList} value={formPublisher} onSelect={handleInput} />
       </label>
-      <label>
+      <label className="flex flex-row items-center gap-2">
         Designer(s):
         {formDesigners.map((designer, idx) => (
           <Fragment key={`designer${idx}`}>
@@ -182,29 +203,71 @@ export default function EditGameForm(props: { game?: Game }) {
         ))}
         <button onClick={AddDesigner}> + </button>
       </label>
-      <label>
-        Min:
-        <input type="number" min={1} name="minplayers" defaultValue={formState.minplayers} onChange={handleChange} />
-      </label>
-      <label>
-        Max:
-        <input type="number" min={1} name="maxplayers" defaultValue={formState.maxplayers} onChange={handleChange} />
-      </label>
-      <label>
-        Min:
-        <input type="number" min={1} name="minplaytime" defaultValue={formState.minplaytime} onChange={handleChange} />
-      </label>
-      <label>
-        Max:
-        <input type="number" min={1} name="maxplaytime" defaultValue={formState.maxplaytime} onChange={handleChange} />
-      </label>
-      <label>
+      <div className="flex flex-row gap-2 items-center">
+        Player Count:
+        <label className="flex flex-row items-center gap-2">
+          Min:
+          <input
+            className="w-12"
+            type="number"
+            min={1}
+            name="minplayers"
+            defaultValue={formState.minplayers}
+            onChange={handleChange}
+          />
+        </label>
+        <label className="flex flex-row items-center gap-2">
+          Max:
+          <input
+            className="w-12"
+            type="number"
+            min={1}
+            name="maxplayers"
+            defaultValue={formState.maxplayers}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
+      <div className="flex flex-row gap-2 items-center">
+        Play Time:
+        <label className="flex flex-row items-center gap-2">
+          Min:
+          <input
+            className="w-12"
+            type="number"
+            min={1}
+            name="minplaytime"
+            defaultValue={formState.minplaytime}
+            onChange={handleChange}
+          />
+        </label>
+        <label className="flex flex-row items-center gap-2">
+          Max:
+          <input
+            className="w-12"
+            type="number"
+            min={1}
+            name="maxplaytime"
+            defaultValue={formState.maxplaytime}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
+      <label className="flex flex-row items-center gap-2">
         Age:
-        <input type="number" min={1} name="minage" defaultValue={formState.minage} onChange={handleChange} />
+        <input
+          className="w-12"
+          type="number"
+          min={1}
+          name="minage"
+          defaultValue={formState.minage}
+          onChange={handleChange}
+        />
       </label>
-      <label>
+      <label className="flex flex-row items-center gap-2">
         Complexity:
         <input
+          className="w-12"
           type="number"
           min={1}
           step={0.01}
@@ -213,11 +276,11 @@ export default function EditGameForm(props: { game?: Game }) {
           onChange={handleChange}
         />
       </label>
-      <label>
+      <label className="flex flex-row items-center gap-2">
         Location:
         <input type="text" name="location" defaultValue={formState.location} onChange={handleChange} />
       </label>
-      <label>
+      <label className="flex flex-row items-center gap-2">
         Year Published:
         <input type="number" name="yearpublished" defaultValue={formState.yearpublished} onChange={handleChange} />
       </label>

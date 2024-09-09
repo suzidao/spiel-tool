@@ -13,6 +13,7 @@ import {
   getPublisher,
   getDesigner,
   getGame,
+  getSPIELGame,
   getGamePublisher,
   getGameDesigners,
   createDesigner,
@@ -31,17 +32,16 @@ import {
   toggleIgnoreSPIELGame,
 } from "./queries";
 
-import SPIELData from "../data/spiel-app-games.json";
 import SPIELThemeData from "../data/spiel-app-themes.json";
 import type * as Global from "../types/global.d.ts";
 import { editLocation } from "../utils/editData";
 
-const SPIELGames = SPIELData as ImportedSPIELData[];
 const SPIELThemes = SPIELThemeData as SPIELTheme[];
 
 export const resolvers = {
   Query: {
     SPIELgames: () => getSPIELGames(),
+    SPIELgame: (_root: any, args: { id: number }) => getSPIELGame(args.id),
     games: () => getGames(),
     game: (_root: any, args: { id: number }) => getGame(args.id),
     publishers: () => getPublishers(),
@@ -130,6 +130,10 @@ export const resolvers = {
           })
         : [];
 
+      const getSPIELData = () => fs.readFileSync(path.join(process.cwd(), "src/data/spiel-app-games.json"), "utf8");
+
+      const SPIELGames = JSON.parse(getSPIELData()) as unknown as ImportedSPIELData[];
+
       const newGames = SPIELGames.filter(
         (game) =>
           !existingGames.find(
@@ -196,9 +200,9 @@ export const resolvers = {
         ? dbGames.filter((game) => game.previewid !== null).map((game) => game.previewid)
         : [];
 
-      const getGamesData = () => fs.readFileSync(path.join(process.cwd(), "src/data/spiel-preview-games.json"), "utf8");
+      const getBGGData = () => fs.readFileSync(path.join(process.cwd(), "src/data/spiel-preview-games.json"), "utf8");
 
-      const bggGames = JSON.parse(getGamesData()) as unknown as ImportedData[];
+      const bggGames = JSON.parse(getBGGData()) as unknown as ImportedBGGData[];
 
       const newGames = bggGames.filter((game) => !previewGameIds.includes(Number(game.itemid)));
 

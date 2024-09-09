@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
   const reqData = await req.json();
 
   const gameInput = {
+    spielid: reqData.spielid,
     title: reqData.title,
     publisher: reqData.publisher,
     designers: reqData.designers,
@@ -33,14 +34,14 @@ export async function POST(req: NextRequest) {
     cache: "no-store",
     body: JSON.stringify({
       query: `
-        mutation ($input: GameInput){
+        mutation ($input: GameInput) {
           addGame (input: $input) { gameid }
         }
       `,
       variables: { input: gameInput },
     }),
   })
-    .then((res) => res.json())
+    .then((res) => res)
     .catch((error) => console.error(error));
 
   return NextResponse.json(rawdata);

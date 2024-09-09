@@ -27,6 +27,9 @@ export async function getUser(id: number) {
 export async function getGame(id: number) {
   return await pool.query(`SELECT * FROM games WHERE gameid=${id}`).then((res) => res.rows[0]);
 }
+export async function getSPIELGame(id: number) {
+  return await pool.query(`SELECT * FROM spielgames WHERE spielid=${id}`).then((res) => res.rows[0]);
+}
 export async function getPublisher(id: number) {
   return await pool.query(`SELECT * FROM publishers WHERE publisherid=${id}`).then((res) => res.rows[0]);
 }
@@ -57,6 +60,7 @@ export async function createUser(input: UserInput) {
 export async function createGame(input: GameInput) {
   const {
     bggid,
+    spielid,
     previewid,
     title,
     publisher,
@@ -79,6 +83,7 @@ export async function createGame(input: GameInput) {
 
   const query = `INSERT INTO games (
     bggid,
+    spielid,
     previewid,
     title,
     publisher,
@@ -99,6 +104,7 @@ export async function createGame(input: GameInput) {
     numpromise
   ) VALUES (
     ${bggid ?? null},
+    ${spielid ?? null},
     ${previewid ?? null},
     $$${title}$$,
     ${publisher},
@@ -111,9 +117,9 @@ export async function createGame(input: GameInput) {
     ${minage ?? null},
     '${location ?? "–"}',
     ${yearpublished ?? null},
-    '${decision}',
-    '${negotiation}',
-    '${acquisition}',
+    '${decision ?? "none"}',
+    '${negotiation ?? "none"}',
+    '${acquisition ?? "none"}',
     ${numhave ?? null},
     ${numneed ?? null},
     ${numpromise ?? null}
@@ -121,7 +127,12 @@ export async function createGame(input: GameInput) {
 
   return await pool
     .query(query)
-    .then((res) => res.rows[0])
+    .then((res) => {
+      if (!!spielid) {
+        pool.query(`UPDATE spielgames SET gameid=${res.rows[0].gameid} WHERE spielid=${spielid} RETURNING *`);
+      }
+      return res.rows[0];
+    })
     .catch((error) => console.error(error));
 }
 

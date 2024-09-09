@@ -131,6 +131,7 @@ export const schema = buildSchema(`
 
   input GameInput {
     bggid: Int
+    spielid: Int
     previewid: Int
     title: String
     publisher: Int
@@ -205,6 +206,7 @@ export const schema = buildSchema(`
     games: [Game]
     game(id: Int): Game
     SPIELgames: [SPIELGame]
+    SPIELgame(id: Int): SPIELGame
     publishers: [Publisher]
     publisher(id: Int): Publisher
     designers: [Designer]
@@ -229,6 +231,7 @@ export const schema = buildSchema(`
     cullGame(gameid: Int): Int
     cullPublisher(publisherid: Int): Int
     cullDesigner(designerid: Int): Int
+    addSPIELGame(spielid: Int, input: SPIELInput): SPIELGame
   }
 
 `);

@@ -15,13 +15,13 @@ export default function AdminLayout({ children }: Readonly<{ children: React.Rea
           Home
         </Link>
         <Link className={pathname === "/admin/reconciliation" ? "font-bold" : ""} href={"/admin/reconciliation"}>
-          Reconciliation (New)
+          Reconcile BGG Games
         </Link>
         <Link
-          className={pathname === "/admin/reconciliation/old" ? "font-bold" : ""}
-          href={"/admin/reconciliation/old"}
+          className={pathname === "/admin/reconciliation/spielapp" ? "font-bold" : ""}
+          href={"/admin/reconciliation/spielapp"}
         >
-          Reconciliation (Old)
+          Reconcile SPIEL Games
         </Link>
       </nav>
       {children}

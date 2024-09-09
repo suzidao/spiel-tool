@@ -227,14 +227,35 @@ export async function addBGGData() {
   return data;
 }
 
-export async function addSPIELGame(game: SPIELGame) {}
+export async function addSPIELGame(game: SPIELGame) {
+  delete game.gameid;
+  const gamePrep = { ...game };
+  const { spielid, ...gameInput } = gamePrep;
+  await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    body: JSON.stringify({
+      query: `
+        mutation ($spielid: Int, $input: SPIELInput) {
+          addSPIELGame (spielid: $spielid, input: $input) { spielid }
+        }
+      `,
+      variables: { spielid: game.spielid, input: gameInput },
+    }),
+  })
+    .then((res) => res.json().then((data) => data))
+    .catch((error) => console.error(error));
+}
 
 export async function addNewGame(formState: GameInput) {
   await fetch("http://localhost:3000/api/games/add", {
     method: "POST",
     body: JSON.stringify(formState),
   })
-    .then((res) => res.json())
+    .then((res) => res)
     .catch((error) => console.error(error));
 }
 
