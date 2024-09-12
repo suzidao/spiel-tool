@@ -7,6 +7,8 @@ export async function POST(req: NextRequest) {
   const gameid = reqData.gameid;
 
   const gameInput = {
+    bggid: reqData.bggid,
+    previewid: reqData.previewid,
     title: reqData.title,
     publisher: reqData.publisher,
     designers: reqData.designers,

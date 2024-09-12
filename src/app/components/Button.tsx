@@ -3,10 +3,12 @@
 export default function Button(props: {
   btnText: string;
   btnColor: string;
+  className?: string;
+  btnType?: "button" | "reset" | "submit";
   btnAction?: () => void;
   disabled?: boolean;
 }) {
-  const { btnColor, btnAction, btnText, disabled } = props;
+  const { btnColor, btnAction, btnText, btnType, className, disabled } = props;
 
   const buildBtnStyles = (color: string) => {
     switch (color) {
@@ -24,6 +26,8 @@ export default function Button(props: {
         return "bg-cyan-300/60 hover:bg-cyan-400/80 border-cyan-500 disabled:bg-cyan-200/50 disabled:border-cyan-400";
       case "purple":
         return "bg-purple-300/60 hover:bg-purple-400/80 border-purple-500 disabled:bg-purple-200/50 disabled:border-purple-400";
+      case "gray":
+        return "bg-gray-200/40 hover:bg-gray-300/70 border-gray-400 disabled:bg-gray-100/30 disabled:border-gray-300";
     }
   };
 
@@ -31,8 +35,9 @@ export default function Button(props: {
     <button
       className={`${buildBtnStyles(
         btnColor
-      )} border transition-all ease-in-out py-1 px-3 rounded text-xs font-medium uppercase whitespace-nowrap disabled:text-gray-600`}
+      )} ${className} border transition-all ease-in-out py-1 px-3 rounded text-xs font-medium uppercase whitespace-nowrap disabled:text-gray-600`}
       onClick={btnAction}
+      type={btnType ?? "button"}
       disabled={disabled}
     >
       {btnText}

@@ -3,10 +3,11 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { DECISION, NEGOTIATION, ACQUISITION } from "@/types/common";
-import { addNewPublisher, addNewDesigner, editGame, addNewGame, assignGame } from "../actions";
+import { addNewPublisher, addNewDesigner, editGame, addNewGame } from "../actions";
 import { useGameMetadataContext } from "../contexts";
 import AutoCompleteInput from "./AutoCompleteInput";
 import { normalizeText } from "@/utils/editData";
+import Button from "./Button";
 
 export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame }) {
   const { game, SPIELgame } = props;
@@ -81,7 +82,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       .filter((designer) => formDesigners.includes(designer.name))
       .map((designer) => designer.id);
     setFormState({ ...formState, ...newFormState });
-  }, [formDesigners]);
+  }, [formDesigners, game]);
 
   useEffect(() => {
     if (!!formState["publisher"]) setNewPublisher("");
@@ -169,6 +170,8 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
     }
 
     game ? await editGame(game.gameid!, formState) : await addNewGame(formState);
+
+    history.back();
   };
 
   const AddDesigner = (e: any) => {
@@ -184,7 +187,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label className="flex flex-row items-center gap-2">
         Title:
         <input type="text" name="title" defaultValue={formState.title} onChange={handleChange} />
@@ -196,7 +199,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       <label className="flex flex-row items-center gap-2">
         Designer(s):
         {formDesigners.map((designer, idx) => (
-          <Fragment key={`designer${idx}`}>
+          <Fragment key={`game${game?.gameid}designer${idx}`}>
             <AutoCompleteInput name="designers" dataList={designerList} value={designer} onSelect={handleInput} />
             {formDesigners.length > 1 && <button onClick={(e) => RemoveDesigner(e, idx)}> – </button>}
           </Fragment>
@@ -210,9 +213,8 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           <input
             className="w-12"
             type="number"
-            min={1}
             name="minplayers"
-            defaultValue={formState.minplayers}
+            defaultValue={formState.minplayers ?? undefined}
             onChange={handleChange}
           />
         </label>
@@ -221,9 +223,8 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           <input
             className="w-12"
             type="number"
-            min={1}
             name="maxplayers"
-            defaultValue={formState.maxplayers}
+            defaultValue={formState.maxplayers ?? undefined}
             onChange={handleChange}
           />
         </label>
@@ -235,9 +236,8 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           <input
             className="w-12"
             type="number"
-            min={1}
             name="minplaytime"
-            defaultValue={formState.minplaytime}
+            defaultValue={formState.minplaytime ?? undefined}
             onChange={handleChange}
           />
         </label>
@@ -246,9 +246,8 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           <input
             className="w-12"
             type="number"
-            min={1}
             name="maxplaytime"
-            defaultValue={formState.maxplaytime}
+            defaultValue={formState.maxplaytime ?? undefined}
             onChange={handleChange}
           />
         </label>
@@ -284,9 +283,9 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
         Year Published:
         <input type="number" name="yearpublished" defaultValue={formState.yearpublished} onChange={handleChange} />
       </label>
-      <label className="flex flex-row max-w-96 p-2">
+      <label className="flex flex-row items-center max-w-96 gap-2">
         Decision Status:
-        <select onChange={handleChange} name="decision">
+        <select className="border border-gray-400 bg-white py-0.5 rounded" onChange={handleChange} name="decision">
           {decisionOptions.map(([key, value]) => (
             <option key={key} value={key}>
               {value}
@@ -294,9 +293,9 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           ))}
         </select>
       </label>
-      <label className="flex flex-row max-w-96 p-2">
+      <label className="flex flex-row items-center max-w-96 gap-2">
         Negotiation Status:
-        <select onChange={handleChange} name="negotiation">
+        <select className="border border-gray-400 bg-white py-0.5 rounded" onChange={handleChange} name="negotiation">
           {negotiationOptions.map(([key, value]) => (
             <option key={key} value={key}>
               {value}
@@ -304,9 +303,9 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           ))}
         </select>
       </label>
-      <label className="flex flex-row max-w-96 p-2">
+      <label className="flex flex-row items-center max-w-96 gap-2">
         Acquisition Status:
-        <select onChange={handleChange} name="acquisition">
+        <select className="border border-gray-400 bg-white py-0.5 rounded" onChange={handleChange} name="acquisition">
           {acquisitionOptions.map(([key, value]) => (
             <option key={key} value={key}>
               {value}
@@ -314,7 +313,12 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           ))}
         </select>
       </label>
-      <button type="submit">{game ? "Edit" : "Add New"} Game</button>
+      <Button
+        className="self-center"
+        btnColor="green"
+        btnText={(game ? "Edit" : "Add New") + " Game"}
+        btnType="submit"
+      />
     </form>
   );
 }

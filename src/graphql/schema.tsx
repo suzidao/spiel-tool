@@ -68,6 +68,8 @@ export const schema = buildSchema(`
     numpromise: Int
     eventid: Int
     paxid: Int
+    created_at: String
+    updated_at: String
   }
   
   type SPIELGame {
@@ -88,6 +90,8 @@ export const schema = buildSchema(`
     categories: [String]
     subtypes: [String]
     ignore: Boolean
+    created_at: String
+    updated_at: String
   }
 
   type GameDesigner {
@@ -224,7 +228,7 @@ export const schema = buildSchema(`
     addUser(input: UserInput): User!
     addBGGData: [Game]
     assignGame(spielid: Int, gameid: Int): [Game]
-    toggleIgnore(spielid: Int, ignore: Boolean): [SPIELGame]
+    toggleIgnore(spielid: Int, ignore: Boolean): SPIELGame
     editGame(gameid: Int, input: GameInput): Game!
     editPublisher(publisherid: Int, input: PublisherInput): Publisher!
     editDesigner(designerid: Int, input: DesignerInput): Designer!

@@ -96,12 +96,6 @@ export const resolvers = {
     password: (root: User) => root.password,
   },
 
-  GameDesigner: {
-    id: (root: GameDesigner) => root.id,
-    designerid: (root: GameDesigner) => root.designerid,
-    gameid: (root: GameDesigner) => root.gameid,
-  },
-
   Mutation: {
     addUser: (root: User, args: { input: UserInput }) => createUser(args.input),
     addPublisher: (root: Publisher, args: { input: PublisherInput }) => createPublisher(args.input).then((res) => res),

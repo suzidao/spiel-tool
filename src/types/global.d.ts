@@ -60,8 +60,8 @@ export declare global {
   type PublisherInput = {
     bggid: number | null;
     name: string;
-    country: string | null;
-    contacts: string | null;
+    country?: string | null;
+    contacts?: string | null;
   };
 
   type Contact = {
@@ -89,10 +89,12 @@ export declare global {
     maxplayers: number;
     minplaytime: number;
     maxplaytime: number;
-    complexity: number;
+    complexity?: number;
     minage: number;
     location?: string;
     yearpublished?: number;
+    created_at: string;
+    updated_at: string;
   };
 
   interface DatabaseData extends BaseGameData {
@@ -155,17 +157,6 @@ export declare global {
     numneed?: number;
     numhave?: number;
     numpromise?: number;
-  };
-
-  type GameDesigner = {
-    id: Int;
-    gameid: Int;
-    designerid: Int;
-  };
-
-  type GameDesignerInput = {
-    gameid: Int;
-    designerid: Int;
   };
 
   type ImportedBGGData = {
@@ -282,6 +273,8 @@ export declare global {
     categories?: string[];
     subtypes?: string[]; // set to ignore if "expansion" exists
     ignore: boolean;
+    created_at: string;
+    updated_at: string;
   };
 
   type SPIELInput = {

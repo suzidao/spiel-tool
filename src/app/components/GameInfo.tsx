@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import BGGKeys from "../../data/bgg-keys.json";
+import { formatPlayerCount, formatPlayTime } from "@/utils/editData";
 
 export default function GameInfo(props: { game: Game }) {
   const {
@@ -31,30 +32,6 @@ export default function GameInfo(props: { game: Game }) {
     msrp_currency,
     availability_status,
   } = props.game;
-
-  const players = () => {
-    switch (!!minplayers || !!maxplayers) {
-      case minplayers === maxplayers:
-      case !!minplayers && !maxplayers:
-        return minplayers;
-      case !minplayers && !!maxplayers:
-        return maxplayers;
-      default:
-        return `${minplayers} – ${maxplayers}`;
-    }
-  };
-
-  const playtime = () => {
-    switch (!!minplaytime || !!maxplaytime) {
-      case minplaytime === maxplaytime:
-      case !!minplaytime && !maxplaytime:
-        return minplaytime;
-      case !minplaytime && !!maxplaytime:
-        return maxplaytime;
-      default:
-        return `${minplaytime} – ${maxplaytime}`;
-    }
-  };
 
   const price = () => {
     return !!showprice && showprice > 0
@@ -181,11 +158,11 @@ export default function GameInfo(props: { game: Game }) {
       <div className="my-4 flex flex-row">
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Player Count:</span>
-          {!!minplayers || !!maxplayers ? `${players()} players` : "–"}
+          {!!minplayers || !!maxplayers ? `${formatPlayerCount(minplayers, maxplayers)} players` : "–"}
         </div>
         <div className="w-1/2">
           <span className="pr-2 font-medium whitespace-nowrap">Playtime:</span>
-          {!!minplaytime || !!maxplaytime ? `${playtime()} minutes` : "–"}
+          {!!minplaytime || !!maxplaytime ? `${formatPlayTime(minplaytime, maxplaytime)} minutes` : "–"}
         </div>
       </div>
       <div className="my-4 flex flex-row">

@@ -103,7 +103,7 @@ export default function AdminPage() {
               btnAction={() => scrapePreview(7, "spiel-preview-parents.json", true)}
             />
             <div>
-              {newBGGPublishers.length && <span className="font-medium">{newBGGPublishers.length}</span>}
+              {newBGGPublishers.length && <span className="font-bold">{newBGGPublishers.length}</span>}
               {" | "}
               {metaData.length} || {existingBGGPublisherIds.length}
               {deletedBGGPublishers.length > 0 && (

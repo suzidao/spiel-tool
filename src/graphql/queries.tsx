@@ -176,23 +176,6 @@ export async function createDesigner(input: DesignerInput) {
     .catch((error) => console.error(error));
 }
 
-export async function createGameDesigner(input: GameDesignerInput) {
-  const { gameid, designerid } = input;
-
-  return await pool
-    .query(
-      `INSERT INTO game_designer (
-        gameid,
-        designerid
-      ) VALUES (
-        ${gameid},
-        ${designerid}
-      ) RETURNING *`
-    )
-    .then((res) => res.rows[0])
-    .catch((error) => console.error(error));
-}
-
 export async function createSPIELGame(input: SPIELInput) {
   const {
     title,
@@ -254,6 +237,8 @@ export async function createSPIELGame(input: SPIELInput) {
 
 export async function updateGame(gameid: number, input: GameInput) {
   const {
+    bggid,
+    previewid,
     title,
     publisher,
     designers,
@@ -265,11 +250,19 @@ export async function updateGame(gameid: number, input: GameInput) {
     minage,
     location,
     yearpublished,
+    decision,
+    negotiation,
+    acquisition,
+    numhave,
+    numneed,
+    numpromise,
   } = input;
 
   return await pool
     .query(
       `UPDATE games SET
+        bggid=${bggid},
+        previewid=${previewid},
         title=$$${title}$$,
         publisher=${publisher},
         designers='{${designers}}',
@@ -280,7 +273,13 @@ export async function updateGame(gameid: number, input: GameInput) {
         complexity=${complexity},
         minage=${minage},
         location='${location}',
-        yearpublished=${yearpublished}
+        yearpublished=${yearpublished},
+        decision='${decision}',
+        negotiation='${negotiation}',
+        acquisition='${acquisition}',
+        numhave=${numhave},
+        numneed=${numneed ?? null},
+        numpromise=${numpromise ?? null}
       WHERE gameid=${gameid}
       RETURNING *`
     )
@@ -341,5 +340,7 @@ export async function associateGames(spielid: number, gameid: number) {
 }
 
 export async function toggleIgnoreSPIELGame(spielid: number, ignore: boolean) {
-  return await pool.query(`UPDATE spielgames SET ignore=${!ignore} WHERE spielid=${spielid} RETURNING *`);
+  return await pool
+    .query(`UPDATE spielgames SET ignore=${ignore} WHERE spielid=${spielid} RETURNING *`)
+    .then((res) => res.rows[0]);
 }

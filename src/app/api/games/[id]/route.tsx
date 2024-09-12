@@ -1,6 +1,5 @@
 /** @format */
 
-import { extendGame } from "@/utils/editData";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
@@ -39,6 +38,7 @@ export async function GET(req: NextApiRequest) {
             maxplaytime
             complexity
             minage
+            location
             decision
             negotiation
             acquisition
@@ -56,7 +56,5 @@ export async function GET(req: NextApiRequest) {
 
   const game = data.game;
 
-  const editedGame = extendGame(game) as Game;
-
-  return NextResponse.json(editedGame);
+  return NextResponse.json(game);
 }

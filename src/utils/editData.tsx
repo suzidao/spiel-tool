@@ -25,6 +25,30 @@ export function editLocation(data: ImportedBGGData) {
     : "–";
 }
 
+export function formatPlayerCount(minplayers?: number, maxplayers?: number) {
+  switch (!!minplayers || !!maxplayers) {
+    case minplayers === maxplayers:
+    case !!minplayers && !maxplayers:
+      return minplayers;
+    case !minplayers && !!maxplayers:
+      return maxplayers;
+    default:
+      return `${minplayers} – ${maxplayers}`;
+  }
+}
+
+export function formatPlayTime(minplaytime?: number, maxplaytime?: number) {
+  switch (!!minplaytime || !!maxplaytime) {
+    case minplaytime === maxplaytime:
+    case !!minplaytime && !maxplaytime:
+      return minplaytime;
+    case !minplaytime && !!maxplaytime:
+      return maxplaytime;
+    default:
+      return `${minplaytime} – ${maxplaytime}`;
+  }
+}
+
 export function extendGame(game: DatabaseData) {
   const data = bggData.find((data: ImportedBGGData) => Number(data.itemid) === game.previewid);
 
@@ -100,7 +124,7 @@ export function extendGame(game: DatabaseData) {
       undecided_stats: 0,
       combined_stats: 0,
       releasedate: "–",
-      location: "–",
+      location: game.location ?? "–",
     } as Game;
   }
 }

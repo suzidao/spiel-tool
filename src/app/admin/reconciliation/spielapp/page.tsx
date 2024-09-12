@@ -48,9 +48,10 @@ export default function ReconciliationPage() {
     });
   }, [gameMatch]);
 
-  const categoryList = SPIELThemes.filter((theme) => theme.ID.includes("CATEGORIES.")).map((category) => {
-    return { objectid: category.ID, name: category.TITEL };
-  });
+  // const categoryList = SPIELThemes.filter((theme) => theme.ID.includes("CATEGORIES.")).map((category) => {
+  //   return { objectid: category.ID, name: category.TITEL };
+  // });
+
   const typeList = SPIELThemes.filter((theme) => theme.ID.includes("TYPE.")).map((type) => {
     return { objectid: type.ID, name: type.TITEL };
   });
@@ -77,6 +78,17 @@ export default function ReconciliationPage() {
   const columnHelper = createColumnHelper<SPIELGame>();
 
   const columns = [
+    columnHelper.accessor("created_at", {
+      id: "CreatedAt",
+      cell: (info) => {
+        let date = new Date(Number(info.getValue()));
+        return date.toLocaleDateString();
+      },
+      header: () => <span>Added</span>,
+      enableHiding: false,
+      enableColumnFilter: false,
+      sortDescFirst: true,
+    }),
     columnHelper.accessor("title", {
       id: "GameTitle",
       cell: ({ row }) => {
@@ -171,42 +183,42 @@ export default function ReconciliationPage() {
         classes: "text-center",
       },
     }),
-    columnHelper.accessor("categories", {
-      id: "Categories",
-      cell: (info) => info.getValue(),
-      header: () => <span>Categories</span>,
-      enableHiding: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const categoryNames = row.original.categories;
-        const categories = categoryNames
-          ? categoryList.filter((listItem) => categoryNames.includes(listItem.name))
-          : [];
+    // columnHelper.accessor("categories", {
+    //   id: "Categories",
+    //   cell: (info) => info.getValue(),
+    //   header: () => <span>Categories</span>,
+    //   enableHiding: false,
+    //   enableSorting: false,
+    //   enableColumnFilter: false,
+    //   filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
+    //     const categoryNames = row.original.categories;
+    //     const categories = categoryNames
+    //       ? categoryList.filter((listItem) => categoryNames.includes(listItem.name))
+    //       : [];
 
-        const matches = categories
-          ? categories.map((category) => {
-              const filteredTypes = filterValue.map((filter) => {
-                const matchFound = filter === category.objectid;
-                return matchFound;
-              });
-              return filteredTypes.includes(true);
-            })
-          : [];
+    //     const matches = categories
+    //       ? categories.map((category) => {
+    //           const filteredTypes = filterValue.map((filter) => {
+    //             const matchFound = filter === category.objectid;
+    //             return matchFound;
+    //           });
+    //           return filteredTypes.includes(true);
+    //         })
+    //       : [];
 
-        if (filterValue.length === 0) {
-          return true;
-        } else {
-          return matches.includes(true);
-        }
-      },
-      meta: {
-        columnName: "Categories",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: categoryList,
-      },
-    }),
+    //     if (filterValue.length === 0) {
+    //       return true;
+    //     } else {
+    //       return matches.includes(true);
+    //     }
+    //   },
+    //   meta: {
+    //     columnName: "Categories",
+    //     filterVariant: "checklist",
+    //     externalFilter: true,
+    //     filterList: categoryList,
+    //   },
+    // }),
     columnHelper.accessor("subtypes", {
       id: "SubTypes",
       cell: (info) => info.getValue(),
@@ -315,7 +327,7 @@ export default function ReconciliationPage() {
         <input className="my-4" type="text" name="match" value={matchTerm} size={60} onChange={handleChange} />
         {!!gameMatch && (
           <>
-            {results.length > 0 ? (
+            {results.length > 0 && (
               <table>
                 <thead>
                   <tr>
@@ -345,14 +357,13 @@ export default function ReconciliationPage() {
                   ))}
                 </tbody>
               </table>
-            ) : (
-              <div>
-                <span className="pr-8">No Matches Found</span>
-                <Link href={`/games/add/${gameMatch.spielid}`}>
-                  <Button btnText="Add Game" btnColor="green" />
-                </Link>
-              </div>
             )}
+            <div>
+              <span className="pr-8">{results.length > 0 ? "No Viable Matches" : "No Matches Found"}</span>
+              <Link href={`/games/add/${gameMatch.spielid}`}>
+                <Button btnText="Add Game" btnColor="green" />
+              </Link>
+            </div>
           </>
         )}
       </div>

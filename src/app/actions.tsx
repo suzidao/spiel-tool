@@ -150,7 +150,6 @@ export async function getAllGames() {
             title
             publisher
             designers
-            price
             releasedate
             minplayers
             maxplayers
@@ -158,10 +157,11 @@ export async function getAllGames() {
             complexity
             minage
             location
-            mechanics
             categories
             ignore
             subtypes
+            created_at
+            updated_at
           }
           games {
             gameid
@@ -266,6 +266,40 @@ export async function editGame(gameid: number, formState: GameInput) {
   })
     .then((res) => res.json())
     .catch((error) => console.error(error));
+}
+
+export async function editPublisher(publisherid: number, input: PublisherInput) {
+  await fetch(`http://localhost:4000/graphql`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+        mutation ($publisherid: Int, $input: PublisherInput) {
+          editPublisher (publisherid: $publisherid, input: $input) { publisherid }
+        }
+      `,
+      variables: { publisherid: publisherid, input: input },
+    }),
+  });
+}
+
+export async function editDesigner(designerid: number, input: DesignerInput) {
+  await fetch(`http://localhost:4000/graphql`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+        mutation ($designerid: Int, $input: DesignerInput) {
+          editDesigner (designerid: $designerid, input: $input) { designerid }
+        }
+      `,
+      variables: { designerid: designerid, input: input },
+    }),
+  });
 }
 
 export async function getGameMetadata() {
