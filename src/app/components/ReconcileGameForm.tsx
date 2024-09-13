@@ -1,13 +1,12 @@
 /** @format */
 "use client";
 
-import { useGameMetadataContext } from "@/app/contexts";
-import { editLocation, formatPlayerCount, formatPlayTime, normalizeText } from "@/utils/editData";
-import BGGData from "@/data/spiel-preview-games.json";
 import { useState } from "react";
-import Button from "./Button";
-import { editDesigner, editGame, editPublisher } from "../actions";
-import Link from "next/link";
+import { useGameMetadataContext } from "@/app/contexts";
+import { editDesigner, editGame, editPublisher } from "@/app/actions";
+import { formatBGGGame, formatPlayerCount, formatPlayTime, normalizeText } from "@/utils/editData";
+import Button from "@/app/components/Button";
+import BGGData from "@/data/spiel-preview-games.json";
 
 export default function ReconcileGameForm(props: { game: DatabaseData; previewid: string }) {
   const { game, previewid } = props;
@@ -27,38 +26,14 @@ export default function ReconcileGameForm(props: { game: DatabaseData; previewid
     return { name: d.name, bggid: d.objectid };
   });
 
-  const gamePublisher = publishers.find(
-    (publisher: Publisher) => normalizeText(publisher.name) === normalizeText(bggPublisher.name)
-  );
+  const gamePublisher = game.publisher;
 
-  const gameDesigners = designers.filter((designer: Designer) =>
-    bggDesigners.map((d) => normalizeText(d.name)).includes(normalizeText(designer.name))
-  );
-
-  const hasComplexity = !!bggGame?.geekitem.item.dynamicinfo.item.stats.avgweight;
+  const gameDesigners = game.designers;
 
   const formattedBGGgame = {
-    bggid: Number(bggGame!.objectid),
-    previewid: Number(bggGame!.itemid),
-    title: bggGame ? bggGame!.version.item.name : "",
+    ...formatBGGGame(bggGame!),
     publisher: bggPublisher,
     designers: bggDesigners,
-    minplayers: Number(bggGame!.geekitem.item.minplayers),
-    maxplayers: Number(bggGame!.geekitem.item.maxplayers),
-    minplaytime: Number(bggGame!.geekitem.item.minplaytime),
-    maxplaytime: Number(bggGame!.geekitem.item.maxplaytime),
-    complexity: hasComplexity
-      ? Number(Number(bggGame!.geekitem.item.dynamicinfo.item.stats.avgweight).toFixed(2))
-      : undefined,
-    minage: Number(bggGame!.geekitem.item.minage),
-    location: bggGame ? editLocation(bggGame) : "–",
-    yearpublished: Number(bggGame!.geekitem.item.yearpublished),
-    decision: "none",
-    negotiation: "none",
-    acquisition: "none",
-    numhave: 0,
-    numneed: 0,
-    numpromise: 0,
   } as unknown as DatabaseData;
 
   let tempGame = { ...reconciledGame, bggid: Number(bggGame!.objectid), previewid: Number(previewid) };
@@ -93,7 +68,7 @@ export default function ReconcileGameForm(props: { game: DatabaseData; previewid
     if (!gamePublisher!.bggid && bggPublisher) {
       const publisherInput = {
         bggid: bggPublisher.bggid,
-        name: gamePublisher!.name,
+        name: reconciledGame["publisher"].name,
       };
 
       await editPublisher(gamePublisher!.publisherid, publisherInput);
@@ -104,12 +79,17 @@ export default function ReconcileGameForm(props: { game: DatabaseData; previewid
         const bggDesigner = bggDesigners.find((d) => normalizeText(d.name) === normalizeText(gameDesigners[i].name));
 
         if (!gameDesigners[i].bggid && bggDesigner) {
-          const designerInput = {
-            bggid: Number(bggDesigner.bggid),
-            name: gameDesigners[i].name,
-          };
+          const chosenDesigner =
+            reconciledGame["designers"].find((d) => normalizeText(d.name) === normalizeText(bggDesigner.name)) ?? null;
 
-          await editDesigner(gameDesigners[i].designerid, designerInput);
+          if (chosenDesigner) {
+            const designerInput = {
+              bggid: Number(bggDesigner.bggid),
+              name: chosenDesigner.name,
+            };
+
+            await editDesigner(gameDesigners[i].designerid, designerInput);
+          }
         }
       }
     }
@@ -254,9 +234,7 @@ export default function ReconcileGameForm(props: { game: DatabaseData; previewid
         })}
       </div>
       <div className="flex flex-row gap-2 justify-center pt-6 pb-2">
-        <Link href="javascript:history.back()">
-          <Button btnColor="gray" btnText="Cancel" />
-        </Link>
+        <Button btnColor="gray" btnText="Cancel" btnAction={() => history.back()} />
         <Button btnColor="green" btnText="Edit Game" btnAction={() => handleEdit()} />
       </div>
     </>

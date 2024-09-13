@@ -49,6 +49,34 @@ export function formatPlayTime(minplaytime?: number, maxplaytime?: number) {
   }
 }
 
+export function formatBGGGame(game: ImportedBGGData): GameInput {
+  const hasComplexity = !!game.geekitem.item.dynamicinfo.item.stats.avgweight;
+
+  return {
+    bggid: Number(game.objectid),
+    previewid: Number(game.itemid),
+    title: game.version.item.name,
+    publisher: null,
+    designers: [],
+    minplayers: Number(game.geekitem.item.minplayers),
+    maxplayers: Number(game.geekitem.item.maxplayers),
+    minplaytime: Number(game.geekitem.item.minplaytime),
+    maxplaytime: Number(game.geekitem.item.maxplaytime),
+    minage: Number(game.geekitem.item.minage),
+    complexity: hasComplexity
+      ? Number(Number(game.geekitem.item.dynamicinfo.item.stats.avgweight).toFixed(2))
+      : undefined,
+    location: editLocation(game),
+    yearpublished: Number(game.geekitem.item.yearpublished),
+    decision: "none",
+    negotiation: "none",
+    acquisition: "none",
+    numhave: 0,
+    numneed: undefined,
+    numpromise: undefined,
+  };
+}
+
 export function extendGame(game: DatabaseData) {
   const data = bggData.find((data: ImportedBGGData) => Number(data.itemid) === game.previewid);
 

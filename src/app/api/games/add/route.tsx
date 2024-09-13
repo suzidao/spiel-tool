@@ -6,6 +6,8 @@ export async function POST(req: NextRequest) {
   const reqData = await req.json();
 
   const gameInput = {
+    bggid: reqData.bggid,
+    previewid: reqData.previewid,
     spielid: reqData.spielid,
     title: reqData.title,
     publisher: reqData.publisher,

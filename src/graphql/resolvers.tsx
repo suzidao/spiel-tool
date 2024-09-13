@@ -34,7 +34,7 @@ import {
 
 import SPIELThemeData from "../data/spiel-app-themes.json";
 import type * as Global from "../types/global.d.ts";
-import { editLocation } from "../utils/editData";
+import { editLocation, formatBGGGame } from "../utils/editData";
 
 const SPIELThemes = SPIELThemeData as SPIELTheme[];
 
@@ -261,31 +261,7 @@ export const resolvers = {
 
           const thisGame = newGames[i];
 
-          const hasComplexity = !!thisGame.geekitem.item.dynamicinfo.item.stats.avgweight;
-
-          const gameInput = {
-            bggid: Number(thisGame.objectid),
-            previewid: Number(thisGame.itemid),
-            title: thisGame.version.item.name,
-            publisher: gamePublisherId,
-            designers: gameDesignerIds,
-            minplayers: Number(thisGame.geekitem.item.minplayers),
-            maxplayers: Number(thisGame.geekitem.item.maxplayers),
-            minplaytime: Number(thisGame.geekitem.item.minplaytime),
-            maxplaytime: Number(thisGame.geekitem.item.maxplaytime),
-            complexity: hasComplexity
-              ? Number(Number(thisGame.geekitem.item.dynamicinfo.item.stats.avgweight).toFixed(2))
-              : undefined,
-            minage: Number(thisGame.geekitem.item.minage),
-            location: editLocation(thisGame),
-            yearpublished: Number(thisGame.geekitem.item.yearpublished),
-            decision: "none",
-            negotiation: "none",
-            acquisition: "none",
-            numhave: 0,
-            numneed: 0,
-            numpromise: 0,
-          };
+          const gameInput = { ...formatBGGGame(thisGame), publisher: gamePublisherId, designers: gameDesignerIds };
 
           createGame(gameInput)
             .then((res) => res)

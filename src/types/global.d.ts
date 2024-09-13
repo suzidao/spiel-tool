@@ -53,8 +53,8 @@ export declare global {
     publisherid: number;
     bggid: number;
     name: string;
-    country: string | null;
-    contacts: string | null;
+    country?: string;
+    contacts?: string;
   };
 
   type PublisherInput = {
@@ -93,8 +93,6 @@ export declare global {
     minage: number;
     location?: string;
     yearpublished?: number;
-    created_at: string;
-    updated_at: string;
   };
 
   interface DatabaseData extends BaseGameData {
@@ -104,9 +102,11 @@ export declare global {
     decision: Decision;
     negotiation: Negotiation;
     acquisition: Acquisition;
-    numneed: number;
+    numneed?: number;
     numhave: number;
-    numpromise: number;
+    numpromise?: number;
+    created_at: string;
+    updated_at: string;
   }
 
   interface BGGData extends BaseGameData {
@@ -128,6 +128,11 @@ export declare global {
     mechanics: GameMeta[];
     expands: GameMeta[];
   }
+
+  type ContextObject = {
+    id: number;
+    name: string;
+  };
 
   interface SpielData extends BaseGameData {
     mechanics?: string[];

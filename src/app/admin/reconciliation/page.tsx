@@ -61,9 +61,13 @@ export default function ReconciliationPage() {
             </thead>
             <tbody>
               {newBGGgames.map((game) => (
-                <tr key={game.itemid}>
-                  <td className="p-2">{game.geekitem.item.primaryname.name}</td>
-                  <td className="p-2">{game.publishers[0].item.primaryname.name}</td>
+                <tr key={game.itemid} className="border-b border-gray-400">
+                  <td className={game.itemid === gameMatch?.itemid ? "font-semibold p-2" : "p-2"}>
+                    {game.geekitem.item.primaryname.name}
+                  </td>
+                  <td className={game.itemid === gameMatch?.itemid ? "font-semibold p-2" : "p-2"}>
+                    {game.publishers[0].item.primaryname.name}
+                  </td>
                   <td className="p-2">
                     <Button
                       btnAction={() => {
@@ -100,7 +104,7 @@ export default function ReconciliationPage() {
         <input className="my-4" type="text" name="match" value={matchTerm} size={60} onChange={handleChange} />
         {!!gameMatch && (
           <>
-            {results.length > 0 ? (
+            {results.length > 0 && (
               <table>
                 <thead>
                   <tr>
@@ -111,7 +115,7 @@ export default function ReconciliationPage() {
                 </thead>
                 <tbody>
                   {results.map((match: Game) => (
-                    <tr key={match.gameid}>
+                    <tr key={match.gameid} className="border-b border-gray-400">
                       <td className="p-3">
                         <Link href={`/games/${match.gameid}/reconcile?previewid=${gameMatch.itemid}`}>
                           <Button btnText="Match" btnColor="cyan" />
@@ -123,14 +127,13 @@ export default function ReconciliationPage() {
                   ))}
                 </tbody>
               </table>
-            ) : (
-              <div>
-                <span className="pr-8">No Matches Found</span>
-                {/* <Link href={`/games/add?previewid=${gameMatch.itemid}`}>
-                  <Button btnText="Add Game" btnColor="green" />
-                </Link> */}
-              </div>
             )}
+            <div className="py-2">
+              <span className="pr-8">{results.length > 0 ? "No Viable Matches" : "No Matches Found"}</span>
+              <Link href={`/games/add?previewid=${gameMatch.itemid}`}>
+                <Button btnText="Add Game" btnColor="green" />
+              </Link>
+            </div>
           </>
         )}
       </div>

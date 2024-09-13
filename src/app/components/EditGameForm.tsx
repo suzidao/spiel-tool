@@ -3,48 +3,63 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { DECISION, NEGOTIATION, ACQUISITION } from "@/types/common";
-import { addNewPublisher, addNewDesigner, editGame, addNewGame } from "../actions";
-import { useGameMetadataContext } from "../contexts";
-import AutoCompleteInput from "./AutoCompleteInput";
-import { normalizeText } from "@/utils/editData";
-import Button from "./Button";
+import { addNewPublisher, addNewDesigner, editGame, addNewGame } from "@/app/actions";
+import { useGameMetadataContext } from "@/app/contexts";
+import { formatBGGGame, normalizeText } from "@/utils/editData";
+import AutoCompleteInput from "@/app/components/AutoCompleteInput";
+import Button from "@/app/components/Button";
+import bggData from "@/data/spiel-preview-games.json";
+import { Metadata } from "next";
 
-export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame }) {
-  const { game, SPIELgame } = props;
+export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame; previewid?: string }) {
+  const { game, SPIELgame, previewid } = props;
   const { publishers, designers } = useGameMetadataContext();
-  const publisherList = publishers.map((pub) => {
-    return { id: pub.publisherid, name: pub.name };
-  });
-  const designerList = designers.map((des) => {
-    return { id: des.designerid, name: des.name };
-  });
 
-  const designerNames =
-    game && game.designers
-      ? game.designers.map((d: Designer) => d.name)
-      : SPIELgame && SPIELgame.designers
-      ? SPIELgame.designers
-      : [];
+  const bggGames = bggData as ImportedBGGData[];
+  const bggGame = bggGames.find((game) => game.itemid === previewid);
 
-  const publisherName =
-    game && game.publisher ? game.publisher.name : SPIELgame && SPIELgame.publisher ? SPIELgame.publisher : "";
+  const designerNames = () => {
+    if (game && game.designers) {
+      return game.designers.map((d: Designer) => d.name);
+    } else if (SPIELgame && SPIELgame.designers) {
+      return SPIELgame.designers;
+    } else if (bggGame && bggGame.geekitem.item.links.boardgamedesigner.length > 0) {
+      return bggGame.geekitem.item.links.boardgamedesigner.map((d) => d.name);
+    } else {
+      return [];
+    }
+  };
 
-  let existingGame = (SPIELgame ? { ...SPIELgame } : { ...game }) as unknown as GameInput;
+  const publisherName = () => {
+    if (game && game.publisher) {
+      return game.publisher.name;
+    } else if (SPIELgame && SPIELgame.publisher) {
+      return SPIELgame.publisher;
+    } else if (bggGame && bggGame.publishers.length > 0) {
+      return bggGame.publishers[0].item.primaryname.name;
+    } else {
+      return "";
+    }
+  };
 
-  if (!!game) {
-    existingGame["publisher"] = game.publisher ? game.publisher!.publisherid : null;
-    existingGame["designers"] = game.designers ? game.designers.map((d: Designer) => d.designerid) : [];
-  }
-
-  if (!!SPIELgame) {
-    existingGame["spielid"] = SPIELgame.spielid;
-    existingGame["minplaytime"] = SPIELgame.playtime ? SPIELgame.playtime : undefined;
-    existingGame["yearpublished"] = SPIELgame.releasedate ? Number(SPIELgame.releasedate.split("/").pop()) : undefined;
-  }
+  let existingGame = (SPIELgame
+    ? {
+        ...SPIELgame,
+        spielid: SPIELgame.spielid,
+        minplaytime: SPIELgame.playtime ?? undefined,
+        yearpublished: SPIELgame.releasedate ? Number(SPIELgame.releasedate.split("/").pop()) : undefined,
+      }
+    : {
+        ...game,
+        publisher: game?.publisher.publisherid,
+        designers: game?.designers.map((d) => d.designerid),
+      }) as unknown as GameInput;
 
   const initialState =
     !!game || !!SPIELgame
       ? { ...existingGame }
+      : !!bggGame
+      ? formatBGGGame(bggGame)
       : {
           bggid: undefined,
           title: "",
@@ -71,71 +86,86 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
   const acquisitionOptions = Object.entries(ACQUISITION);
 
   const [formState, setFormState] = useState<GameInput>(initialState);
-  const [formPublisher, setFormPublisher] = useState<string>(publisherName ?? "");
+  const [formPublisher, setFormPublisher] = useState<string>(publisherName() ?? "");
   const [newPublisher, setNewPublisher] = useState<string>("");
-  const [formDesigners, setFormDesigners] = useState<string[]>(designerNames ?? [""]);
+  const [formDesigners, setFormDesigners] = useState<string[]>(designerNames() ?? [""]);
   const [newDesigners, setNewDesigners] = useState<string[]>([]);
+
+  const publisherList = publishers.map((pub) => {
+    return { id: pub.publisherid, name: pub.name };
+  });
+
+  const designerList = designers.map((des) => {
+    return { id: des.designerid, name: des.name };
+  });
 
   useEffect(() => {
     let newFormState = { ...formState };
-    newFormState["designers"] = designerList
-      .filter((designer) => formDesigners.includes(designer.name))
-      .map((designer) => designer.id);
-    setFormState({ ...formState, ...newFormState });
-  }, [formDesigners, game]);
+    // prevent from firing until Context loads
+    if (designerList.length) {
+      newFormState["designers"] = designerList
+        .filter((designer) => formDesigners.includes(designer.name))
+        .map((designer) => designer.id);
+      setFormState({ ...formState, ...newFormState });
+    }
+  }, [formDesigners]);
 
   useEffect(() => {
     if (!!formState["publisher"]) setNewPublisher("");
+    if (formState["designers"].length > 0) setNewDesigners([]);
   }, [formState]);
 
   const handleInput = (name: string, value: string, valueId?: number) => {
     let newFormState = { ...formState };
     const fieldName = name;
 
-    switch (fieldName) {
-      case "publisher":
-        setFormPublisher(value);
-        const existingPublisher = publishers.find(
-          (pub) => pub.publisherid === valueId || normalizeText(pub.name) === normalizeText(value)
-        );
-        if (!!existingPublisher) {
-          newFormState["publisher"] = existingPublisher.publisherid;
-        } else if (!valueId && !!value) {
-          newFormState["publisher"] = null;
-          setNewPublisher(value);
-        }
-
-        setFormState({ ...formState, ...newFormState });
-        break;
-      case "designers":
-        // if designer exists
-        const existingDesigner = designers.find(
-          (d) => d.designerid === valueId || normalizeText(d.name) === normalizeText(value)
-        );
-
-        // get names from fields
-        const fields = Array.from(document.getElementsByName("designers")) as HTMLInputElement[];
-        let fieldValues = fields.map((input) => input.value);
-        setFormDesigners(fieldValues);
-
-        const matchingIds = designerList
-          .filter((d) => fieldValues.map((value) => normalizeText(value)).includes(normalizeText(d.name)))
-          .map((d) => d.id);
-
-        newFormState["designers"] = matchingIds;
-
-        if (matchingIds.length === formDesigners.length && existingDesigner) {
-          setNewDesigners([]);
-        } else {
-          let unknownDesigners = fieldValues.filter(
-            (fieldValue) =>
-              !designerList.map((d) => normalizeText(d.name)).includes(normalizeText(fieldValue)) && !!fieldValue
+    // prevent from firing until Context loads
+    if (publisherList.length && designerList.length) {
+      switch (fieldName) {
+        case "publisher":
+          setFormPublisher(value);
+          const existingPublisher = publisherList.find(
+            (pub) => pub.id === valueId || normalizeText(pub.name) === normalizeText(value)
           );
-          setNewDesigners(unknownDesigners);
-        }
+          if (!!existingPublisher) {
+            newFormState["publisher"] = existingPublisher.id;
+          } else if (!valueId && !!value) {
+            newFormState["publisher"] = null;
+            setNewPublisher(value);
+          }
 
-        setFormState({ ...formState, ...newFormState });
-        break;
+          setFormState({ ...formState, ...newFormState });
+          break;
+        case "designers":
+          // if designer exists
+          const existingDesigner = designerList.find(
+            (d) => d.id === valueId || normalizeText(d.name) === normalizeText(value)
+          );
+
+          // get names from fields
+          const fields = Array.from(document.getElementsByName("designers")) as HTMLInputElement[];
+          let fieldValues = fields.map((input) => input.value);
+          setFormDesigners(fieldValues);
+
+          const matchingIds = designerList
+            .filter((d) => fieldValues.map((value) => normalizeText(value)).includes(normalizeText(d.name)))
+            .map((d) => d.id);
+
+          newFormState["designers"] = matchingIds;
+
+          if (matchingIds.length === formDesigners.length && existingDesigner) {
+            setNewDesigners([]);
+          } else {
+            let unknownDesigners = fieldValues.filter(
+              (fieldValue) =>
+                !designerList.map((d) => normalizeText(d.name)).includes(normalizeText(fieldValue)) && !!fieldValue
+            );
+            setNewDesigners(unknownDesigners);
+          }
+
+          setFormState({ ...formState, ...newFormState });
+          break;
+      }
     }
   };
 
@@ -162,6 +192,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
     if (!!newPublisher) {
       await addNewPublisher(newPublisher).then((res) => (formState["publisher"] = res!));
     }
+
     if (newDesigners.length > 0) {
       for (let i = 0; i < newDesigners.length; i++) {
         if (!designers.map((d) => d.name).includes(newDesigners[i]))
@@ -254,21 +285,13 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       </div>
       <label className="flex flex-row items-center gap-2">
         Age:
-        <input
-          className="w-12"
-          type="number"
-          min={1}
-          name="minage"
-          defaultValue={formState.minage}
-          onChange={handleChange}
-        />
+        <input className="w-12" type="number" name="minage" defaultValue={formState.minage} onChange={handleChange} />
       </label>
       <label className="flex flex-row items-center gap-2">
         Complexity:
         <input
-          className="w-12"
+          className="w-14"
           type="number"
-          min={1}
           step={0.01}
           name="complexity"
           defaultValue={formState.complexity}

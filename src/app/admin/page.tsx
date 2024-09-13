@@ -2,10 +2,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { scrapePreview, getAllGames, addBGGData, scrapeSPIEL, importSPIELData } from "../actions";
-import bggData from "../../data/spiel-preview-games.json";
-import parentData from "../../data/spiel-preview-parents.json";
-import SPIELData from "../../data/spiel-app-games.json";
+import { scrapePreview, getAllGames, addBGGData, scrapeSPIEL, importSPIELData } from "@/app/actions";
+import bggData from "@/data/spiel-preview-games.json";
+import parentData from "@/data/spiel-preview-parents.json";
+import SPIELData from "@/data/spiel-app-games.json";
 import Button from "@/app/components/Button";
 
 export default function AdminPage() {
@@ -77,7 +77,7 @@ export default function AdminPage() {
             <Button
               btnText="Scrape BGG Preview Items"
               btnColor="orange"
-              btnAction={() => scrapePreview(109, "spiel-preview-games.json")}
+              btnAction={() => scrapePreview(111, "spiel-preview-games.json")}
             />
             <div>
               {newBGGgames.length > 0 && (
