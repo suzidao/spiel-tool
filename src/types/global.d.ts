@@ -239,6 +239,7 @@ export declare global {
   };
 
   type ImportedSPIELData = {
+    ID: string; // game id
     INFO: string; // contains designer info
     S_ORDER: string; // sorting order
     TITEL: string; // game title
@@ -262,6 +263,7 @@ export declare global {
 
   type SPIELGame = {
     spielid: number;
+    appid: number;
     gameid?: number;
     title: string;
     publisher: string;
@@ -272,6 +274,7 @@ export declare global {
     minage: number;
     complexity: number;
     location: string;
+    halls: string[];
     price: number; // extended data
     releasedate: string; // extract year for yearpublished
     mechanics?: string[];
@@ -283,6 +286,7 @@ export declare global {
   };
 
   type SPIELInput = {
+    appid: number;
     title: string;
     publisher: string;
     designers: string;
@@ -293,6 +297,7 @@ export declare global {
     complexity?: number;
     price?: number;
     location: string;
+    halls: string[];
     releasedate: string;
     mechanics?: string;
     categories?: string;

@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAllGames } from "../../actions";
+import { getGames } from "../../actions";
 import bggData from "../../../data/spiel-preview-games.json";
 import Button from "@/app/components/Button";
 import { normalizeText } from "@/utils/editData";
@@ -10,16 +10,15 @@ import Link from "next/link";
 
 export default function ReconciliationPage() {
   const [existingBGGgames, setExistingBGGgames] = useState<Game[]>([]);
-  const [existingSPIELgames, setExistingSPIELGames] = useState<SPIELGame[]>([]);
+  [];
   [];
   const [matchTerm, setMatchTerm] = useState<string>("");
   const [results, setResults] = useState<Game[]>([]);
   const [gameMatch, setGameMatch] = useState<ImportedBGGData>();
 
   useEffect(() => {
-    getAllGames().then((res) => {
-      setExistingBGGgames(res.games);
-      setExistingSPIELGames(res.SPIELgames);
+    getGames().then((res) => {
+      setExistingBGGgames(res);
     });
   }, [gameMatch]);
 
@@ -85,7 +84,7 @@ export default function ReconciliationPage() {
           </table>
         )}
       </div>
-      <div className="flex flex-col gap-2 w-1/2">
+      <div className="flex flex-col gap-2 w-1/2 sticky top-0 self-start pt-8">
         <p className="flex gap-2 justify-start items-center">
           Currently matching: <strong>{gameMatch?.geekitem.item.primaryname.name}</strong>
           {!!gameMatch && (

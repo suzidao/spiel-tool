@@ -169,6 +169,7 @@ export async function getAllGames() {
             spielid
             title
             publisher {
+              publisherid
               bggid
               name
             }
@@ -201,8 +202,7 @@ export async function importSPIELData() {
       `,
     }),
   });
-  const data = await rawdata.json();
-
+  const { data } = await rawdata.json();
   return data;
 }
 

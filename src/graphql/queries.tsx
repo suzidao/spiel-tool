@@ -178,6 +178,7 @@ export async function createDesigner(input: DesignerInput) {
 
 export async function createSPIELGame(input: SPIELInput) {
   const {
+    appid,
     title,
     publisher,
     designers,
@@ -188,6 +189,7 @@ export async function createSPIELGame(input: SPIELInput) {
     complexity,
     price,
     location,
+    halls,
     releasedate,
     mechanics,
     categories,
@@ -196,6 +198,7 @@ export async function createSPIELGame(input: SPIELInput) {
   } = input;
 
   const query = `INSERT INTO spielgames (
+        appid,
         title,
         publisher,
         designers,
@@ -206,12 +209,14 @@ export async function createSPIELGame(input: SPIELInput) {
         complexity,
         price,
         location,
+        halls,
         releasedate,
         mechanics,
         categories,
         subtypes,
         ignore
       ) VALUES (
+        ${appid},
         $$${title}$$,
         $$${publisher}$$,
         string_to_array($$${designers}$$, ','),
@@ -222,6 +227,7 @@ export async function createSPIELGame(input: SPIELInput) {
         ${complexity ?? null},
         ${price ?? null},
         '${location}',
+        '{${halls}}',
         '${releasedate}',
         string_to_array($$${mechanics}$$, ','),
         string_to_array($$${categories}$$, ','),

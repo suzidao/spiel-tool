@@ -2,7 +2,6 @@
 
 "use client";
 
-import { useState } from "react";
 import Filters from "./Filters";
 
 import { flexRender, RowData, Table } from "@tanstack/react-table";

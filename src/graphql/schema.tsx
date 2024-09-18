@@ -74,6 +74,7 @@ export const schema = buildSchema(`
   
   type SPIELGame {
     spielid: Int
+    appid: Int
     gameid: Int
     title: String
     publisher: String
@@ -85,6 +86,7 @@ export const schema = buildSchema(`
     complexity: Int
     price: Float
     location: String
+    halls: [String]
     releasedate: String
     mechanics: [String]
     categories: [String]
@@ -189,6 +191,7 @@ export const schema = buildSchema(`
   }
 
   input SPIELInput {
+    appid: Int
     title: String
     publisher: String
     designers: [String]
@@ -199,6 +202,7 @@ export const schema = buildSchema(`
     complexity: Int
     price: Float
     location: String
+    halls: [String]
     releasedate: String
     mechanics: [String]
     categories: [String]

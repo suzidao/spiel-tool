@@ -118,22 +118,13 @@ export const resolvers = {
       toggleIgnoreSPIELGame(args.spielid, args.ignore).then((res) => res),
     importSPIELData: async () => {
       const dbGames = await getSPIELGames().then((games) => games);
-      const existingGames = dbGames
-        ? dbGames.map((game) => {
-            return { title: game.title, publisher: game.publisher };
-          })
-        : [];
+      const existingGameIds = dbGames ? dbGames.map((game) => game.appid) : [];
 
       const getSPIELData = () => fs.readFileSync(path.join(process.cwd(), "src/data/spiel-app-games.json"), "utf8");
 
       const SPIELGames = JSON.parse(getSPIELData()) as unknown as ImportedSPIELData[];
 
-      const newGames = SPIELGames.filter(
-        (game) =>
-          !existingGames.find(
-            (existingGame) => existingGame.title === game.TITEL && existingGame.publisher === game.UNTERTITEL
-          )
-      );
+      const newGames = SPIELGames.filter((game) => !existingGameIds.includes(Number(game.ID)));
 
       if (newGames) {
         for (let i = 0; i < newGames.length; i++) {
@@ -144,6 +135,8 @@ export const resolvers = {
           const booths = !!thisGame.STAENDE
             ? thisGame.STAENDE.map((location) => [location.NAME.slice(0, 1), "-", location.NAME.slice(1)].join(""))
             : [];
+
+          const halls = !!thisGame.STAENDE ? thisGame.STAENDE.map((location) => location.HALLE) : [];
 
           const pricing = Number(
             Number(thisGame.INFO.split("price:</td><td>")[1].split("</td>")[0].split("&nbsp;")[0]).toFixed(2)
@@ -156,6 +149,7 @@ export const resolvers = {
           );
 
           const SPIELInput = {
+            appid: Number(thisGame.ID),
             title: thisGame.TITEL,
             publisher: thisGame.UNTERTITEL,
             designers: thisGame.INFO.split("</td><td>")[1].split("</td>")[0].toString(),
@@ -165,7 +159,8 @@ export const resolvers = {
             minage: Number(thisGame.INFO.split("Age:</td><td>")[1].split("and up</td>")[0]),
             complexity: isNaN(level) ? undefined : level,
             price: isNaN(pricing) ? undefined : pricing,
-            location: booths.toString() ?? "–",
+            location: booths.join(", ") ?? "–",
+            halls: halls,
             releasedate: thisGame.INFO.split("date:</td><td>")[1].split("</td>")[0],
             mechanics: thisGame.THEMEN.filter((theme) => theme.includes("MECHANISMS") && theme !== "MECHANISMS.23")
               .map((mechanic) => SPIELThemes.find((theme) => theme.ID === mechanic))
@@ -207,12 +202,13 @@ export const resolvers = {
 
           // check existing publishers for game publisher and add if none
           const dbPublishers = await getPublishers().then((publishers) => publishers);
-          const lastPublisherId = dbPublishers.length > 0 ? dbPublishers[dbPublishers.length - 1].publisherid : 0;
 
           const bggPublisher = newGames[i].publishers[0].item;
           const bggPublisherId = Number(bggPublisher.objectid);
 
           const existingPublisher = dbPublishers.find((dbPublisher) => dbPublisher.bggid === bggPublisherId);
+
+          let gamePublisherId;
 
           if (!existingPublisher) {
             const publisherInput = {
@@ -222,12 +218,14 @@ export const resolvers = {
               contacts: null,
             };
 
-            createPublisher(publisherInput)
-              .then((res) => res)
+            await createPublisher(publisherInput)
+              .then((res) => {
+                gamePublisherId = res.publisherid;
+              })
               .catch((error) => console.error(error));
+          } else {
+            gamePublisherId = existingPublisher.publisherid;
           }
-
-          const gamePublisherId = existingPublisher ? existingPublisher.publisherid : lastPublisherId + 1;
 
           const bggDesigners = newGames[i].geekitem.item.links.boardgamedesigner;
 
@@ -264,7 +262,7 @@ export const resolvers = {
           const gameInput = { ...formatBGGGame(thisGame), publisher: gamePublisherId, designers: gameDesignerIds };
 
           createGame(gameInput)
-            .then((res) => res)
+            .then((res) => res.gameid)
             .catch((error) => console.error(error));
         }
       }

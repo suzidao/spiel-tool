@@ -77,7 +77,7 @@ export default function AdminPage() {
             <Button
               btnText="Scrape BGG Preview Items"
               btnColor="orange"
-              btnAction={() => scrapePreview(111, "spiel-preview-games.json")}
+              btnAction={() => scrapePreview(116, "spiel-preview-games.json")}
             />
             <div>
               {newBGGgames.length > 0 && (
@@ -100,7 +100,7 @@ export default function AdminPage() {
             <Button
               btnText="Scrape BGG Parent Items"
               btnColor="orange"
-              btnAction={() => scrapePreview(7, "spiel-preview-parents.json", true)}
+              btnAction={() => scrapePreview(8, "spiel-preview-parents.json", true)}
             />
             <div>
               {newBGGPublishers.length && <span className="font-bold">{newBGGPublishers.length}</span>}
