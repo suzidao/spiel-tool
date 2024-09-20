@@ -1,12 +1,18 @@
 /** @format */
 
+"use client";
+
 import Link from "next/link";
-import { Fragment } from "react";
-import BGGKeys from "../../data/bgg-keys.json";
+import { Fragment, useEffect, useState } from "react";
+import { DECISION, NEGOTIATION, ACQUISITION } from "@/types/common";
+import BGGKeys from "@/data/bgg-keys.json";
 import { formatPlayerCount, formatPlayTime } from "@/utils/editData";
+import { updateStatus } from "@/app/actions";
+import Button from "./Button";
 
 export default function GameInfo(props: { game: Game }) {
   const {
+    gameid,
     bggid,
     title,
     publisher,
@@ -31,7 +37,34 @@ export default function GameInfo(props: { game: Game }) {
     msrp,
     msrp_currency,
     availability_status,
+    decision,
+    negotiation,
+    acquisition,
   } = props.game;
+
+  const [decisionStatus, setDecisionStatus] = useState<string>(decision);
+  const [negotiationStatus, setNegotiationStatus] = useState<string>(negotiation);
+  const [acquisitionStatus, setAcquisitionStatus] = useState<string>(acquisition);
+
+  useEffect(() => {
+    updateStatus(gameid, "decision", decisionStatus);
+  }, [decisionStatus]);
+
+  useEffect(() => {
+    updateStatus(gameid, "negotiation", negotiationStatus);
+  }, [negotiationStatus]);
+
+  useEffect(() => {
+    updateStatus(gameid, "acquisition", acquisitionStatus);
+  }, [acquisitionStatus]);
+
+  const decisionOptions = Object.entries(DECISION);
+  const negotiationOptions = Object.entries(NEGOTIATION);
+  const acquisitionOptions = Object.entries(ACQUISITION);
+
+  const digitizations = digitized
+    ? digitized.filter((type) => BGGKeys.digital_implementations.map((key) => key.objectid).includes(type.objectid))
+    : [];
 
   const price = () => {
     return !!showprice && showprice > 0
@@ -47,6 +80,58 @@ export default function GameInfo(props: { game: Game }) {
 
   return (
     <div className="min-w-[420px] max-w-[960px] mx-auto bg-white">
+      <div className="flex flex-row justify-start gap-6 mb-6">
+        <label className="flex flex-row items-center gap-2">
+          Decision:
+          <select
+            className="border border-gray-400 bg-white py-0.5 rounded"
+            onChange={(e) => setDecisionStatus(e.target.value)}
+            defaultValue={decisionStatus}
+            name="decision"
+          >
+            {decisionOptions.map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+        {!["none", "rejected"].includes(decisionStatus) && (
+          <label className="flex flex-row items-center gap-2">
+            Negotiation:
+            <select
+              className="border border-gray-400 bg-white py-0.5 rounded"
+              onChange={(e) => setNegotiationStatus(e.target.value)}
+              defaultValue={negotiationStatus}
+              name="negotiation"
+            >
+              {negotiationOptions.map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {negotiationStatus !== "none" && (
+          <label className="flex flex-row items-center gap-2">
+            Acquisition:
+            <select
+              className="border border-gray-400 bg-white py-0.5 rounded"
+              onChange={(e) => setAcquisitionStatus(e.target.value)}
+              defaultValue={acquisitionStatus}
+              name="acquisition"
+            >
+              {acquisitionOptions.map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </div>
+
       {!!reimplements && reimplements.length > 0 && (
         <div className="mb-4 text-xs uppercase">
           <span className="pr-1 font-semibold">Reimplements:</span>
@@ -90,26 +175,30 @@ export default function GameInfo(props: { game: Game }) {
         </div>
       )}
       <div className="mb-4 flex flex-row items-center w-full">
-        <div className="w-1/2 flex items-center tracking-looser uppercase font-medium">
-          <span
-            className={
-              "inline-block font-semibold text-xxs rounded-full px-2.5 py-1 " +
-              (availability_status === "demo" ? "text-black bg-yellow-500" : "") +
-              (availability_status === "forsale" ? "text-white bg-green-600 mr-2" : "")
-            }
-          >
-            {availabilityStatus}
-          </span>
-          {availability_status === "forsale" && ` ${price()}`}
-        </div>
+        {availabilityStatus && (
+          <div className="w-1/2 flex items-center tracking-looser uppercase font-medium">
+            <span
+              className={
+                "inline-block font-semibold text-xxs rounded-full px-2.5 py-1 " +
+                (availability_status === "demo" ? "text-black bg-yellow-500" : "") +
+                (availability_status === "forsale" ? "text-white bg-green-600 mr-2" : "")
+              }
+            >
+              {availabilityStatus}
+            </span>
+            {availability_status === "forsale" && ` ${price()}`}
+          </div>
+        )}
         <div>
           <span className="pr-2 font-medium whitespace-nowrap">Location:</span>
           {location}
         </div>
-        <div className="ml-auto justify-self-end">
-          {!!thumbs && thumbs > 0 ? thumbs : "–"}
-          <span className="pl-2 font-medium">👍</span>
-        </div>
+        {!!thumbs && (
+          <div className="ml-auto justify-self-end">
+            {thumbs > 0 ? thumbs : "–"}
+            <span className="pl-2 font-medium">👍</span>
+          </div>
+        )}
       </div>
       <div className="my-4">
         <span className="pr-2 font-medium whitespace-nowrap">Game Title:</span>
@@ -212,29 +301,30 @@ export default function GameInfo(props: { game: Game }) {
             </ul>
           </div>
         )}
-        {digitized && (
+        {digitizations.length > 0 && (
           <div className="w-1/2">
             <span className="pr-2 font-medium whitespace-nowrap">Digital Implementations:</span>
             <ul className="ml-4 my-2">
-              {digitized.map((digitization) => {
-                const keys = BGGKeys.digital_implementations.map((key) => key.objectid);
-
-                if (keys.includes(digitization.objectid)) {
-                  const platforms = BGGKeys.digital_implementations.filter((key) => {
-                    return key.objectid === digitization.objectid;
-                  });
-                  return platforms.map((platform) => {
-                    return (
-                      <li key={platform.objectid} className="my-1">
-                        {platform.name}
-                      </li>
-                    );
-                  });
-                }
+              {digitizations.map((digitization) => {
+                const platforms = BGGKeys.digital_implementations.filter((key) => {
+                  return key.objectid === digitization.objectid;
+                });
+                return platforms.map((platform) => {
+                  return (
+                    <li key={platform.objectid} className="my-1">
+                      {platform.name}
+                    </li>
+                  );
+                });
               })}
             </ul>
           </div>
         )}
+      </div>
+      <div className="border-t border-gray-400 pt-4 flex justify-center gap-2">
+        <Link href={`${gameid}/edit`}>
+          <Button btnColor="green" btnText="Edit" />
+        </Link>
       </div>
     </div>
   );

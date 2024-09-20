@@ -6,7 +6,6 @@ export enum DECISION {
   evaluate = "Evaluate",
   alternate = "Alternate",
   selected = "Selected",
-  soft_locked = "Soft-Locked",
   placed = "Placed",
 }
 

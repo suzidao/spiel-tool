@@ -9,7 +9,6 @@ import { formatBGGGame, normalizeText } from "@/utils/editData";
 import AutoCompleteInput from "@/app/components/AutoCompleteInput";
 import Button from "@/app/components/Button";
 import bggData from "@/data/spiel-preview-games.json";
-import { Metadata } from "next";
 
 export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame; previewid?: string }) {
   const { game, SPIELgame, previewid } = props;
@@ -308,7 +307,12 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       </label>
       <label className="flex flex-row items-center max-w-96 gap-2">
         Decision Status:
-        <select className="border border-gray-400 bg-white py-0.5 rounded" onChange={handleChange} name="decision">
+        <select
+          className="border border-gray-400 bg-white py-0.5 rounded"
+          onChange={handleChange}
+          defaultValue={formState.decision}
+          name="decision"
+        >
           {decisionOptions.map(([key, value]) => (
             <option key={key} value={key}>
               {value}
@@ -318,7 +322,12 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       </label>
       <label className="flex flex-row items-center max-w-96 gap-2">
         Negotiation Status:
-        <select className="border border-gray-400 bg-white py-0.5 rounded" onChange={handleChange} name="negotiation">
+        <select
+          className="border border-gray-400 bg-white py-0.5 rounded"
+          onChange={handleChange}
+          defaultValue={formState.negotiation}
+          name="negotiation"
+        >
           {negotiationOptions.map(([key, value]) => (
             <option key={key} value={key}>
               {value}
@@ -328,7 +337,12 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       </label>
       <label className="flex flex-row items-center max-w-96 gap-2">
         Acquisition Status:
-        <select className="border border-gray-400 bg-white py-0.5 rounded" onChange={handleChange} name="acquisition">
+        <select
+          className="border border-gray-400 bg-white py-0.5 rounded"
+          onChange={handleChange}
+          defaultValue={formState.acquisition}
+          name="acquisition"
+        >
           {acquisitionOptions.map(([key, value]) => (
             <option key={key} value={key}>
               {value}
@@ -339,7 +353,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       <Button
         className="self-center"
         btnColor="green"
-        btnText={(game ? "Edit" : "Add New") + " Game"}
+        btnText={(game ? "Save" : "Add New") + " Game"}
         btnType="submit"
       />
     </form>

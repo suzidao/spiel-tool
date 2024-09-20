@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SPIELThemes from "@/data/spiel-app-themes.json";
 import { assignGame, toggleIgnore, getAllGames } from "@/app/actions";
 import { normalizeText } from "@/utils/editData";
@@ -48,6 +48,20 @@ export default function ReconciliationPage() {
     });
   }, [gameMatch]);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let term = e.target.value;
+    setMatchTerm(term);
+    match(term);
+  };
+
+  const match = (term: string) => {
+    const filteredResults = dbGames.filter((game) => {
+      return normalizeText(game.title).includes(normalizeText(term));
+    });
+
+    term !== "" ? setResults(filteredResults) : setResults([]);
+  };
+
   // const categoryList = SPIELThemes.filter((theme) => theme.ID.includes("CATEGORIES.")).map((category) => {
   //   return { objectid: category.ID, name: category.TITEL };
   // });
@@ -77,183 +91,185 @@ export default function ReconciliationPage() {
 
   const columnHelper = createColumnHelper<SPIELGame>();
 
-  const columns = [
-    columnHelper.accessor("created_at", {
-      id: "CreatedAt",
-      cell: (info) => {
-        let date = new Date(Number(info.getValue()));
-        return date.toLocaleDateString();
-      },
-      header: () => <span>Added</span>,
-      enableHiding: false,
-      enableColumnFilter: false,
-      sortDescFirst: true,
-    }),
-    columnHelper.accessor("title", {
-      id: "GameTitle",
-      cell: ({ row }) => {
-        return (
-          <span className={row.original.spielid === gameMatch?.spielid ? "font-semibold" : ""}>
-            {row.original.title}
-          </span>
-        );
-      },
-      header: () => <span>Title</span>,
-      enableHiding: false,
-    }),
-    columnHelper.accessor("publisher", {
-      id: "Publisher",
-      cell: ({ row }) => {
-        return (
-          <span className={row.original.spielid === gameMatch?.spielid ? "font-semibold" : ""}>
-            {row.original.publisher}
-          </span>
-        );
-      },
-      header: () => <span>Publisher</span>,
-      enableHiding: false,
-    }),
-    columnHelper.accessor("gameid", {
-      id: "Gameid",
-      cell: ({ row, row: { index }, column: { id }, table }) => {
-        const game = row.original;
+  const columns = useMemo(() => {
+    return [
+      columnHelper.accessor("created_at", {
+        id: "CreatedAt",
+        cell: (info) => {
+          let date = new Date(Number(info.getValue()));
+          return date.toLocaleDateString();
+        },
+        header: () => <span>Added</span>,
+        enableHiding: false,
+        enableColumnFilter: false,
+        sortDescFirst: true,
+      }),
+      columnHelper.accessor("title", {
+        id: "GameTitle",
+        cell: ({ row }) => {
+          return (
+            <span className={row.original.spielid === gameMatch?.spielid ? "font-semibold" : ""}>
+              {row.original.title}
+            </span>
+          );
+        },
+        header: () => <span>Title</span>,
+        enableHiding: false,
+      }),
+      columnHelper.accessor("publisher", {
+        id: "Publisher",
+        cell: ({ row }) => {
+          return (
+            <span className={row.original.spielid === gameMatch?.spielid ? "font-semibold" : ""}>
+              {row.original.publisher}
+            </span>
+          );
+        },
+        header: () => <span>Publisher</span>,
+        enableHiding: false,
+      }),
+      columnHelper.accessor("gameid", {
+        id: "Gameid",
+        cell: ({ row, row: { index }, column: { id }, table }) => {
+          const game = row.original;
 
-        return !!game.gameid ? (
-          "✅"
-        ) : (
-          <Button
-            btnAction={() => {
-              setMatchTerm(game.title);
-              match(game.title);
-              setGameMatch(game);
-              table.options.meta?.updateData(index, id, game.gameid);
-            }}
-            btnColor="teal"
-            btnText="Reconcile"
-          />
-        );
-      },
-      header: () => <span>Reconcile</span>,
-      enableHiding: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const isMatched = !!row.original.gameid;
+          return !!game.gameid ? (
+            "✅"
+          ) : (
+            <Button
+              btnAction={() => {
+                setMatchTerm(game.title);
+                match(game.title);
+                setGameMatch(game);
+                table.options.meta?.updateData(index, id, game.gameid);
+              }}
+              btnColor="teal"
+              btnText="Reconcile"
+            />
+          );
+        },
+        header: () => <span>Reconcile</span>,
+        enableHiding: false,
+        enableColumnFilter: false,
+        filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
+          const isMatched = !!row.original.gameid;
 
-        return filterValue.length === 1 ? !isMatched : true;
-      },
-      meta: {
-        columnName: "Exclude Matched Games",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: [{ objectid: "matched", name: "" }],
-        headerClasses: "text-center",
-        classes: "text-center",
-      },
-    }),
-    columnHelper.accessor("ignore", {
-      id: "Ignore",
-      cell: ({ row, row: { index }, column: { id }, table }) => {
-        const game = row.original;
-        const ignored = game.ignore;
+          return filterValue.length === 1 ? !isMatched : true;
+        },
+        meta: {
+          columnName: "Exclude Matched Games",
+          filterVariant: "checklist",
+          externalFilter: true,
+          filterList: [{ objectid: "matched", name: "" }],
+          headerClasses: "text-center",
+          classes: "text-center",
+        },
+      }),
+      columnHelper.accessor("ignore", {
+        id: "Ignore",
+        cell: ({ row, row: { index }, column: { id }, table }) => {
+          const game = row.original;
+          const ignored = game.ignore;
 
-        return (
-          <input
-            type="checkbox"
-            checked={ignored}
-            onChange={() => {
-              toggleIgnore(game.spielid, !ignored);
-            }}
-            onBlur={() => table.options.meta?.updateData(index, id, ignored)}
-          />
-        );
-      },
-      header: () => <span>Ignored</span>,
-      enableHiding: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const ignored = row.original.ignore;
+          return (
+            <input
+              type="checkbox"
+              checked={ignored}
+              onChange={() => {
+                toggleIgnore(game.spielid, !ignored);
+                table.options.meta?.updateData(index, id, !ignored);
+              }}
+            />
+          );
+        },
+        header: () => <span>Ignored</span>,
+        enableHiding: false,
+        enableColumnFilter: false,
+        filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
+          const ignored = row.original.ignore;
 
-        return filterValue.length === 1 ? !!ignored === false : true;
-      },
-      meta: {
-        columnName: "Exclude Ignored Items",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: [{ objectid: "ignore", name: "" }],
-        classes: "text-center",
-      },
-    }),
-    // columnHelper.accessor("categories", {
-    //   id: "Categories",
-    //   cell: (info) => info.getValue(),
-    //   header: () => <span>Categories</span>,
-    //   enableHiding: false,
-    //   enableSorting: false,
-    //   enableColumnFilter: false,
-    //   filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-    //     const categoryNames = row.original.categories;
-    //     const categories = categoryNames
-    //       ? categoryList.filter((listItem) => categoryNames.includes(listItem.name))
-    //       : [];
+          return filterValue.length === 1 ? !!ignored === false : true;
+        },
+        meta: {
+          columnName: "Exclude Ignored Items",
+          filterVariant: "checklist",
+          externalFilter: true,
+          filterList: [{ objectid: "ignore", name: "" }],
+          classes: "text-center",
+        },
+      }),
+      // columnHelper.accessor("categories", {
+      //   id: "Categories",
+      //   cell: (info) => info.getValue(),
+      //   header: () => <span>Categories</span>,
+      //   enableHiding: false,
+      //   enableSorting: false,
+      //   enableColumnFilter: false,
+      //   filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
+      //     const categoryNames = row.original.categories;
+      //     const categories = categoryNames
+      //       ? categoryList.filter((listItem) => categoryNames.includes(listItem.name))
+      //       : [];
 
-    //     const matches = categories
-    //       ? categories.map((category) => {
-    //           const filteredTypes = filterValue.map((filter) => {
-    //             const matchFound = filter === category.objectid;
-    //             return matchFound;
-    //           });
-    //           return filteredTypes.includes(true);
-    //         })
-    //       : [];
+      //     const matches = categories
+      //       ? categories.map((category) => {
+      //           const filteredTypes = filterValue.map((filter) => {
+      //             const matchFound = filter === category.objectid;
+      //             return matchFound;
+      //           });
+      //           return filteredTypes.includes(true);
+      //         })
+      //       : [];
 
-    //     if (filterValue.length === 0) {
-    //       return true;
-    //     } else {
-    //       return matches.includes(true);
-    //     }
-    //   },
-    //   meta: {
-    //     columnName: "Categories",
-    //     filterVariant: "checklist",
-    //     externalFilter: true,
-    //     filterList: categoryList,
-    //   },
-    // }),
-    columnHelper.accessor("subtypes", {
-      id: "SubTypes",
-      cell: (info) => info.getValue(),
-      header: () => <span>SubTypes</span>,
-      enableHiding: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
-        const typeNames = row.original.subtypes;
-        const subtypes = typeNames ? typeList.filter((listItem) => typeNames.includes(listItem.name)) : [];
+      //     if (filterValue.length === 0) {
+      //       return true;
+      //     } else {
+      //       return matches.includes(true);
+      //     }
+      //   },
+      //   meta: {
+      //     columnName: "Categories",
+      //     filterVariant: "checklist",
+      //     externalFilter: true,
+      //     filterList: categoryList,
+      //   },
+      // }),
+      columnHelper.accessor("subtypes", {
+        id: "SubTypes",
+        cell: (info) => info.getValue(),
+        header: () => <span>SubTypes</span>,
+        enableHiding: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        filterFn: (row: Row<SPIELGame>, _columnId: string, filterValue: string[]) => {
+          const typeNames = row.original.subtypes;
+          const subtypes = typeNames ? typeList.filter((listItem) => typeNames.includes(listItem.name)) : [];
 
-        const matches = subtypes
-          ? subtypes.map((type) => {
-              const filteredTypes = filterValue.map((filter) => {
-                const matchFound = filter === type.objectid;
-                return matchFound;
-              });
-              return filteredTypes.includes(true);
-            })
-          : [];
+          const matches = subtypes
+            ? subtypes.map((type) => {
+                const filteredTypes = filterValue.map((filter) => {
+                  const matchFound = filter === type.objectid;
+                  return matchFound;
+                });
+                return filteredTypes.includes(true);
+              })
+            : [];
 
-        if (filterValue.length === 0) {
-          return true;
-        } else {
-          return matches.includes(true);
-        }
-      },
-      meta: {
-        columnName: "SubTypes",
-        filterVariant: "checklist",
-        externalFilter: true,
-        filterList: typeList,
-      },
-    }),
-  ];
+          if (filterValue.length === 0) {
+            return true;
+          } else {
+            return matches.includes(true);
+          }
+        },
+        meta: {
+          columnName: "SubTypes",
+          filterVariant: "checklist",
+          externalFilter: true,
+          filterList: typeList,
+        },
+      }),
+    ];
+  }, [gameMatch?.spielid, SPIELGames]);
 
   const table = useReactTable({
     data: SPIELGames,
@@ -288,20 +304,6 @@ export default function ReconciliationPage() {
       },
     },
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let term = e.target.value;
-    setMatchTerm(term);
-    match(term);
-  };
-
-  const match = (term: string) => {
-    const filteredResults = dbGames.filter((game) => {
-      return normalizeText(game.title).includes(normalizeText(term));
-    });
-
-    term !== "" ? setResults(filteredResults) : setResults([]);
-  };
 
   return (
     <div className="flex flex-row p-12">

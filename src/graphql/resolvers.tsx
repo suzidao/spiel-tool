@@ -30,6 +30,7 @@ import {
   getAllGameDesigners,
   associateGames,
   toggleIgnoreSPIELGame,
+  updateStatus,
 } from "./queries";
 
 import SPIELThemeData from "../data/spiel-app-themes.json";
@@ -116,6 +117,15 @@ export const resolvers = {
     },
     toggleIgnore: (root: SPIELGame, args: { spielid: number; ignore: boolean }) =>
       toggleIgnoreSPIELGame(args.spielid, args.ignore).then((res) => res),
+
+    editStatus: async (root: Game, args: { gameid: number; status: string; value: string }) => {
+      const { gameid, status, value } = args;
+
+      await updateStatus(gameid, status, value)
+        .then((res) => res)
+        .catch((error) => console.error(error));
+    },
+
     importSPIELData: async () => {
       const dbGames = await getSPIELGames().then((games) => games);
       const existingGameIds = dbGames ? dbGames.map((game) => game.appid) : [];
@@ -261,7 +271,7 @@ export const resolvers = {
 
           const gameInput = { ...formatBGGGame(thisGame), publisher: gamePublisherId, designers: gameDesignerIds };
 
-          createGame(gameInput)
+          await createGame(gameInput)
             .then((res) => res.gameid)
             .catch((error) => console.error(error));
         }

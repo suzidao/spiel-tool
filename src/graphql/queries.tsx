@@ -350,3 +350,9 @@ export async function toggleIgnoreSPIELGame(spielid: number, ignore: boolean) {
     .query(`UPDATE spielgames SET ignore=${ignore} WHERE spielid=${spielid} RETURNING *`)
     .then((res) => res.rows[0]);
 }
+
+export async function updateStatus(gameid: number, status: string, value: string) {
+  return await pool
+    .query(`UPDATE games SET ${status}='${value}' WHERE gameid=${gameid} RETURNING gameid`)
+    .then((res) => res.rows[0]);
+}

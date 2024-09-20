@@ -240,6 +240,6 @@ export const schema = buildSchema(`
     cullPublisher(publisherid: Int): Int
     cullDesigner(designerid: Int): Int
     addSPIELGame(spielid: Int, input: SPIELInput): SPIELGame
+    editStatus(gameid: Int, status: String, value: String): Game
   }
-
 `);
