@@ -60,21 +60,51 @@ export default function GamesPage() {
 
           switch (status) {
             case "none":
-              return <div className="text-xl -my-2">🫥</div>;
+              return (
+                <Link href={`/games/${info.row.original.gameid}`} className="text-xl -my-2">
+                  🫥
+                </Link>
+              );
             case "rejected":
-              return <div className="text-xl -my-2">🚫</div>;
+              return (
+                <Link href={`/games/${info.row.original.gameid}`} className="text-xl -my-2">
+                  🚫
+                </Link>
+              );
             case "evaluate":
-              return <div className="text-xl -my-2">⚖️</div>;
+              return (
+                <Link href={`/games/${info.row.original.gameid}`} className="text-xl -my-2">
+                  ⚖️
+                </Link>
+              );
             case "alternate":
-              return <div className="text-xl -my-2">⭐️</div>;
+              return (
+                <Link href={`/games/${info.row.original.gameid}`} className="text-xl -my-2">
+                  ⭐️
+                </Link>
+              );
             case "selected":
-              return <div className="text-xl -my-2">✅</div>;
+              return (
+                <Link href={`/games/${info.row.original.gameid}`} className="text-xl -my-2">
+                  ✅
+                </Link>
+              );
             case "placed":
-              return <div className="text-xl -my-2">💜</div>;
+              return (
+                <Link href={`/games/${info.row.original.gameid}`} className="text-xl -my-2">
+                  💜
+                </Link>
+              );
           }
         },
         header: () => <span className="text-xl">🧑‍⚖️</span>,
         enableColumnFilter: false,
+        sortingFn: (rowA, rowB, _columnId) => {
+          const statusA = rowA.original.decision;
+          const statusB = rowB.original.decision;
+          const statusOrder = ["placed", "selected", "alternate", "evaluate", "none", "rejected"];
+          return statusOrder.indexOf(statusA) - statusOrder.indexOf(statusB);
+        },
         filterFn: (row: Row<Game>, _columnId: string, filterValue: string[]) => {
           const status = row.original.decision;
           if (filterValue.length === 0) {
@@ -526,7 +556,7 @@ export default function GamesPage() {
         },
       }),
     ],
-    []
+    [data]
   );
 
   const table = useReactTable({

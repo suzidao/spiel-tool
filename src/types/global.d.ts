@@ -105,6 +105,7 @@ export declare global {
     numneed?: number;
     numhave: number;
     numpromise?: number;
+    notes?: string;
     created_at: string;
     updated_at: string;
   }
@@ -162,6 +163,7 @@ export declare global {
     numneed?: number;
     numhave?: number;
     numpromise?: number;
+    notes?: string;
   };
 
   type ImportedBGGData = {

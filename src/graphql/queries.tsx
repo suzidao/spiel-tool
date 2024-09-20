@@ -79,6 +79,7 @@ export async function createGame(input: GameInput) {
     numhave,
     numneed,
     numpromise,
+    notes,
   } = input;
 
   const query = `INSERT INTO games (
@@ -101,7 +102,8 @@ export async function createGame(input: GameInput) {
     acquisition,
     numhave,
     numneed,
-    numpromise
+    numpromise,
+    notes
   ) VALUES (
     ${bggid ?? null},
     ${spielid ?? null},
@@ -122,7 +124,8 @@ export async function createGame(input: GameInput) {
     '${acquisition ?? "none"}',
     ${numhave ?? null},
     ${numneed ?? null},
-    ${numpromise ?? null}
+    ${numpromise ?? null},
+    $$${notes}$$
   ) RETURNING *`;
 
   return await pool
@@ -262,6 +265,7 @@ export async function updateGame(gameid: number, input: GameInput) {
     numhave,
     numneed,
     numpromise,
+    notes,
   } = input;
 
   return await pool
@@ -286,6 +290,7 @@ export async function updateGame(gameid: number, input: GameInput) {
         numhave=${numhave},
         numneed=${numneed ?? null},
         numpromise=${numpromise ?? null}
+        notes=$$${notes}$$
       WHERE gameid=${gameid}
       RETURNING *`
     )
@@ -354,5 +359,11 @@ export async function toggleIgnoreSPIELGame(spielid: number, ignore: boolean) {
 export async function updateStatus(gameid: number, status: string, value: string) {
   return await pool
     .query(`UPDATE games SET ${status}='${value}' WHERE gameid=${gameid} RETURNING gameid`)
+    .then((res) => res.rows[0]);
+}
+
+export async function updateNote(gameid: number, note: string) {
+  return await pool
+    .query(`UPDATE games SET notes='${note}' WHERE gameid=${gameid} RETURNING gameid`)
     .then((res) => res.rows[0]);
 }

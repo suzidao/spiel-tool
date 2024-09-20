@@ -46,6 +46,7 @@ export async function GET(req: NextApiRequest) {
             numhave
             numneed
             numpromise
+            notes
           }
         }
       `,

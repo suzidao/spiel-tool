@@ -353,3 +353,22 @@ export async function updateStatus(gameid: number, status: string, value: string
     .then((res) => res.json().then((data) => data))
     .catch((error) => console.error(error));
 }
+
+export async function saveNote(gameid: number, value: string) {
+  await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+        mutation ($gameid: Int, $note: String) {
+          saveNote (gameid: $gameid, note: $note) { gameid }
+        }
+      `,
+      variables: { gameid: gameid, note: value },
+    }),
+  })
+    .then((res) => res.json().then((data) => data))
+    .catch((error) => console.error(error));
+}

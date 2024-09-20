@@ -68,6 +68,7 @@ export const schema = buildSchema(`
     numpromise: Int
     eventid: Int
     paxid: Int
+    notes: String
     created_at: String
     updated_at: String
   }
@@ -156,6 +157,7 @@ export const schema = buildSchema(`
     numhave: Int
     numneed: Int
     numpromise: Int
+    notes: String
   }
 
   input CommentInput {
@@ -241,5 +243,6 @@ export const schema = buildSchema(`
     cullDesigner(designerid: Int): Int
     addSPIELGame(spielid: Int, input: SPIELInput): SPIELGame
     editStatus(gameid: Int, status: String, value: String): Game
+    saveNote(gameid: Int, note: String): Game
   }
 `);

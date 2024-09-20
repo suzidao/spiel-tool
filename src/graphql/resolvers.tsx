@@ -31,11 +31,12 @@ import {
   associateGames,
   toggleIgnoreSPIELGame,
   updateStatus,
+  updateNote,
 } from "./queries";
 
 import SPIELThemeData from "../data/spiel-app-themes.json";
 import type * as Global from "../types/global.d.ts";
-import { editLocation, formatBGGGame } from "../utils/editData";
+import { formatBGGGame } from "../utils/editData";
 
 const SPIELThemes = SPIELThemeData as SPIELTheme[];
 
@@ -58,6 +59,7 @@ export const resolvers = {
     gameid: (root: Game) => root.gameid,
     bggid: (root: Game) => root.bggid,
     previewid: (root: Game) => root.previewid,
+    spielid: (root: Game) => root.spielid,
     title: (root: Game) => root.title,
     publisher: (root: Game) => getGamePublisher(root.gameid),
     designers: (root: Game) => getGameDesigners(root.gameid),
@@ -67,10 +69,12 @@ export const resolvers = {
     maxplaytime: (root: Game) => root.maxplaytime,
     complexity: (root: Game) => root.complexity,
     minage: (root: Game) => root.minage,
+    location: (root: Game) => root.location,
     yearpublished: (root: Game) => root.yearpublished,
     numhave: (root: Game) => root.numhave,
     numneed: (root: Game) => root.numneed,
     numpromise: (root: Game) => root.numpromise,
+    notes: (root: Game) => root.notes,
     decision: (root: Game) => root.decision,
     negotiation: (root: Game) => root.negotiation,
     acquisition: (root: Game) => root.acquisition,
@@ -122,6 +126,14 @@ export const resolvers = {
       const { gameid, status, value } = args;
 
       await updateStatus(gameid, status, value)
+        .then((res) => res)
+        .catch((error) => console.error(error));
+    },
+
+    saveNote: async (root: Game, args: { gameid: number; note: string }) => {
+      const { gameid, note } = args;
+
+      await updateNote(gameid, note)
         .then((res) => res)
         .catch((error) => console.error(error));
     },

@@ -74,6 +74,7 @@ export function formatBGGGame(game: ImportedBGGData): GameInput {
     numhave: 0,
     numneed: undefined,
     numpromise: undefined,
+    notes: undefined,
   };
 }
 

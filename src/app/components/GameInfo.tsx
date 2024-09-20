@@ -7,7 +7,7 @@ import { Fragment, useEffect, useState } from "react";
 import { DECISION, NEGOTIATION, ACQUISITION } from "@/types/common";
 import BGGKeys from "@/data/bgg-keys.json";
 import { formatPlayerCount, formatPlayTime } from "@/utils/editData";
-import { updateStatus } from "@/app/actions";
+import { saveNote, updateStatus } from "@/app/actions";
 import Button from "./Button";
 
 export default function GameInfo(props: { game: Game }) {
@@ -40,11 +40,13 @@ export default function GameInfo(props: { game: Game }) {
     decision,
     negotiation,
     acquisition,
+    notes,
   } = props.game;
 
   const [decisionStatus, setDecisionStatus] = useState<string>(decision);
   const [negotiationStatus, setNegotiationStatus] = useState<string>(negotiation);
   const [acquisitionStatus, setAcquisitionStatus] = useState<string>(acquisition);
+  const [showNotes, setShowNotes] = useState<boolean>(!!notes);
 
   useEffect(() => {
     updateStatus(gameid, "decision", decisionStatus);
@@ -80,7 +82,7 @@ export default function GameInfo(props: { game: Game }) {
 
   return (
     <div className="min-w-[420px] max-w-[960px] mx-auto bg-white">
-      <div className="flex flex-row justify-start gap-6 mb-6">
+      <div className="flex flex-row justify-start gap-6 mb-2">
         <label className="flex flex-row items-center gap-2">
           Decision:
           <select
@@ -130,10 +132,24 @@ export default function GameInfo(props: { game: Game }) {
             </select>
           </label>
         )}
+        <button
+          className="justify-self-end ml-auto text-xl"
+          onClick={() => {
+            setShowNotes(!showNotes);
+          }}
+        >
+          {showNotes ? "✏️" : "📝"}
+        </button>
       </div>
-
+      {showNotes && (
+        <textarea
+          className="border border-gray-400 p-2 w-full"
+          defaultValue={notes}
+          onBlur={(e) => saveNote(gameid, e.target.value)}
+        />
+      )}
       {!!reimplements && reimplements.length > 0 && (
-        <div className="mb-4 text-xs uppercase">
+        <div className="my-2 text-xs uppercase">
           <span className="pr-1 font-semibold">Reimplements:</span>
           {reimplements.map((game, idx) => {
             const isLast = reimplements.length - 1 === idx;
@@ -154,7 +170,7 @@ export default function GameInfo(props: { game: Game }) {
         </div>
       )}
       {!!expands && expands.length > 0 && (
-        <div className="mb-4 text-xs uppercase">
+        <div className="my-2 text-xs uppercase">
           <span className="pr-1 font-semibold">Expansion For:</span>
           {expands.map((game, idx) => {
             const isLast = expands.length - 1 === idx;
@@ -174,7 +190,7 @@ export default function GameInfo(props: { game: Game }) {
           })}
         </div>
       )}
-      <div className="mb-4 flex flex-row items-center w-full">
+      <div className="my-2 flex flex-row items-center w-full">
         {availabilityStatus && (
           <div className="w-1/2 flex items-center tracking-looser uppercase font-medium">
             <span
@@ -194,9 +210,9 @@ export default function GameInfo(props: { game: Game }) {
           {location}
         </div>
         {!!thumbs && (
-          <div className="ml-auto justify-self-end">
+          <div className="ml-auto justify-self-end items-center flex">
+            <span className="pr-2 font-medium text-xl -mt-1">👍</span>
             {thumbs > 0 ? thumbs : "–"}
-            <span className="pl-2 font-medium">👍</span>
           </div>
         )}
       </div>
@@ -323,7 +339,7 @@ export default function GameInfo(props: { game: Game }) {
       </div>
       <div className="border-t border-gray-400 pt-4 flex justify-center gap-2">
         <Link href={`${gameid}/edit`}>
-          <Button btnColor="green" btnText="Edit" />
+          <Button btnColor="green" btnText="Edit Game Info" />
         </Link>
       </div>
     </div>
