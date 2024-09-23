@@ -44,6 +44,7 @@ export default function GamesPage() {
     MaxPlaytime: false,
     Complexity: false,
     Location: false,
+    Hall: false,
   });
 
   useEffect(() => {
@@ -509,6 +510,41 @@ export default function GamesPage() {
           filterVariant: "checklist",
           externalFilter: true,
           filterList: BGGKeys.excluded_subtypes,
+        },
+      }),
+      columnHelper.accessor("location", {
+        id: "Hall",
+        cell: (info) => {
+          const location = info.getValue();
+          const hallNames = location ? location.split(", ").map((loc) => loc.split("-")[0]) : [];
+
+          const hallNums = hallNames.map((name, idx) => {
+            return name + (hallNames.length - 1 > idx ? ", " : "");
+          });
+
+          return hallNums;
+        },
+        header: () => <span>Hall(s)</span>,
+        enableSorting: false,
+        enableColumnFilter: false,
+        filterFn: (row: Row<Game>, _columnId: string, filterValue: string[]) => {
+          const location = row.original.location;
+          const hallNames = location ? location.split(", ").map((loc) => loc.split("-")[0]) : [];
+          const hallNums = hallNames.map((name, idx) => {
+            return name + (hallNames.length - 1 > idx ? ", " : "");
+          });
+
+          if (filterValue.length > 0) {
+            return hallNums.map((num) => filterValue.includes("hall" + num)).includes(true);
+          } else {
+            return true;
+          }
+        },
+        meta: {
+          columnName: "Hall",
+          filterVariant: "checklist",
+          externalFilter: true,
+          filterList: BGGKeys.hall_names,
         },
       }),
       columnHelper.accessor("digitized", {

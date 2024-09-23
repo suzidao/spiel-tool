@@ -2,9 +2,10 @@
 
 "use client";
 
-import Filters from "./Filters";
+import Filters from "@/app/components/Filters";
 
 import { flexRender, RowData, Table } from "@tanstack/react-table";
+import { useMemo } from "react";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -26,7 +27,7 @@ declare module "@tanstack/react-table" {
 }
 
 export default function DataTable(props: { table: Table<any> }) {
-  const table = props.table;
+  const table = useMemo(() => props.table, []);
   const hideAll =
     table.getAllLeafColumns().filter((column) => column.columnDef.enableHiding === false).length ===
     table.getAllLeafColumns().length;
@@ -51,6 +52,7 @@ export default function DataTable(props: { table: Table<any> }) {
                     <label className="flex align-middle gap-2">
                       <input
                         {...{
+                          id: column.id,
                           type: "checkbox",
                           checked: column.getIsVisible(),
                           onChange: () => {

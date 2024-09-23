@@ -18,6 +18,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
     <div className="flex space-x-2">
       {/* See faceted column filters example for min max values functionality */}
       <DebouncedInput
+        id={column.id + "filtermin"}
         type="number"
         value={(columnFilterValue as [number, number])?.[0] ?? ""}
         onChange={(value) => column.setFilterValue((old: [number, number]) => [value, old?.[1]])}
@@ -26,6 +27,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
         className="border p-1 w-12"
       />
       <DebouncedInput
+        id={column.id + "filtermax"}
         type="number"
         value={(columnFilterValue as [number, number])?.[1] ?? ""}
         onChange={(value) => column.setFilterValue((old: [number, number]) => [old?.[0], value])}
@@ -36,6 +38,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
     </div>
   ) : filterVariant === "min" ? (
     <DebouncedInput
+      id={column.id + "filter"}
       type="number"
       value={(columnFilterValue as [number, number])?.[0] ?? ""}
       onChange={(value) => column.setFilterValue([value, column.columnDef.meta?.filterMax ?? 9999])}
@@ -46,6 +49,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
     />
   ) : filterVariant === "max" ? (
     <DebouncedInput
+      id={column.id + "filter"}
       type="number"
       value={(columnFilterValue as [number, number])?.[1] ?? ""}
       onChange={(value) => column.setFilterValue([column.columnDef.meta?.filterMin ?? "", value])}
@@ -55,6 +59,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
     />
   ) : filterVariant === "number" ? (
     <DebouncedInput
+      id={column.id + "filter"}
       type="number"
       value={(columnFilterValue ?? "") as number}
       onChange={(value) => column.setFilterValue(value)}
@@ -66,6 +71,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
       <label className="flex font-semibold items-center gap-1 py-1 mr-2">
         <input
           {...{
+            id: column.id + "filter",
             type: "checkbox",
             checked: checkChecklist((columnFilterValue ?? []) as string[]),
             onChange: () => {
@@ -84,6 +90,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
         column.columnDef.meta?.filterList.map((filterItem) => (
           <label key={filterItem.objectid} className="flex items-center gap-1 py-1 mr-2 whitespace-nowrap">
             <input
+              id={filterItem.objectid}
               type="checkbox"
               name={column.columnDef.id}
               value={filterItem.objectid}
@@ -111,6 +118,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
               className="flex items-center gap-1 py-1 pr-1 whitespace-nowrap first-of-type:font-semibold"
             >
               <input
+                id={filterItem.objectid}
                 type="radio"
                 defaultChecked={idx === 0}
                 name={column.columnDef.id}
@@ -127,6 +135,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
     </div>
   ) : (
     <DebouncedInput
+      id={column.id + "filter"}
       className="border p-1 w-full"
       onChange={(value) => column.setFilterValue(value)}
       placeholder={`Filter`}

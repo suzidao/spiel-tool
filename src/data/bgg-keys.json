@@ -72,5 +72,31 @@
       "objectid": "forsale",
       "name": "For Sale"
     }
+  ],
+  "hall_names": [
+    {
+      "objectid": "hall1",
+      "name": "Hall 1"
+    },
+    {
+      "objectid": "hall2",
+      "name": "Hall 2"
+    },
+    {
+      "objectid": "hall3",
+      "name": "Hall 3"
+    },
+    {
+      "objectid": "hall4",
+      "name": "Hall 4"
+    },
+    {
+      "objectid": "hall5",
+      "name": "Hall 5"
+    },
+    {
+      "objectid": "hall6",
+      "name": "Hall 6"
+    }
   ]
 }
