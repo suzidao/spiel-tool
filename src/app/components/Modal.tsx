@@ -41,7 +41,7 @@ export default function Modal(props: {
             </button>
           </form>
         </div>
-        <div className="p-4 w-auto">{children}</div>
+        <div className="w-auto">{children}</div>
         {/* <div className="flex justify-center items-center gap-2 p-2">
           <form className="m-4" method="dialog">
             <button>Close</button>

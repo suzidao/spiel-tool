@@ -244,5 +244,6 @@ export const schema = buildSchema(`
     addSPIELGame(spielid: Int, input: SPIELInput): SPIELGame
     editStatus(gameid: Int, status: String, value: String): Game
     saveNote(gameid: Int, note: String): Game
+    setAmount(gameid: Int, numField: String, value: Int): Game
   }
 `);

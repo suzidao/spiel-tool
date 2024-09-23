@@ -32,6 +32,7 @@ import {
   toggleIgnoreSPIELGame,
   updateStatus,
   updateNote,
+  updateAmount,
 } from "./queries";
 
 import SPIELThemeData from "../data/spiel-app-themes.json";
@@ -134,6 +135,14 @@ export const resolvers = {
       const { gameid, note } = args;
 
       await updateNote(gameid, note)
+        .then((res) => res)
+        .catch((error) => console.error(error));
+    },
+
+    setAmount: async (root: Game, args: { gameid: number; numField: string; value: number }) => {
+      const { gameid, numField, value } = args;
+
+      await updateAmount(gameid, numField, value)
         .then((res) => res)
         .catch((error) => console.error(error));
     },

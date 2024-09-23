@@ -145,6 +145,7 @@ export async function getAllGames() {
       query: `
         query getAllGames {
           SPIELgames {
+            appid
             spielid
             gameid
             title
@@ -367,6 +368,25 @@ export async function saveNote(gameid: number, value: string) {
         }
       `,
       variables: { gameid: gameid, note: value },
+    }),
+  })
+    .then((res) => res.json().then((data) => data))
+    .catch((error) => console.error(error));
+}
+
+export async function setAmount(gameid: number, numField: string, value: number) {
+  await fetch("http://localhost:4000/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+        mutation ($gameid: Int, $numField: String, $value: Int) {
+          setAmount (gameid: $gameid, numField: $numField, value: $value) { gameid }
+        }
+      `,
+      variables: { gameid: gameid, numField: numField, value: value },
     }),
   })
     .then((res) => res.json().then((data) => data))

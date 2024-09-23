@@ -51,20 +51,14 @@ export default function AdminPage() {
   const newSPIELgames = existingSPIELgames
     ? importedSPIELGames.filter(
         (SPIELGame: ImportedSPIELData) =>
-          !existingSPIELgames.find(
-            (dbSPIELGame: SPIELGame) =>
-              dbSPIELGame.title === SPIELGame.TITEL && dbSPIELGame.publisher === SPIELGame.UNTERTITEL
-          )
+          !existingSPIELgames.map((dbSPIELGame: SPIELGame) => dbSPIELGame.appid).includes(Number(SPIELGame.ID))
       )
     : importedSPIELGames;
 
   const deletedSPIELgames = existingSPIELgames
     ? existingSPIELgames.filter(
         (game: SPIELGame) =>
-          !importedSPIELGames.find(
-            (importedGame: ImportedSPIELData) =>
-              importedGame.TITEL === game.title && importedGame.UNTERTITEL === game.publisher
-          )
+          !importedSPIELGames.map((importedGame: ImportedSPIELData) => Number(importedGame.ID)).includes(game.appid)
       )
     : [];
 
@@ -77,7 +71,7 @@ export default function AdminPage() {
             <Button
               btnText="Scrape BGG Preview Items"
               btnColor="orange"
-              btnAction={() => scrapePreview(117, "spiel-preview-games.json")}
+              btnAction={() => scrapePreview(118, "spiel-preview-games.json")}
             />
             <div>
               {newBGGgames.length > 0 && (

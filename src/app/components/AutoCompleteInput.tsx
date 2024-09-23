@@ -15,8 +15,9 @@ export default function AutoCompleteInput(props: {
   value: string | "";
   name: string;
   onSelect: (name: string, value: string, valueId?: number) => void;
+  className?: string;
 }) {
-  const { name, value, dataList, onSelect } = props;
+  const { name, value, dataList, onSelect, className } = props;
   const [searchTerm, setSearchTerm] = useState<string>(value);
   const [results, setResults] = useState<DataObject[]>([]);
   const [match, setMatch] = useState<number>();
@@ -44,23 +45,33 @@ export default function AutoCompleteInput(props: {
   };
 
   return (
-    <div className="relative">
-      <input type="text" name={name} value={searchTerm} onChange={handleChange} />
+    <div className="relative w-full">
+      <input
+        className={className}
+        type="text"
+        name={name}
+        value={searchTerm}
+        onChange={handleChange}
+        onBlur={() => {
+          setResults([]);
+        }}
+      />
       <div className="absolute z-10">
-        <div className="flex flex-col max-w-60 border-zinc-600 bg-white z-10">
-          {results.map((match: DataObject, idx: number) => (
-            <button
-              key={idx}
-              className="text-left bg-zinc-200 px-4 py-2"
-              onClick={() => {
-                setSearchTerm(match.name);
-                setResults([]);
-                setMatch(match.id);
-              }}
-            >
-              {match.name}
-            </button>
-          ))}
+        <div className="flex flex-col max-w-60 max-h-96 overflow-scroll border-zinc-600 bg-white z-10">
+          {results.length > 0 &&
+            results.map((match: DataObject, idx: number) => (
+              <button
+                key={idx}
+                className="text-left bg-zinc-200 px-4 py-2"
+                onClick={() => {
+                  setSearchTerm(match.name);
+                  setResults([]);
+                  setMatch(match.id);
+                }}
+              >
+                {match.name}
+              </button>
+            ))}
         </div>
       </div>
     </div>

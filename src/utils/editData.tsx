@@ -72,8 +72,8 @@ export function formatBGGGame(game: ImportedBGGData): GameInput {
     negotiation: "none",
     acquisition: "none",
     numhave: 0,
-    numneed: undefined,
-    numpromise: undefined,
+    numneed: 0,
+    numpromise: 0,
     notes: undefined,
   };
 }
@@ -82,9 +82,6 @@ export function extendGame(game: DatabaseData) {
   const data = bggData.find((data: ImportedBGGData) => Number(data.itemid) === game.previewid);
 
   if (!!data) {
-    const editedLocation = editLocation(data);
-    const retrievedLocation = !!game.location && game.location === editedLocation ? game.location : editedLocation;
-
     const releasedate = data.version.item.releasedate;
     const overridedate = data.version.item.overridedate;
 
@@ -113,7 +110,7 @@ export function extendGame(game: DatabaseData) {
 
     const extendedGame: BGGData = {
       ...game,
-      location: retrievedLocation,
+      location: game.location ?? editLocation(data),
       msrp: data.msrp,
       showprice: data.showprice,
       msrp_currency: data.msrp_currency,

@@ -20,6 +20,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import DataTable from "@/app/components/DataTable";
 import { getGames } from "@/app/actions";
+import Button from "@/app/components/Button";
 
 export default function GamesPage() {
   const [data, setData] = useState<Game[]>([]);
@@ -234,7 +235,7 @@ export default function GamesPage() {
         enableColumnFilter: false,
         meta: {
           columnName: "👍",
-          headerClasses: "align-bottom pb-4 text-center text-xl",
+          headerClasses: "items-center text-center text-xl",
           classes: "text-center min-w-12",
         },
       }),
@@ -248,7 +249,7 @@ export default function GamesPage() {
         enableColumnFilter: false,
         meta: {
           columnName: "Release Date",
-          headerClasses: "align-bottom pb-4",
+          headerClasses: "items-center",
           classes: "whitespace-nowrap",
         },
       }),
@@ -257,7 +258,7 @@ export default function GamesPage() {
         header: () => <span>Interest Stats</span>,
         meta: {
           columnName: "Interest Stats",
-          headerClasses: "text-center",
+          headerClasses: "text-center pt-2",
         },
         columns: [
           columnHelper.accessor("musthave_stats", {
@@ -579,7 +580,9 @@ export default function GamesPage() {
 
   return !!data ? (
     <div className="flex min-h-screen flex-col p-6 lg:p-24">
-      <Link href="/games/add">Add New Game</Link>
+      <Link href="/games/add">
+        <Button btnText="Add New Game" btnColor="green" />
+      </Link>
       <DataTable table={table} />
     </div>
   ) : (

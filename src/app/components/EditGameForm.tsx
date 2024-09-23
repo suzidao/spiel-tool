@@ -25,7 +25,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
     } else if (bggGame && bggGame.geekitem.item.links.boardgamedesigner.length > 0) {
       return bggGame.geekitem.item.links.boardgamedesigner.map((d) => d.name);
     } else {
-      return [];
+      return [""];
     }
   };
 
@@ -76,8 +76,9 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
           negotiation: "none",
           acquisition: "none",
           numhave: 0,
-          numneed: undefined,
-          numpromise: undefined,
+          numneed: 0,
+          numpromise: 0,
+          notes: undefined,
         };
 
   const decisionOptions = Object.entries(DECISION);
@@ -168,7 +169,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     e.preventDefault();
     let newFormState = { ...formState };
     const fieldName = e.target.name;
@@ -217,141 +218,205 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-4">
       <label className="flex flex-row items-center gap-2">
         Title:
-        <input type="text" name="title" defaultValue={formState.title} onChange={handleChange} />
+        <input className="w-full" type="text" name="title" defaultValue={formState.title} onChange={handleChange} />
       </label>
       <label className="flex flex-row items-center gap-2">
         Publisher:
-        <AutoCompleteInput name="publisher" dataList={publisherList} value={formPublisher} onSelect={handleInput} />
-      </label>
-      <label className="flex flex-row items-center gap-2">
-        Designer(s):
-        {formDesigners.map((designer, idx) => (
-          <Fragment key={`game${game?.gameid}designer${idx}`}>
-            <AutoCompleteInput name="designers" dataList={designerList} value={designer} onSelect={handleInput} />
-            {formDesigners.length > 1 && <button onClick={(e) => RemoveDesigner(e, idx)}> – </button>}
-          </Fragment>
-        ))}
-        <button onClick={AddDesigner}> + </button>
-      </label>
-      <div className="flex flex-row gap-2 items-center">
-        Player Count:
-        <label className="flex flex-row items-center gap-2">
-          Min:
-          <input
-            className="w-12"
-            type="number"
-            name="minplayers"
-            defaultValue={formState.minplayers ?? undefined}
-            onChange={handleChange}
-          />
-        </label>
-        <label className="flex flex-row items-center gap-2">
-          Max:
-          <input
-            className="w-12"
-            type="number"
-            name="maxplayers"
-            defaultValue={formState.maxplayers ?? undefined}
-            onChange={handleChange}
-          />
-        </label>
-      </div>
-      <div className="flex flex-row gap-2 items-center">
-        Play Time:
-        <label className="flex flex-row items-center gap-2">
-          Min:
-          <input
-            className="w-12"
-            type="number"
-            name="minplaytime"
-            defaultValue={formState.minplaytime ?? undefined}
-            onChange={handleChange}
-          />
-        </label>
-        <label className="flex flex-row items-center gap-2">
-          Max:
-          <input
-            className="w-12"
-            type="number"
-            name="maxplaytime"
-            defaultValue={formState.maxplaytime ?? undefined}
-            onChange={handleChange}
-          />
-        </label>
-      </div>
-      <label className="flex flex-row items-center gap-2">
-        Age:
-        <input className="w-12" type="number" name="minage" defaultValue={formState.minage} onChange={handleChange} />
-      </label>
-      <label className="flex flex-row items-center gap-2">
-        Complexity:
-        <input
-          className="w-14"
-          type="number"
-          step={0.01}
-          name="complexity"
-          defaultValue={formState.complexity}
-          onChange={handleChange}
+        <AutoCompleteInput
+          className="w-full"
+          name="publisher"
+          dataList={publisherList}
+          value={formPublisher}
+          onSelect={handleInput}
         />
       </label>
+      <label className="flex flex-row items-start gap-2 mb-4">
+        <div className="pt-1">Designer(s):</div>
+        <div className="flex flex-row flex-wrap max-w-md gap-x-4 gap-y-2">
+          {formDesigners.map((designer, idx) => (
+            <div className="flex flex-row gap-2" key={`game${game?.gameid}designer${idx}`}>
+              <AutoCompleteInput name="designers" dataList={designerList} value={designer} onSelect={handleInput} />
+              {formDesigners.length > 1 && <button onClick={(e) => RemoveDesigner(e, idx)}>➖</button>}
+            </div>
+          ))}
+          <button onClick={AddDesigner}>➕ Add Designer</button>
+        </div>
+      </label>
+      <div className="flex flex-row gap-8 justify-between">
+        <div className="flex flex-row gap-2 items-center whitespace-nowrap">
+          Player Count:
+          <label className="flex flex-row items-center gap-2">
+            Min:
+            <input
+              className="w-12"
+              type="number"
+              name="minplayers"
+              defaultValue={formState.minplayers ?? undefined}
+              onChange={handleChange}
+            />
+          </label>
+          <label className="flex flex-row items-center gap-2">
+            Max:
+            <input
+              className="w-12"
+              type="number"
+              name="maxplayers"
+              defaultValue={formState.maxplayers ?? undefined}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+        <div className="flex flex-row gap-2 items-center">
+          Play Time:
+          <label className="flex flex-row items-center gap-2">
+            Min:
+            <input
+              className="w-12"
+              type="number"
+              name="minplaytime"
+              defaultValue={formState.minplaytime ?? undefined}
+              onChange={handleChange}
+            />
+          </label>
+          <label className="flex flex-row items-center gap-2">
+            Max:
+            <input
+              className="w-12"
+              type="number"
+              name="maxplaytime"
+              defaultValue={formState.maxplaytime ?? undefined}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+      </div>
+      <div className="flex flex-row gap-6 justify-between">
+        <label className="flex flex-row items-center gap-2">
+          Age:
+          <input className="w-12" type="number" name="minage" defaultValue={formState.minage} onChange={handleChange} />
+        </label>
+        <label className="flex flex-row items-center gap-2">
+          Complexity:
+          <input
+            className="w-14"
+            type="number"
+            step={0.01}
+            name="complexity"
+            defaultValue={formState.complexity ?? 0}
+            onChange={handleChange}
+          />
+        </label>
+        <label className="flex flex-row items-center gap-2">
+          Year Published:
+          <input
+            className="w-16"
+            type="number"
+            name="yearpublished"
+            defaultValue={formState.yearpublished}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
       <label className="flex flex-row items-center gap-2">
         Location:
         <input type="text" name="location" defaultValue={formState.location} onChange={handleChange} />
       </label>
-      <label className="flex flex-row items-center gap-2">
-        Year Published:
-        <input type="number" name="yearpublished" defaultValue={formState.yearpublished} onChange={handleChange} />
-      </label>
-      <label className="flex flex-row items-center max-w-96 gap-2">
-        Decision Status:
-        <select
-          className="border border-gray-400 bg-white py-0.5 rounded"
-          onChange={handleChange}
-          defaultValue={formState.decision}
-          name="decision"
-        >
-          {decisionOptions.map(([key, value]) => (
-            <option key={key} value={key}>
-              {value}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-row items-center max-w-96 gap-2">
-        Negotiation Status:
-        <select
-          className="border border-gray-400 bg-white py-0.5 rounded"
-          onChange={handleChange}
-          defaultValue={formState.negotiation}
-          name="negotiation"
-        >
-          {negotiationOptions.map(([key, value]) => (
-            <option key={key} value={key}>
-              {value}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-row items-center max-w-96 gap-2">
-        Acquisition Status:
-        <select
-          className="border border-gray-400 bg-white py-0.5 rounded"
-          onChange={handleChange}
-          defaultValue={formState.acquisition}
-          name="acquisition"
-        >
-          {acquisitionOptions.map(([key, value]) => (
-            <option key={key} value={key}>
-              {value}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-row gap-4 mt-4">
+        <label className="flex flex-row items-center max-w-96 gap-2">
+          Decision:
+          <select
+            className="border border-gray-400 bg-white py-0.5 rounded"
+            onChange={handleChange}
+            defaultValue={formState.decision}
+            name="decision"
+          >
+            {decisionOptions.map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-row items-center max-w-96 gap-2">
+          Negotiation:
+          <select
+            className="border border-gray-400 bg-white py-0.5 rounded"
+            onChange={handleChange}
+            defaultValue={formState.negotiation}
+            name="negotiation"
+          >
+            {negotiationOptions.map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-row items-center max-w-96 gap-2">
+          Acquisition:
+          <select
+            className="border border-gray-400 bg-white py-0.5 rounded"
+            onChange={handleChange}
+            defaultValue={formState.acquisition}
+            name="acquisition"
+          >
+            {acquisitionOptions.map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div className="flex flex-row gap-6 items-center justify-start">
+        <label className="flex flex-row items-center gap-2">
+          Need:
+          <input
+            className="w-12"
+            type="number"
+            name="numneed"
+            min={0}
+            defaultValue={formState.numneed ?? 0}
+            onChange={handleChange}
+          />
+        </label>
+        <label className="flex flex-row items-center gap-2">
+          Promised:
+          <input
+            className="w-12"
+            type="number"
+            name="numpromise"
+            min={0}
+            defaultValue={formState.numpromise ?? 0}
+            onChange={handleChange}
+          />
+        </label>
+        <label className="flex flex-row items-center gap-2">
+          Have:
+          <input
+            className="w-12"
+            type="number"
+            name="numhave"
+            min={0}
+            defaultValue={formState.numhave ?? 0}
+            onChange={handleChange}
+          />
+        </label>
+      </div>
+      <label className="flex flex-row items-start gap-2">
+        Notes:
+        <textarea
+          className="border border-gray-400 p-2 w-full min-h-12"
+          defaultValue={formState.notes}
+          name="notes"
+          onBlur={handleChange}
+        />
       </label>
       <Button
-        className="self-center"
+        className="self-center my-4"
         btnColor="green"
         btnText={(game ? "Save" : "Add New") + " Game"}
         btnType="submit"

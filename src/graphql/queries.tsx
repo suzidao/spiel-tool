@@ -289,8 +289,8 @@ export async function updateGame(gameid: number, input: GameInput) {
         acquisition='${acquisition}',
         numhave=${numhave},
         numneed=${numneed ?? null},
-        numpromise=${numpromise ?? null}
-        notes=$$${notes}$$
+        numpromise=${numpromise ?? null},
+        notes=$$${notes ?? null}$$
       WHERE gameid=${gameid}
       RETURNING *`
     )
@@ -365,5 +365,11 @@ export async function updateStatus(gameid: number, status: string, value: string
 export async function updateNote(gameid: number, note: string) {
   return await pool
     .query(`UPDATE games SET notes='${note}' WHERE gameid=${gameid} RETURNING gameid`)
+    .then((res) => res.rows[0]);
+}
+
+export async function updateAmount(gameid: number, numField: string, value: number) {
+  return await pool
+    .query(`UPDATE games SET ${numField}=${value} WHERE gameid=${gameid} RETURNING gameid`)
     .then((res) => res.rows[0]);
 }

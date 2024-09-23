@@ -95,7 +95,7 @@ export default function DataTable(props: { table: Table<any> }) {
                   key={header.id}
                   colSpan={header.colSpan}
                   className={
-                    "text-left px-1 pt-2 " +
+                    "text-left px-1 " +
                     (header.column.columnDef.meta?.headerClasses && header.column.columnDef.meta?.headerClasses)
                   }
                 >

@@ -6,7 +6,8 @@ import { extendGame } from "@/utils/editData";
 
 export default async function GameModal({ params: { id } }: { params: { id: string } }) {
   const rawdata = await fetch(`http://localhost:3000/api/games/${id}`, {
-    cache: "no-store",
+    method: "GET",
+    cache: "no-cache",
   });
   const game = await rawdata.json().then((res) => extendGame(res));
 
