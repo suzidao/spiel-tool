@@ -51,7 +51,7 @@ export declare global {
 
   type Publisher = {
     publisherid: number;
-    bggid: number;
+    bggid?: number;
     name: string;
     country?: string;
     contacts?: string;

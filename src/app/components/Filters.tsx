@@ -90,7 +90,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
         column.columnDef.meta?.filterList.map((filterItem) => (
           <label key={filterItem.objectid} className="flex items-center gap-1 py-1 mr-2 whitespace-nowrap">
             <input
-              id={filterItem.objectid}
+              id={filterItem.objectid + column.id}
               type="checkbox"
               name={column.columnDef.id}
               value={filterItem.objectid}
@@ -118,7 +118,7 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
               className="flex items-center gap-1 py-1 pr-1 whitespace-nowrap first-of-type:font-semibold"
             >
               <input
-                id={filterItem.objectid}
+                id={filterItem.objectid + column.id}
                 type="radio"
                 defaultChecked={idx === 0}
                 name={column.columnDef.id}

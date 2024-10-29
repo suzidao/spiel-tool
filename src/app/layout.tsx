@@ -2,7 +2,6 @@
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { GameMetadataContextProvider } from "./contexts";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,10 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <GameMetadataContextProvider>
-          {children}
-          {modal}
-        </GameMetadataContextProvider>
+        {children}
+        {modal}
       </body>
     </html>
   );

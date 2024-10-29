@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   const reqData = await req.json();
 
   const gameInput = {
-    bggid: reqData.bggid,
+    bggid: Number(reqData.bggid),
     previewid: reqData.previewid,
     spielid: reqData.spielid,
     title: reqData.title,
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     numhave: Number(reqData.numhave),
     numneed: Number(reqData.numneed),
     numpromise: Number(reqData.numpromise),
+    notes: reqData.notes,
   };
 
   const rawdata = await fetch("http://localhost:4000/graphql", {

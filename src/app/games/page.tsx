@@ -24,6 +24,7 @@ import Button from "@/app/components/Button";
 
 export default function GamesPage() {
   const [data, setData] = useState<Game[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     { id: "AvailabilityStatus", value: "all" },
@@ -50,6 +51,10 @@ export default function GamesPage() {
   useEffect(() => {
     getGames().then((res: Game[]) => setData(res));
   }, []);
+
+  useMemo(() => {
+    setGames(data);
+  }, [data]);
 
   const columnHelper = createColumnHelper<Game>();
 
@@ -154,16 +159,20 @@ export default function GamesPage() {
         id: "Publisher",
         cell: ({ row }) => {
           const game = row.original;
-          return game.publisher.bggid ? (
-            <Link
-              key={game.publisher.publisherid}
-              href={`https://boardgamegeek.com/publisher/${game.publisher.bggid}`}
-              target="_blank"
-            >
-              {game.publisher.name}
-            </Link>
+          return game.publisher ? (
+            game.publisher.bggid ? (
+              <Link
+                key={game.publisher.publisherid}
+                href={`https://boardgamegeek.com/publisher/${game.publisher.bggid}`}
+                target="_blank"
+              >
+                {game.publisher.name}
+              </Link>
+            ) : (
+              <Fragment key={game.publisher.publisherid}>{game.publisher.name}</Fragment>
+            )
           ) : (
-            <Fragment key={game.publisher.publisherid}>{game.publisher.name}</Fragment>
+            <>Unknown</>
           );
         },
         header: () => <span>Publisher</span>,
@@ -597,7 +606,7 @@ export default function GamesPage() {
   );
 
   const table = useReactTable({
-    data,
+    data: games,
     columns,
     filterFns: {},
     onColumnFiltersChange: setColumnFilters,
@@ -614,14 +623,12 @@ export default function GamesPage() {
     },
   });
 
-  return !!data ? (
+  return (
     <div className="flex min-h-screen flex-col p-6 lg:p-24">
       <Link href="/games/add">
         <Button btnText="Add New Game" btnColor="green" />
       </Link>
-      <DataTable table={table} />
+      {!!games ? <DataTable table={table} /> : <div>No Games Found</div>}
     </div>
-  ) : (
-    <div>No Games Found</div>
   );
 }

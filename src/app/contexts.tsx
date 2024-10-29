@@ -3,7 +3,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { getGameMetadata } from "./actions";
+import { getGameMetadata } from "@/app/actions";
 
 type GameMetadataContext = {
   publishers: Publisher[];

@@ -275,7 +275,7 @@ export default function GameInfo(props: { game: Game }) {
                 {location?.split(", ").map((text, idx) => {
                   const list = location?.split(", ");
                   return (
-                    <span key={text + idx} className={(list.length !== 1 ?? "whitespace-nowrap ") + "mr-1"}>
+                    <span key={text + idx} className={(list.length > 1 && "whitespace-nowrap ") + "mr-1"}>
                       {text + (idx !== list.length - 1 ? ", " : "")}
                     </span>
                   );
@@ -302,16 +302,20 @@ export default function GameInfo(props: { game: Game }) {
         </div>
         <div className="my-3">
           <span className="pr-2 font-medium">Publisher:</span>
-          {!!publisher.bggid ? (
-            <Link
-              key={publisher.publisherid}
-              href={`https://boardgamegeek.com/publisher/${publisher.bggid}`}
-              target="_blank"
-            >
-              {publisher.name}
-            </Link>
+          {publisher ? (
+            !!publisher.bggid ? (
+              <Link
+                key={publisher.publisherid}
+                href={`https://boardgamegeek.com/publisher/${publisher.bggid}`}
+                target="_blank"
+              >
+                {publisher.name}
+              </Link>
+            ) : (
+              publisher.name
+            )
           ) : (
-            publisher.name
+            <>—</>
           )}
         </div>
         <div className="my-3">

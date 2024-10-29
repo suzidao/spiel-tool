@@ -1,7 +1,7 @@
 /** @format */
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DECISION, NEGOTIATION, ACQUISITION } from "@/types/common";
 import { addNewPublisher, addNewDesigner, editGame, addNewGame } from "@/app/actions";
 import { useGameMetadataContext } from "@/app/contexts";
@@ -219,10 +219,16 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-4">
-      <label className="flex flex-row items-center gap-2">
-        Title:
-        <input className="w-full" type="text" name="title" defaultValue={formState.title} onChange={handleChange} />
-      </label>
+      <div className="flex flex-row items-center justify-between gap-4 w-full">
+        <label className="flex flex-row items-center justify-self-stretch gap-2 w-full">
+          Title:
+          <input className="w-full" type="text" name="title" defaultValue={formState.title} onChange={handleChange} />
+        </label>
+        <label className="flex flex-row items-center justify-self-end gap-2 whitespace-nowrap">
+          BGG ID:
+          <input className="w-20" type="number" name="bggid" defaultValue={formState.bggid} onChange={handleChange} />
+        </label>
+      </div>
       <label className="flex flex-row items-center gap-2">
         Publisher:
         <AutoCompleteInput
@@ -295,7 +301,7 @@ export default function EditGameForm(props: { game?: Game; SPIELgame?: SPIELGame
       </div>
       <div className="flex flex-row gap-6 justify-between">
         <label className="flex flex-row items-center gap-2">
-          Age:
+          Min. Age:
           <input className="w-12" type="number" name="minage" defaultValue={formState.minage} onChange={handleChange} />
         </label>
         <label className="flex flex-row items-center gap-2">

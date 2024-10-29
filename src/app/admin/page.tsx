@@ -13,16 +13,16 @@ export default function AdminPage() {
   const [existingSPIELgames, setExistingSPIELGames] = useState<SPIELGame[]>([]);
   [];
 
+  const importedBGGGames = bggData as ImportedBGGData[];
+  const metaData = parentData as PublisherMeta[];
+  const importedSPIELGames = SPIELData as ImportedSPIELData[];
+
   useEffect(() => {
     getAllGames().then((res) => {
       setExistingBGGgames(res.games.filter((game: Game) => game.previewid !== null));
       setExistingSPIELGames(res.SPIELgames);
     });
   }, []);
-
-  const importedBGGGames = bggData as ImportedBGGData[];
-  const metaData = parentData as PublisherMeta[];
-  const importedSPIELGames = SPIELData as ImportedSPIELData[];
 
   const existingBGGPublisherIds = existingBGGgames
     ? [...new Set(existingBGGgames.map((game: Game) => game.publisher.bggid))]
@@ -33,7 +33,9 @@ export default function AdminPage() {
     : metaData;
 
   const deletedBGGPublishers = existingBGGPublisherIds
-    ? existingBGGPublisherIds.filter((pubid) => !metaData.map((pub) => Number(pub.objectid)).includes(pubid))
+    ? existingBGGPublisherIds.filter((pubid) =>
+        pubid ? !metaData.map((pub) => Number(pub.objectid)).includes(pubid) : false
+      )
     : [];
 
   const existingPreviewIds = existingBGGgames ? existingBGGgames.map((game: Game) => game.previewid) : [];
@@ -71,7 +73,7 @@ export default function AdminPage() {
             <Button
               btnText="Scrape BGG Preview Items"
               btnColor="orange"
-              btnAction={() => scrapePreview(118, "spiel-preview-games.json")}
+              btnAction={() => scrapePreview(123, "spiel-preview-games.json")}
             />
             <div>
               {newBGGgames.length > 0 && (

@@ -5,7 +5,7 @@
 import Filters from "@/app/components/Filters";
 
 import { flexRender, RowData, Table } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -27,7 +27,10 @@ declare module "@tanstack/react-table" {
 }
 
 export default function DataTable(props: { table: Table<any> }) {
-  const table = useMemo(() => props.table, []);
+  const [table, setTable] = useState(props.table);
+  const data = useMemo(() => props.table, []);
+  useMemo(() => setTable(data), [table]);
+
   const hideAll =
     table.getAllLeafColumns().filter((column) => column.columnDef.enableHiding === false).length ===
     table.getAllLeafColumns().length;

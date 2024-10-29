@@ -1,7 +1,7 @@
 /** @format */
 
 import GameInfo from "@/app/components/GameInfo";
-import Modal from "../../../components/Modal";
+import Modal from "@/app/components/Modal";
 import { extendGame } from "@/utils/editData";
 
 export default async function GameModal({ params: { id } }: { params: { id: string } }) {
@@ -9,7 +9,7 @@ export default async function GameModal({ params: { id } }: { params: { id: stri
     method: "GET",
     cache: "no-cache",
   });
-  const game = await rawdata.json().then((res) => extendGame(res));
+  const game = await rawdata.json();
 
   return (
     <Modal title={game.title}>

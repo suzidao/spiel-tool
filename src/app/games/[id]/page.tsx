@@ -8,7 +8,7 @@ export default async function GamePage({ params: { id } }: { params: { id: strin
     method: "GET",
     cache: "no-cache",
   });
-  const game = await rawdata.json().then((res) => extendGame(res));
+  const game = await rawdata.json();
 
   return (
     <div className="p-4 lg:p-24 flex justify-center">

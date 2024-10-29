@@ -2,6 +2,7 @@
 
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
+import { extendGame } from "@/utils/editData";
 
 export async function GET(req: NextApiRequest) {
   let gameId = Number(req.url?.split("/").pop());
@@ -55,7 +56,7 @@ export async function GET(req: NextApiRequest) {
   });
   const { data } = await rawdata.json();
 
-  const game = data.game;
+  const game = extendGame(data.game);
 
   return NextResponse.json(game);
 }

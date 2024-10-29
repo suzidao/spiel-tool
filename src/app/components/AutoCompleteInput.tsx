@@ -63,6 +63,7 @@ export default function AutoCompleteInput(props: {
               <button
                 key={idx}
                 className="text-left bg-zinc-200 px-4 py-2"
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   setSearchTerm(match.name);
                   setResults([]);
